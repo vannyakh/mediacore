@@ -2,6 +2,16 @@
 
 Storage persists job outputs. **Cloud storage is optional** — a local-only workflow works with zero cloud credentials or SDKs.
 
+```mermaid
+flowchart LR
+  Job[Job_output] --> Runtime[get_storage]
+  Runtime -->|STORAGE_BACKEND_local| Local[storage_local]
+  Runtime -->|s3_r2| ObjectStore[S3_R2]
+  Runtime -->|ftp_webdav| Net[FTP_WebDAV]
+  Runtime -->|stubs| Cloud[GDrive_Azure_Dropbox]
+  Local --> Files["/files/job_id"]
+```
+
 ## Default
 
 ```bash

@@ -116,10 +116,11 @@ npm run preview
 | Doc | Description |
 |-----|-------------|
 | [Getting started](docs/getting-started/) | Install, first analyze, CLI |
+| [Platforms](docs/platforms/) | Available extractors + how to register |
+| [Plugins](docs/plugins/) | Plugin catalog + how to register |
 | [Architecture](docs/architecture/) | Engine, runtime, events, pipeline |
 | [API](docs/api/) | REST `/v1/*` |
 | [SDK](docs/sdk/) | Multi-language clients |
-| [Plugins](docs/plugins/) | Plugin kinds, storage, providers |
 | [Deployment](docs/deployment/) | Docker, Helm, config |
 | [Vision](docs/getting-started/vision.md) | Product positioning |
 | [Testing](docs/getting-started/testing.md) | TestKit and CI layers |

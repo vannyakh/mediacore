@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "providers" / "data" / "sites_snapshot.json"
 OUT_EXTRACTORS = ROOT / "providers" / "data" / "extractors.json"
 OUT_INDEX = ROOT / "providers" / "data" / "providers_index.json"
+OUT_DOCS = ROOT / "docs" / "public" / "platforms.json"
 
 
 def _load_major_platforms() -> dict:
@@ -43,6 +44,27 @@ def slug(name: str) -> str:
     s = re.sub(r"[^a-zA-Z0-9._-]+", "_", s)
     s = s.strip("_.").lower()
     return s or "unknown"
+
+
+def primary_host(hosts: list[str] | tuple[str, ...]) -> str | None:
+    for host in hosts or ():
+        h = str(host).strip().lower()
+        if h.startswith("www."):
+            h = h[4:]
+        if "." in h and " " not in h and not h.startswith("."):
+            return h
+    return None
+
+
+def brand_logo_url(name: str, hosts: list[str] | tuple[str, ...]) -> str | None:
+    """CDN logo URL for docs UI (host favicon, else Simple Icons slug)."""
+    host = primary_host(hosts)
+    if host:
+        return f"https://www.google.com/s2/favicons?domain={host}&sz=128"
+    icon_slug = re.sub(r"[^a-z0-9]", "", name.lower())
+    if icon_slug:
+        return f"https://cdn.simpleicons.org/{icon_slug}"
+    return None
 
 
 def curated_host_lookup() -> dict[str, tuple[str, tuple[str, ...], tuple[str, ...]]]:
@@ -167,9 +189,30 @@ def main() -> int:
         "providers": providers,
     }
     OUT_INDEX.write_text(json.dumps(index, indent=2) + "\n", encoding="utf-8")
+
+    # Slim catalog for docs site (/platforms/)
+    docs_payload = {
+        "version": 1,
+        "count": index["count"],
+        "with_hosts": index["with_hosts"],
+        "providers": [
+            {
+                "name": p["name"],
+                "status": "broken" if p.get("broken") else p.get("status", "not_configured"),
+                "hosts": p.get("hosts") or [],
+                "description": p.get("description") or "",
+                "logo": brand_logo_url(p["name"], p.get("hosts") or []),
+            }
+            for p in providers
+        ],
+    }
+    OUT_DOCS.parent.mkdir(parents=True, exist_ok=True)
+    OUT_DOCS.write_text(json.dumps(docs_payload) + "\n", encoding="utf-8")
+
     print(
-        f"Wrote {OUT_EXTRACTORS.name} ({clean['count']} extractors) and "
-        f"{OUT_INDEX.name} ({index['count']} providers, {index['with_hosts']} with hosts)"
+        f"Wrote {OUT_EXTRACTORS.name} ({clean['count']} extractors), "
+        f"{OUT_INDEX.name} ({index['count']} providers, {index['with_hosts']} with hosts), "
+        f"and {OUT_DOCS.relative_to(ROOT)} ({docs_payload['count']} for docs)"
     )
     return 0
 

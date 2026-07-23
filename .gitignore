@@ -25,15 +25,25 @@ storage/files/
 *.mkv
 tmp/
 
-# Node / admin
-apps/admin/node_modules/
+# Node — never commit dependencies (docs/apps install locally)
+node_modules/
+**/node_modules/
+
+# Accidental root npm (MediaCore is Python/uv at repo root; docs npm lives in docs/)
+/package.json
+/package-lock.json
+
+# Frontend app build outputs
 apps/admin/.next/
 apps/admin/out/
-apps/dashboard/node_modules/
 apps/dashboard/.next/
+apps/dashboard/out/
+apps/studio/node_modules/
+apps/studio/.next/
+apps/desktop/node_modules/
+apps/desktop/dist/
 
 # Docs (VitePress)
-docs/node_modules/
 docs/.vitepress/dist/
 docs/.vitepress/cache/
 

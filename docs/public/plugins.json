@@ -1,0 +1,285 @@
+{
+  "version": 1,
+  "count": 19,
+  "by_kind": {
+    "analytics": 1,
+    "authentication": 1,
+    "notifications": 2,
+    "ffmpeg": 1,
+    "metadata": 1,
+    "provider": 1,
+    "storage": 9,
+    "translation": 1,
+    "webhooks": 1,
+    "ai": 1
+  },
+  "plugins": [
+    {
+      "name": "mediacore-plugin-analytics",
+      "short_name": "analytics",
+      "version": "0.1.0",
+      "kind": "analytics",
+      "status": "stub",
+      "description": "Job and usage analytics sink (stub)",
+      "capabilities": [
+        "track",
+        "metrics"
+      ],
+      "logo": "https://cdn.simpleicons.org/googleanalytics/E37400"
+    },
+    {
+      "name": "mediacore-plugin-auth-apikey",
+      "short_name": "auth-apikey",
+      "version": "0.1.0",
+      "kind": "authentication",
+      "status": "stub",
+      "description": "API key authentication adapter (stub \u2014 core auth remains in packages/auth)",
+      "capabilities": [
+        "api_key",
+        "verify"
+      ],
+      "logo": "https://cdn.simpleicons.org/auth0/EB5424"
+    },
+    {
+      "name": "mediacore-plugin-discord",
+      "short_name": "discord",
+      "version": "0.1.0",
+      "kind": "notifications",
+      "status": "stub",
+      "description": "Discord webhook notifications for job events",
+      "capabilities": [
+        "events",
+        "notify"
+      ],
+      "logo": "https://cdn.simpleicons.org/discord/5865F2"
+    },
+    {
+      "name": "mediacore-plugin-ffmpeg",
+      "short_name": "ffmpeg",
+      "version": "0.1.0",
+      "kind": "ffmpeg",
+      "status": "available",
+      "description": "FFmpeg-powered convert, audio extract, thumbnail, and clip",
+      "capabilities": [
+        "convert",
+        "audio",
+        "thumbnail",
+        "clip"
+      ],
+      "logo": "https://cdn.simpleicons.org/ffmpeg/007808"
+    },
+    {
+      "name": "mediacore-plugin-metadata",
+      "short_name": "metadata",
+      "version": "0.1.0",
+      "kind": "metadata",
+      "status": "stub",
+      "description": "Normalize and enrich media metadata (stub)",
+      "capabilities": [
+        "enrich",
+        "normalize"
+      ],
+      "logo": "https://cdn.simpleicons.org/json/000000"
+    },
+    {
+      "name": "mediacore-plugin-provider",
+      "short_name": "provider",
+      "version": "0.1.0",
+      "kind": "provider",
+      "status": "stub",
+      "description": "Optional provider-plugin bridge (stub). Platform extractors remain under providers/ and packages/registry.",
+      "capabilities": [
+        "resolve",
+        "metadata",
+        "download"
+      ],
+      "logo": "https://cdn.simpleicons.org/package/0ea5e9"
+    },
+    {
+      "name": "mediacore-plugin-storage-azure",
+      "short_name": "storage-azure",
+      "version": "0.1.0",
+      "kind": "storage",
+      "status": "stub",
+      "description": "Azure Blob storage (optional \u2014 set STORAGE_BACKEND=azure)",
+      "capabilities": [
+        "store",
+        "delete",
+        "signed_url",
+        "publish"
+      ],
+      "logo": "https://cdn.simpleicons.org/microsoftazure/0078D4"
+    },
+    {
+      "name": "mediacore-plugin-storage-dropbox",
+      "short_name": "storage-dropbox",
+      "version": "0.1.0",
+      "kind": "storage",
+      "status": "stub",
+      "description": "Dropbox storage (optional \u2014 set STORAGE_BACKEND=dropbox)",
+      "capabilities": [
+        "store",
+        "delete",
+        "list",
+        "publish"
+      ],
+      "logo": "https://cdn.simpleicons.org/dropbox/0061FF"
+    },
+    {
+      "name": "mediacore-plugin-storage-ftp",
+      "short_name": "storage-ftp",
+      "version": "0.1.0",
+      "kind": "storage",
+      "status": "available",
+      "description": "FTP storage (optional \u2014 set STORAGE_BACKEND=ftp)",
+      "capabilities": [
+        "store",
+        "delete",
+        "public_url",
+        "publish"
+      ],
+      "logo": "https://cdn.simpleicons.org/filezilla/BF0000"
+    },
+    {
+      "name": "mediacore-plugin-storage-gdrive",
+      "short_name": "storage-gdrive",
+      "version": "0.1.0",
+      "kind": "storage",
+      "status": "stub",
+      "description": "Google Drive storage (optional \u2014 OAuth; not required for local use)",
+      "capabilities": [
+        "store",
+        "delete",
+        "list",
+        "publish"
+      ],
+      "logo": "https://cdn.simpleicons.org/googledrive/4285F4"
+    },
+    {
+      "name": "mediacore-plugin-storage-local",
+      "short_name": "storage-local",
+      "version": "0.1.0",
+      "kind": "storage",
+      "status": "available",
+      "description": "Local filesystem storage for MediaCore jobs (default; no cloud required)",
+      "capabilities": [
+        "store",
+        "delete",
+        "public_url",
+        "publish"
+      ],
+      "logo": "https://cdn.simpleicons.org/files/0ea5e9"
+    },
+    {
+      "name": "mediacore-plugin-storage-onedrive",
+      "short_name": "storage-onedrive",
+      "version": "0.1.0",
+      "kind": "storage",
+      "status": "stub",
+      "description": "OneDrive storage (optional \u2014 set STORAGE_BACKEND=onedrive)",
+      "capabilities": [
+        "store",
+        "delete",
+        "list",
+        "publish"
+      ],
+      "logo": "https://cdn.simpleicons.org/microsoftonedrive/0078D4"
+    },
+    {
+      "name": "mediacore-plugin-storage-r2",
+      "short_name": "storage-r2",
+      "version": "0.1.0",
+      "kind": "storage",
+      "status": "available",
+      "description": "Cloudflare R2 object storage (optional \u2014 set STORAGE_BACKEND=r2)",
+      "capabilities": [
+        "store",
+        "delete",
+        "signed_url",
+        "publish"
+      ],
+      "logo": "https://cdn.simpleicons.org/cloudflare/F38020"
+    },
+    {
+      "name": "mediacore-plugin-storage-s3",
+      "short_name": "storage-s3",
+      "version": "0.1.0",
+      "kind": "storage",
+      "status": "available",
+      "description": "Amazon S3 object storage (optional \u2014 set STORAGE_BACKEND=s3)",
+      "capabilities": [
+        "store",
+        "delete",
+        "signed_url",
+        "publish"
+      ],
+      "logo": "https://cdn.simpleicons.org/amazons3/569A31"
+    },
+    {
+      "name": "mediacore-plugin-storage-webdav",
+      "short_name": "storage-webdav",
+      "version": "0.1.0",
+      "kind": "storage",
+      "status": "available",
+      "description": "WebDAV storage (optional \u2014 set STORAGE_BACKEND=webdav)",
+      "capabilities": [
+        "store",
+        "delete",
+        "public_url",
+        "publish"
+      ],
+      "logo": "https://cdn.simpleicons.org/nextdotjs/000000"
+    },
+    {
+      "name": "mediacore-plugin-telegram",
+      "short_name": "telegram",
+      "version": "0.1.0",
+      "kind": "notifications",
+      "status": "stub",
+      "description": "Telegram bot notifications for job events",
+      "capabilities": [
+        "events",
+        "notify"
+      ],
+      "logo": "https://cdn.simpleicons.org/telegram/26A5E4"
+    },
+    {
+      "name": "mediacore-plugin-translate",
+      "short_name": "translate",
+      "version": "0.1.0",
+      "kind": "translation",
+      "status": "stub",
+      "description": "Subtitle / text translation (stub)",
+      "capabilities": [
+        "translate"
+      ],
+      "logo": "https://cdn.simpleicons.org/googletranslate/4285F4"
+    },
+    {
+      "name": "mediacore-plugin-webhook",
+      "short_name": "webhook",
+      "version": "0.1.0",
+      "kind": "webhooks",
+      "status": "stub",
+      "description": "Forward MediaCore events to HTTP webhooks",
+      "capabilities": [
+        "events",
+        "webhook"
+      ],
+      "logo": "https://cdn.simpleicons.org/webhook/0ea5e9"
+    },
+    {
+      "name": "mediacore-plugin-whisper",
+      "short_name": "whisper",
+      "version": "0.1.0",
+      "kind": "ai",
+      "status": "stub",
+      "description": "Speech-to-text via Whisper (stub)",
+      "capabilities": [
+        "transcribe",
+        "subtitles"
+      ],
+      "logo": "https://cdn.simpleicons.org/openai/412991"
+    }
+  ]
+}

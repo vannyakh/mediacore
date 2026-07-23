@@ -1,23 +1,44 @@
-# MediaCore Testing
+---
+title: Testing
+---
 
-Testing is a first-class feature. Layers live under `tests/`; shared fakes and contracts live in `packages/testkit/`.
+<script setup>
+const links = [
+  { title: "Benchmarks", href: "/benchmarks/", hint: "Latency & regressions", icon: "https://cdn.simpleicons.org/prometheus/E6522C" },
+  { title: "Plugins", href: "/plugins/", hint: "Contract tests", icon: "https://cdn.simpleicons.org/npm/CB3837" },
+  { title: "Platforms", href: "/platforms/", hint: "Provider contracts", icon: "https://cdn.simpleicons.org/youtube/FF0000" },
+  { title: "Get started", href: "/getting-started/", hint: "Local setup", icon: "https://cdn.simpleicons.org/python/3776AB" },
+]
+const gates = [
+  { value: "PR", label: "unit · api · contracts" },
+  { value: "Nightly", label: "bench · stress · chaos" },
+  { value: "≥40%", label: "Coverage floor" },
+  { value: "TestKit", label: "Shared fakes" },
+]
+</script>
+
+<DocHero
+  eyebrow="Quality"
+  title="Testing"
+  lead="First-class TestKit, layered suites, and CI markers — so every provider and plugin can prove itself."
+/>
+
+<DocStats :items="gates" />
 
 ## Layout
 
-```text
-packages/testkit/     fake_provider, fake_storage, fake_queue, fake_http, contracts
-tests/
-  unit/               isolated components
-  integration/        multi-component flows
-  api/                REST /v1
-  providers/          provider units + contracts
-  plugins/            plugin certification
-  storage/            storage backend contracts
-  e2e/                full user workflows
-  performance/        latency smoke
-  benchmark/          pytest-benchmark
-  stress/ load/ chaos/ security/ regression/
-  fixtures/ snapshots/ data/
+```mermaid
+flowchart TB
+  TestKit[packages_testkit] --> Unit[unit]
+  TestKit --> Integration[integration]
+  TestKit --> API[api]
+  TestKit --> Providers[providers]
+  TestKit --> Plugins[plugins]
+  TestKit --> Storage[storage]
+  Unit --> E2E[e2e]
+  Integration --> Perf[performance]
+  API --> Bench[benchmark]
+  Providers --> Stress[stress_load_chaos]
 ```
 
 ## Run locally
@@ -25,25 +46,15 @@ tests/
 ```bash
 uv sync --extra dev
 
-# PR-critical suite (default CI)
+# PR-critical suite
 uv run pytest -m "not load and not stress and not chaos and not benchmark"
-
-# All tests including heavy markers
-uv run pytest
 
 # Coverage
 uv run pytest --cov=packages --cov=providers --cov=apps --cov-report=term-missing
 
-# Benchmarks (pytest-benchmark)
+# Benchmarks
 uv run pytest -m benchmark --benchmark-only
-
-# Standalone benchmark module (Python smoke + reports)
 uv run python -m packages.mediacore_benchmark.runner
-# Rust Criterion: cargo bench -p mediacore-benchmarks
-# See docs/benchmarks/ and benchmarks/README.md
-
-# Load (requires API running)
-uv run locust -f tests/load/locustfile.py --headless -u 10 -r 2 -t 30s --host http://127.0.0.1:8000
 ```
 
 ## Markers
@@ -57,21 +68,8 @@ uv run locust -f tests/load/locustfile.py --headless -u 10 -r 2 -t 30s --host ht
 
 ## Contracts
 
-Every provider, plugin, and storage backend should pass the shared runners in `packages/testkit/contracts.py`. Contributors can validate plugins locally before submitting PRs.
+Shared runners in `packages/testkit/contracts.py` for providers, plugins, and storage. Bug fixes add permanent tests under `tests/regression/`.
 
-## Regression policy
+## Related
 
-Every bug fix must add a permanent test under `tests/regression/`. The suite exists so the same failure never returns silently.
-
-## Targets
-
-| Category | Current gate | Mature target |
-|----------|--------------|---------------|
-| Overall coverage | ≥40% (ratchet up) | ≥95% core |
-| Provider/plugin contracts | Built-ins | 100% ecosystem |
-| Perf regression | Smoke latency | ≤5% vs main |
-| Memory leaks | — | Zero known |
-
-## Rust engine (future)
-
-When `crates/mediacore-engine` lands, add Criterion benches (`cargo bench`) and document flamegraph/profiler workflows alongside the Python suite.
+<DocLinks :items="links" />

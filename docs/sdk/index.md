@@ -1,6 +1,22 @@
 # MediaCore SDKs
 
-Every official SDK exposes the **same surface** against the REST API (`X-API-Key`).
+Official clients share one surface against the REST API (`X-API-Key`). Browse support below, then open a language page for install and examples.
+
+<SdkCatalog />
+
+```mermaid
+flowchart LR
+  JS[JavaScript] --> REST[MediaCore_REST_v1]
+  TS[TypeScript] --> REST
+  Py[Python] --> REST
+  Go[Go] --> REST
+  Rust[Rust] --> REST
+  Dart[Dart] --> REST
+  CS[CSharp] --> REST
+  Java[Java_stub] -.-> REST
+  Swift[Swift_stub] -.-> REST
+  Kotlin[Kotlin_stub] -.-> REST
+```
 
 ## Unified API
 
@@ -11,51 +27,12 @@ client.media.convert(path|url, options?)
 client.media.thumbnail(url)
 
 client.jobs.list()
-client.jobs.get(id)          # convenience; not required for parity checklist
+client.jobs.get(id)
 
 client.plugins.list()
 ```
 
-Language-idiomatic naming is allowed (`AnalyzeAsync` in C#, `analyze` in JS) as long as the namespace layout stays `media` / `jobs` / `plugins`.
-
-## Supported
-
-| SDK | Path | Status |
-|-----|------|--------|
-| JavaScript | `sdk/javascript` | Ready |
-| TypeScript | `sdk/typescript` | Ready |
-| Python | `sdk/python` | Ready |
-| Rust | `sdk/rust` | Ready |
-| Go | `sdk/go` | Ready |
-| Dart | `sdk/dart` | Ready |
-| C# | `sdk/csharp` | Ready |
-| Java | `sdk/java` | Future stub |
-| Swift | `sdk/swift` | Future stub |
-| Kotlin | `sdk/kotlin` | Future stub |
-
-## Example (Python)
-
-```python
-from mediacore_sdk import MediaCore
-
-client = MediaCore("dev-api-key-change-me")
-meta = client.media.analyze("https://example.com/video.mp4")
-job = client.media.download(meta["url"], meta["formats"][0]["id"])
-jobs = client.jobs.list()
-plugins = client.plugins.list()
-```
-
-## Example (JavaScript)
-
-```js
-import { MediaCore } from "@mediacore/sdk";
-
-const client = new MediaCore("dev-api-key-change-me");
-const meta = await client.media.analyze("https://example.com/video.mp4");
-const job = await client.media.download(meta.url, meta.formats[0].id);
-const jobs = await client.jobs.list();
-const plugins = await client.plugins.list();
-```
+Language-idiomatic naming is fine (`AnalyzeAsync` in C#, `Media.Analyze` in Go) as long as namespaces stay `media` / `jobs` / `plugins`.
 
 ## REST mapping
 
@@ -68,3 +45,20 @@ const plugins = await client.plugins.list();
 | `jobs.list` | `GET /v1/jobs` |
 | `jobs.get` | `GET /v1/jobs/{id}` |
 | `plugins.list` | `GET /v1/plugins` |
+
+Full HTTP reference: [API](/api/).
+
+## Language guides
+
+| SDK | Status | Detail |
+|-----|--------|--------|
+| [JavaScript](./javascript) | Ready | `@mediacore/sdk` |
+| [TypeScript](./typescript) | Ready | `@mediacore/sdk-ts` |
+| [Python](./python) | Ready | `mediacore_sdk` |
+| [Go](./go) | Ready | `mediacore` |
+| [Rust](./rust) | Ready | `mediacore_sdk` |
+| [Dart](./dart) | Ready | `mediacore` |
+| [C#](./csharp) | Ready | `MediaCore` |
+| [Java](./java) | Stub | `io.mediacore` |
+| [Swift](./swift) | Stub | `MediaCore` |
+| [Kotlin](./kotlin) | Stub | `io.mediacore` |

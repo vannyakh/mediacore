@@ -1,19 +1,28 @@
-# Providers
+# Providers vs plugins
 
-MediaCore core never hardcodes scrape logic. Providers live under `providers/`.
+MediaCore core never hardcodes scrape logic. **Extractors** live under `providers/` and are registered via `packages/registry`. **Plugins** live under `plugins/` and add optional capabilities (storage, FFmpeg, webhooks).
+
+See also: [Available platforms](/platforms/) · [Register an extractor](/platforms/register) · [Register a plugin](/plugins/register).
 
 ## Architecture
 
+```mermaid
+flowchart TB
+  Provider[Provider] --> Metadata[metadata]
+  Provider --> Manifest[manifest]
+  Provider --> Formats[formats]
+  Provider --> Download[download]
+  Provider --> Thumbnail[thumbnail]
+  Provider --> Subtitle[subtitles]
+  Provider --> Live[live]
 ```
-Provider
-│
-├── Metadata
-├── Manifest
-├── Formats
-├── Download
-├── Thumbnail
-├── Subtitle
-└── Live
+
+```mermaid
+flowchart LR
+  Providers[providers] --> Registry[packages_registry]
+  Plugins[plugins] --> PluginLoader[packages_plugins]
+  Registry --> Engine[packages_engine]
+  PluginLoader --> Runtime[apps_api_worker]
 ```
 
 Implement `packages.core.provider.Provider` and declare `capabilities` via `ProviderCapabilities`.

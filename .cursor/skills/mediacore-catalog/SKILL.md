@@ -29,6 +29,8 @@ uv run python scripts/sync_platform_catalog.py --file ./sites.md
 | `providers/data/sites_snapshot.json` | Snapshot input |
 | `providers/data/extractors.json` | Clean extractor list |
 | `providers/data/providers_index.json` | Stub provider index |
+| `docs/public/platforms.json` | Docs `/platforms/` full list UI |
+| `docs/public/plugins.json` | Docs `/plugins/` catalog UI (`scripts/generate_plugins_docs.py`) |
 
 ## After regenerate
 

@@ -1,14 +1,36 @@
-# MediaCore Architecture
+---
+title: Architecture overview
+---
+
+<script setup>
+const links = [
+  { title: "Plugins", href: "/plugins/", hint: "Capabilities", icon: "https://cdn.simpleicons.org/npm/CB3837" },
+  { title: "Platforms", href: "/platforms/", hint: "Providers", icon: "https://cdn.simpleicons.org/youtube/FF0000" },
+  { title: "API events", href: "/api/", hint: "SSE & history", icon: "https://cdn.simpleicons.org/fastapi/009688" },
+  { title: "Deploy", href: "/deployment/", hint: "Local → K8s", icon: "https://cdn.simpleicons.org/kubernetes/326CE5" },
+]
+</script>
+
+<DocHero
+  eyebrow="Deep dive"
+  title="Architecture overview"
+  lead="Layout, engine vs runtime, request flow, and the event bus that ties jobs together."
+/>
 
 ## Vision
 
 **The Open Media Infrastructure Platform** — Extract • Process • Automate • Deliver.
 
-Full product vision: [Vision](/getting-started/vision). MediaCore is not a video downloader; it is reusable media infrastructure (engine, runtime, plugins, SDKs, Studio).
-
-```text
-MediaCore → Plugin System → Providers → Media Pipeline → SDK → Application
+```mermaid
+flowchart LR
+  MediaCore --> PluginSystem[Plugin_System]
+  PluginSystem --> Providers
+  Providers --> MediaPipeline[Media_Pipeline]
+  MediaPipeline --> SDK
+  SDK --> Application
 ```
+
+Full product story: [Vision](/getting-started/vision).
 
 ## Layout
 
@@ -32,10 +54,10 @@ No platform-specific code in the engine.
 
 ## Core principles
 
-1. **Core first** — small, stable, provider-agnostic; no YouTube/TikTok/etc. knowledge in core.
-2. **Plugins for everything else** — providers, storage, AI, auth, notifications, integrations.
+1. **Core first** — small, stable, provider-agnostic.
+2. **Plugins for everything else** — storage, AI, auth, notifications, integrations.
 3. **Same pipeline everywhere** — API, CLI, Desktop, Studio share jobs and events.
-4. **SDK consistency** — same concepts and method names across languages.
+4. **SDK consistency** — same concepts across languages.
 5. **Deployment modes** — CLI, desktop, docker, k8s, embedded, local-only.
 
 ## Request flow
@@ -49,14 +71,15 @@ flowchart TD
   API --> Queue[packages_queue]
   Queue --> Worker[apps_worker]
   Worker --> Engine
-  Worker --> Storage[packages_storage]
+  Worker --> PluginRuntime[packages_plugins_runtime]
+  PluginRuntime --> Storage[packages_storage]
+  PluginRuntime --> Media[packages_media]
   Engine --> Events[packages_events]
+  Events --> PluginRuntime
   API --> Plugins[packages_plugins]
 ```
 
 ## Events
-
-Canonical lifecycle (source of truth: `packages/events/bus.py` — `EventType`):
 
 `JobCreated` → `AnalyzeStarted` → `MetadataReady` → `DownloadStarted` → `Progress` → `ProcessingStarted` → `Completed` | `Failed` | `Cancelled`
 
@@ -65,33 +88,17 @@ Canonical lifecycle (source of truth: `packages/events/bus.py` — `EventType`):
 ```json
 {
   "type": "Progress",
-  "payload": { "job_id": "…", "percent": 42, "bytes_done": 1000, "bytes_total": 2400 },
+  "payload": { "job_id": "…", "percent": 42 },
   "at": "2026-07-23T12:00:00+00:00"
 }
 ```
 
 ### Fan-out
 
-- In-process `EventBus` for emit/listen in each process.
-- Redis pub/sub channel `mediacore:events` bridges API ↔ worker (`EVENTS_REDIS_ENABLED`, `REDIS_URL`).
-- Remote ingest uses `emit_remote` so events are not re-published (no echo loop).
+- In-process `EventBus`
+- Redis channel `mediacore:events` when `EVENTS_REDIS_ENABLED`
+- `GET /v1/events` · `GET /v1/events/stream` · webhook / bot plugins
 
-### Consumer API
+## Continue
 
-| Endpoint | Use |
-|----------|-----|
-| `GET /v1/events?limit=&job_id=` | History (API key) |
-| `GET /v1/events/stream?job_id=&replay_only=` | SSE live stream (`replay_only` exits after history) |
-| `POST /v1/jobs/{id}/cancel` | Sets cancelled + emits `Cancelled` |
-
-Compatibility alias: `/api/v1/*`.
-
-### Consumers
-
-| Consumer | How |
-|----------|-----|
-| Dashboard | `/events` page polls `/v1/events` |
-| CLI | `mediacore events [--follow] [--job-id]` |
-| Webhooks | `mediacore-plugin-webhook` when `MEDIACORE_WEBHOOK_URL` / `WEBHOOK_URL` set |
-| Desktop | Polls `/v1/events` (scaffold) |
-| Bots | Telegram / Discord listeners when tokens/webhook URLs set |
+<DocLinks :items="links" />

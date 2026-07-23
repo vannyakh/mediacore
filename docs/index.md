@@ -4,25 +4,41 @@ layout: home
 hero:
   name: MediaCore
   text: Open Source Media Infrastructure
-  tagline: Extract • Process • Automate • Deliver
+  tagline: Extract • Process • Automate • Deliver — v0.1.0
+  image:
+    src: /logo.png
+    alt: MediaCore
   actions:
     - theme: brand
       text: Get started
       link: /getting-started/
     - theme: alt
-      text: API reference
-      link: /api/
+      text: Platforms
+      link: /platforms/
     - theme: alt
-      text: View on GitHub
-      link: https://github.com/mediacore/mediacore
+      text: Plugins
+      link: /plugins/
+    - theme: alt
+      text: GitHub
+      link: https://github.com/vannyakh/mediacore
 
 features:
-  - title: Modular core
+  - icon:
+      src: https://cdn.simpleicons.org/python/3776AB
+    title: Modular core
     details: Provider-agnostic engine, plugin system, job queue, events, and storage interfaces.
-  - title: Media pipelines
+  - icon:
+      src: https://cdn.simpleicons.org/ffmpeg/007808
+    title: Media pipelines
     details: Analyze, download, audio, video, subtitles, thumbnail, convert, clip — same flow everywhere.
-  - title: Developer surfaces
+  - icon:
+      src: https://cdn.simpleicons.org/typescript/3178C6
+    title: Developer surfaces
     details: REST API, CLI, multi-language SDKs, Dashboard, Desktop, and Studio scaffolds.
-  - title: Extensible
-    details: Providers, storage backends, FFmpeg, AI, webhooks, and notifications as plugins.
+  - icon:
+      src: https://cdn.simpleicons.org/docker/2496ED
+    title: Extensible
+    details: Register extractors and plugins without forking core. Cloud storage stays optional.
 ---
+
+<HomeExtras />
