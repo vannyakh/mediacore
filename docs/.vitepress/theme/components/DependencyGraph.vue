@@ -5,6 +5,7 @@ import { Network } from "vis-network";
 import {
   KIND_COLORS,
   edges as allEdges,
+  nodeIconDataUri,
   nodes as allNodes,
   type GraphEdge,
   type GraphKind,
@@ -14,6 +15,28 @@ import {
 const container = ref<HTMLElement | null>(null);
 let network: Network | null = null;
 let resizeObserver: ResizeObserver | null = null;
+let settleTimer: ReturnType<typeof setTimeout> | null = null;
+let dragNodeId: string | null = null;
+let dragNodeBaseSize = 24;
+
+/** Soft springs while / after dragging — animated without endless jitter. */
+const interactivePhysics = {
+  enabled: true,
+  solver: "forceAtlas2Based" as const,
+  forceAtlas2Based: {
+    gravitationalConstant: -38,
+    centralGravity: 0.006,
+    springLength: 150,
+    springConstant: 0.055,
+    damping: 0.78,
+    avoidOverlap: 0.9,
+  },
+  maxVelocity: 28,
+  minVelocity: 2,
+  timestep: 0.35,
+  adaptiveTimestep: true,
+  stabilization: { enabled: false },
+};
 
 const hideOptional = ref(false);
 const hideInfra = ref(false);
@@ -96,7 +119,7 @@ function fit(animate = true) {
   // Capping left a tiny center blob and mismatched drag hit-targets.
   network.fit({
     animation: animate
-      ? { duration: 280, easingFunction: "easeInOutQuad" }
+      ? { duration: 420, easingFunction: "easeInOutCubic" }
       : false,
   });
 }
@@ -106,30 +129,53 @@ function onWindowResize() {
   fit(false);
 }
 
+function clearSettleTimer() {
+  if (settleTimer != null) {
+    clearTimeout(settleTimer);
+    settleTimer = null;
+  }
+}
+
 function build() {
   if (!container.value) return;
+  clearSettleTimer();
+  dragNodeId = null;
   network?.destroy();
   network = null;
 
   const { nodes, edges } = filterGraph();
   const fontColor = labelColor();
+  const baseSize = (id: string) => (id === "mediacore" ? 34 : 24);
+
   const visNodes = new DataSet(
-    nodes.map((n) => ({
-      id: n.id,
-      label: n.label,
-      group: n.kind,
-      color: {
-        background: KIND_COLORS[n.kind],
-        border: KIND_COLORS[n.kind],
-        highlight: { background: "#f97316", border: "#ea580c" },
-      },
-      font: { color: fontColor, size: 14, face: "ui-sans-serif, system-ui" },
-      shape: "dot",
-      size: n.id === "mediacore" ? 32 : 20,
-      borderWidth: 2,
-      // Allow free dragging once physics settles.
-      physics: true,
-    })),
+    nodes.map((n) => {
+      const color = KIND_COLORS[n.kind];
+      const image = nodeIconDataUri(color, n.icon);
+      return {
+        id: n.id,
+        label: n.label,
+        group: n.kind,
+        shape: "circularImage",
+        image,
+        brokenImage: image,
+        size: baseSize(n.id),
+        borderWidth: 3,
+        borderWidthSelected: 4,
+        color: {
+          background: color,
+          border: color,
+          highlight: { background: color, border: "#f97316" },
+          hover: { background: color, border: "#fb923c" },
+        },
+        font: {
+          color: fontColor,
+          size: 13,
+          face: "ui-sans-serif, system-ui",
+          vadjust: 2,
+        },
+        physics: true,
+      };
+    }),
   );
   const visEdges = new DataSet(
     edges.map((e, i) => ({
@@ -140,7 +186,8 @@ function build() {
       color: { color: edgeColor(e.kind), highlight: "#fb923c", opacity: 0.85 },
       width: e.kind === "prod" ? 1.8 : 1.2,
       dashes: e.kind === "optional",
-      smooth: true,
+      // continuous curves animate cleanly with spring physics while dragging
+      smooth: { enabled: true, type: "continuous", roundness: 0.35 },
     })),
   );
 
@@ -176,11 +223,12 @@ function build() {
       },
       nodes: {
         shadow: false,
-        scaling: { min: 16, max: 36 },
+        scaling: { min: 16, max: 40 },
       },
       edges: {
-        selectionWidth: 2,
-        hoverWidth: 1.5,
+        selectionWidth: 2.5,
+        hoverWidth: 2,
+        smooth: { enabled: true, type: "continuous", roundness: 0.35 },
       },
     },
   );
@@ -194,7 +242,7 @@ function build() {
     selectedId.value = null;
   });
 
-  // After layout settles: stop physics so node drag feels solid, then fill canvas.
+  // Initial layout: freeze, then fill canvas. Drag re-enables soft springs.
   network.once("stabilizationIterationsDone", () => {
     network?.setOptions({ physics: { enabled: false } });
     requestAnimationFrame(() => {
@@ -203,8 +251,52 @@ function build() {
     });
   });
 
-  network.on("dragStart", () => {
-    network?.setOptions({ physics: { enabled: false } });
+  network.on("dragStart", (params) => {
+    // Pan (empty nodes) stays free; only node drags get spring animation.
+    if (!params.nodes?.length || !network) return;
+    clearSettleTimer();
+    dragNodeId = String(params.nodes[0]);
+    dragNodeBaseSize = baseSize(dragNodeId);
+    visNodes.update({
+      id: dragNodeId,
+      size: dragNodeBaseSize * 1.18,
+      borderWidth: 5,
+    });
+    network.setOptions({ physics: interactivePhysics });
+  });
+
+  network.on("dragEnd", (params) => {
+    if (!params.nodes?.length || !network) return;
+    if (dragNodeId != null) {
+      visNodes.update({
+        id: dragNodeId,
+        size: dragNodeBaseSize,
+        borderWidth: 3,
+      });
+      dragNodeId = null;
+    }
+    // Keep soft physics briefly so neighbors ease into place, then freeze.
+    network.setOptions({ physics: interactivePhysics });
+    clearSettleTimer();
+    settleTimer = setTimeout(() => {
+      network?.setOptions({
+        physics: {
+          ...interactivePhysics,
+          enabled: true,
+          maxVelocity: 12,
+          minVelocity: 3,
+          forceAtlas2Based: {
+            ...interactivePhysics.forceAtlas2Based,
+            damping: 0.92,
+            springConstant: 0.04,
+          },
+        },
+      });
+      settleTimer = setTimeout(() => {
+        network?.setOptions({ physics: { enabled: false } });
+        settleTimer = null;
+      }, 280);
+    }, 420);
   });
 }
 
@@ -242,6 +334,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   window.removeEventListener("resize", onWindowResize);
+  clearSettleTimer();
   resizeObserver?.disconnect();
   resizeObserver = null;
   network?.destroy();
@@ -265,14 +358,52 @@ watch([hideOptional, hideInfra, hideSdk], async () => {
         </span>
       </div>
       <div class="mc-graph__actions">
-        <button type="button" class="mc-chip" @click="fit">Fit</button>
         <button
           type="button"
-          class="mc-chip"
-          :aria-pressed="!minimized"
+          class="mc-icon-btn"
+          aria-label="Fit graph"
+          data-tip="Fit"
+          @click="fit()"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"
+            />
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="mc-icon-btn"
+          :aria-label="minimized ? 'Show options' : 'Minimize options'"
+          :aria-pressed="minimized"
+          :data-tip="minimized ? 'Show options' : 'Minimize'"
           @click="toggleMinimized"
         >
-          {{ minimized ? "Show options" : "Minimize" }}
+          <svg v-if="!minimized" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"
+            />
+          </svg>
+          <svg v-else viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"
+            />
+          </svg>
         </button>
       </div>
     </div>
@@ -387,8 +518,90 @@ watch([hideOptional, hideInfra, hideSdk], async () => {
 
 .mc-graph__actions {
   display: flex;
-  gap: 0.4rem;
+  gap: 0.35rem;
   flex: 0 0 auto;
+  align-items: center;
+}
+
+.mc-icon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid var(--vp-c-brand-1);
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.mc-icon-btn svg {
+  width: 1rem;
+  height: 1rem;
+  display: block;
+}
+
+.mc-icon-btn:hover {
+  background: var(--vp-c-brand-1);
+  color: var(--vp-c-bg);
+  border-color: var(--vp-c-brand-1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--vp-c-brand-1) 28%, transparent);
+}
+
+.mc-icon-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.mc-icon-btn:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 2px;
+}
+
+.mc-icon-btn[aria-pressed="true"] {
+  background: var(--vp-c-brand-1);
+  color: var(--vp-c-bg);
+}
+
+/* Hover label */
+.mc-icon-btn::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: 50%;
+  transform: translateX(-50%) translateY(-2px);
+  padding: 0.22rem 0.5rem;
+  border-radius: 0.35rem;
+  background: var(--vp-c-bg-elv, var(--vp-c-bg-soft));
+  border: 1px solid var(--vp-c-divider);
+  color: var(--vp-c-text-1);
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity 0.12s ease,
+    transform 0.12s ease;
+  z-index: 5;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.mc-icon-btn:hover::after,
+.mc-icon-btn:focus-visible::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 .mc-graph__canvas {
