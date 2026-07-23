@@ -28,5 +28,15 @@ uv run python scripts/sync_platform_catalog.py --offline
 | Skill | When |
 |-------|------|
 | `mediacore-dev` | Run/test/doctor local stack |
-| `mediacore-provider` | Add/upgrade providers |
+| `mediacore-provider` | Add/upgrade a single provider |
+| `mediacore-upgrade-loop` | Auto-implement platforms in batches (queue + yt-dlp host research only) |
 | `mediacore-catalog` | Sync/regenerate platform catalog |
+
+### Upgrade all platforms (agent loop)
+
+```bash
+uv run python scripts/provider_upgrade_queue.py next --limit 5
+# implement batch → mark done / skipped_no_api → regenerate docs → pytest -m provider
+```
+
+yt-dlp (`github.com/yt-dlp/yt-dlp`) is **host/URL research only** — never port scrapers.

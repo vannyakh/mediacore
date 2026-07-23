@@ -6,15 +6,35 @@ Browser and Node client using native `fetch`. Same surface as TypeScript / Pytho
 
 ## Install
 
-```bash
+From the MediaCore repository root (publish to npm comes later):
+
+::: code-group
+
+```bash [npm]
 npm install ./sdk/javascript
-# or
+```
+
+```bash [pnpm]
 pnpm add ./sdk/javascript
 ```
+
+```bash [yarn]
+yarn add ./sdk/javascript
+```
+
+```bash [bun]
+bun add ./sdk/javascript
+```
+
+:::
 
 ```js
 import { MediaCore } from "@mediacore/sdk";
 ```
+
+::: tip
+Install from the local path until `@mediacore/sdk` is published. A bare `npm install @mediacore/sdk` may resolve nothing or a stale cache.
+:::
 
 ## Runtime
 

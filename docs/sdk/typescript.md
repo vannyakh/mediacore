@@ -6,15 +6,37 @@ Typed client (`src/client.ts`) with the same surface as JavaScript.
 
 ## Install
 
-```bash
+From the MediaCore repository root (publish to npm comes later):
+
+::: code-group
+
+```bash [npm]
 npm install ./sdk/typescript
 ```
 
+```bash [pnpm]
+pnpm add ./sdk/typescript
+```
+
+```bash [yarn]
+yarn add ./sdk/typescript
+```
+
+```bash [bun]
+bun add ./sdk/typescript
+```
+
+:::
+
 ```ts
 import { MediaCore } from "@mediacore/sdk-ts";
-// or local:
+// or local entry:
 import { MediaCore } from "./src/client.js";
 ```
+
+::: tip
+Use the monorepo path until `@mediacore/sdk-ts` is on a registry. Prefer `./sdk/typescript` over a cached package name.
+:::
 
 ## Runtime
 
@@ -41,10 +63,14 @@ import { MediaCore } from "./src/client.js";
 
 const client = new MediaCore("dev-api-key-change-me");
 const meta = await client.media.analyze("https://example.com/video.mp4");
-const job = await client.media.download(meta.url!, meta.formats[0].id);
-await client.jobs.list();
-await client.plugins.list();
+const job = await client.media.download(meta.url, meta.formats[0]?.id);
+await client.media.convert("/path/out.mp4", { container: "webm" });
+await client.media.thumbnail(meta.url);
+const jobs = await client.jobs.list();
+const plugins = await client.plugins.list();
 ```
+
+Constructor: `new MediaCore(apiKey, baseUrl?)`.
 
 ## See also
 

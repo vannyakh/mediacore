@@ -1,0 +1,20 @@
+---
+description: Auto-upgrade catalog stubs in batches; yt-dlp research-only for hosts
+globs: providers/**/*
+alwaysApply: false
+---
+
+# Provider auto-upgrade
+
+When the user asks to implement all platforms, continue upgrades, or process the queue:
+
+1. Read skill `.cursor/skills/mediacore-upgrade-loop/SKILL.md`.
+2. Run `uv run python scripts/provider_upgrade_queue.py next --limit 5`.
+3. Upgrade that batch only (oEmbed / official API → working provider; else hosts_only or skipped_no_api).
+4. Mark queue statuses; refresh docs + `DOCS_WORKING_STATUS`; run provider tests.
+
+## yt-dlp
+
+Use https://github.com/yt-dlp/yt-dlp/tree/master/yt_dlp/extractor only to learn **hosts / `_VALID_URL` / IE names**.
+
+Never port scrape or download logic from yt-dlp into MediaCore.

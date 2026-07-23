@@ -61,6 +61,7 @@ export default withMermaid(
           text: "Project",
           items: [
             { text: "Architecture", link: "/architecture/" },
+            { text: "Relationships", link: "/architecture/relationships" },
             { text: "Deployment", link: "/deployment/" },
             { text: "Benchmarks", link: "/benchmarks/" },
             { text: "Roadmap", link: "/getting-started/roadmap" },
@@ -96,6 +97,7 @@ export default withMermaid(
             items: [
               { text: "Overview", link: "/architecture/" },
               { text: "Engine & events", link: "/architecture/overview" },
+              { text: "Relationships", link: "/architecture/relationships" },
             ],
           },
         ],
@@ -109,7 +111,7 @@ export default withMermaid(
           {
             text: "SDK",
             items: [
-              { text: "Overview", link: "/sdk/" },
+              { text: "Install", link: "/sdk/" },
               { text: "JavaScript", link: "/sdk/javascript" },
               { text: "TypeScript", link: "/sdk/typescript" },
               { text: "Python", link: "/sdk/python" },

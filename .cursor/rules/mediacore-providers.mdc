@@ -35,9 +35,11 @@ Declare only capabilities you implement. Defaults handle thumbnail/subtitles/liv
 
 ## Registration order
 
-1. Working providers (`filesystem`, `vimeo`) first  
-2. Catalog stubs from `providers/platforms/factory.py`  
+1. Working providers first (early list in `packages/registry/providers.py`)  
+2. Catalog stubs from `providers/platforms/factory.py` (skip if name already registered)  
 3. `generic` + `example` last  
+
+Batch upgrades: skill `mediacore-upgrade-loop` + `scripts/provider_upgrade_queue.py`.
 
 Use `packages.registry.providers.reset_registry()` in tests after registry changes.
 

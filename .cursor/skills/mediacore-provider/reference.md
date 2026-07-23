@@ -2,8 +2,8 @@
 
 ## Registry resolve order
 
-1. `filesystem`, `vimeo` (working)
-2. All catalog stubs (`build_all_providers()`)
+1. Working providers registered early in `packages/registry/providers.py` (filesystem, oEmbed batch, …)
+2. All catalog stubs (`build_all_providers()`), skipping names already registered
 3. `generic`, `example`
 
 ## Key paths

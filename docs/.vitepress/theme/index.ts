@@ -5,6 +5,8 @@ import TechStack from "./components/TechStack.vue";
 import PluginCatalog from "./components/PluginCatalog.vue";
 import PlatformCatalog from "./components/PlatformCatalog.vue";
 import SdkCatalog from "./components/SdkCatalog.vue";
+import SdkFeatures from "./components/SdkFeatures.vue";
+import SdkHeroActions from "./components/SdkHeroActions.vue";
 import HomeExtras from "./components/HomeExtras.vue";
 import DocHero from "./components/DocHero.vue";
 import DocLinks from "./components/DocLinks.vue";
@@ -12,6 +14,7 @@ import DocStats from "./components/DocStats.vue";
 import DocSteps from "./components/DocSteps.vue";
 import ArchitectureLayers from "./components/ArchitectureLayers.vue";
 import MermaidViewer from "./components/MermaidViewer.vue";
+import DependencyGraph from "./components/DependencyGraph.vue";
 
 export default {
   extends: DefaultTheme,
@@ -20,6 +23,8 @@ export default {
     app.component("PluginCatalog", PluginCatalog);
     app.component("PlatformCatalog", PlatformCatalog);
     app.component("SdkCatalog", SdkCatalog);
+    app.component("SdkFeatures", SdkFeatures);
+    app.component("SdkHeroActions", SdkHeroActions);
     app.component("HomeExtras", HomeExtras);
     app.component("DocHero", DocHero);
     app.component("DocLinks", DocLinks);
@@ -27,5 +32,6 @@ export default {
     app.component("DocSteps", DocSteps);
     app.component("ArchitectureLayers", ArchitectureLayers);
     app.component("MermaidViewer", MermaidViewer);
+    app.component("DependencyGraph", DependencyGraph);
   },
 } satisfies Theme;

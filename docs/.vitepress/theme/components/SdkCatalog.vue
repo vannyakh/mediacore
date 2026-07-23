@@ -38,7 +38,8 @@ function initial(name: string): string {
   <div class="mc-sdks">
     <p v-if="loading" class="mc-lead">Loading SDKs…</p>
     <p v-else-if="error" class="mc-lead">Could not load <code>/sdks.json</code>: {{ error }}</p>
-    <div v-else class="mc-sdk-grid">
+    <p v-else class="mc-sdk-note">Open a language for install tabs and examples. Registry deploy is deferred.</p>
+    <div v-if="!loading && !error" class="mc-sdk-grid">
       <a v-for="s in rows" :key="s.id" class="mc-sdk-tile" :href="`/sdk/${s.id}`">
         <span class="mc-sdk-logo" aria-hidden="true">
           <img

@@ -6,11 +6,30 @@ Async .NET client. `MediaCoreClient` remains a compatibility alias.
 
 ## Install
 
-Add a project or file reference to `sdk/csharp` (e.g. `MediaCoreClient.cs`).
+NuGet publish comes later. For now, include the sources under `sdk/csharp` (e.g. `MediaCoreClient.cs`) in your .NET project:
+
+::: code-group
+
+```bash [files]
+# Copy or link sdk/csharp/*.cs into your .NET project
+ls ../sdk/csharp
+```
+
+```xml [csproj]
+<ItemGroup>
+  <Compile Include="..\sdk\csharp\*.cs" Link="MediaCore\%(Filename)%(Extension)" />
+</ItemGroup>
+```
+
+:::
 
 ```csharp
 using MediaCore; // or project namespace
 ```
+
+::: tip
+Path layout may vary — point at `sdk/csharp` in your MediaCore checkout until a NuGet package ships.
+:::
 
 ## Runtime
 

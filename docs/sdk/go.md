@@ -6,16 +6,31 @@ Idiomatic Go client with exported `Media`, `Jobs`, and `Plugins` namespaces.
 
 ## Install
 
-```bash
-# From a module that vendors or replaces the path
+From the MediaCore repository root (module publish comes later):
+
+::: code-group
+
+```bash [go]
 go get ./sdk/go
 ```
+
+```bash [replace]
+# In your go.mod when developing against a checkout:
+# replace example.com/you/app => ../apidownloader  (adjust path)
+go get ./sdk/go
+```
+
+:::
 
 ```go
 import mediacore "path/to/sdk/go"
 
 client := mediacore.New("dev-api-key-change-me")
 ```
+
+::: tip
+Use a local `replace` or path until the Go module is published. Avoid cached module proxies for an unpublished path.
+:::
 
 ## Runtime
 

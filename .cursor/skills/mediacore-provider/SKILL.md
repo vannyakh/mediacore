@@ -58,3 +58,4 @@ Catalog stubs use `status="not_configured"` and raise `ProviderNotConfiguredErro
 
 - [docs/plugins/providers.md](../../../docs/plugins/providers.md)
 - [reference.md](reference.md)
+- Skill `mediacore-upgrade-loop` — batch auto-upgrade + queue (`scripts/provider_upgrade_queue.py`)

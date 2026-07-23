@@ -6,17 +6,29 @@ Dart / Flutter client for mobile and desktop apps.
 
 ## Install
 
-```bash
+From your app directory (pub.dev publish comes later):
+
+::: code-group
+
+```bash [dart]
 dart pub add --path ../sdk/dart
-# or in pubspec.yaml:
-# dependencies:
-#   mediacore:
-#     path: ../sdk/dart
 ```
+
+```yaml [pubspec.yaml]
+dependencies:
+  mediacore:
+    path: ../sdk/dart
+```
+
+:::
 
 ```dart
 import 'package:mediacore/mediacore.dart';
 ```
+
+::: tip
+Adjust the relative path to your MediaCore checkout. Registry publish is deferred.
+:::
 
 ## Runtime
 

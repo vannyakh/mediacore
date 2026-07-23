@@ -6,15 +6,31 @@ Synchronous [httpx](https://www.python-httpx.org/) client for scripts, workers, 
 
 ## Install
 
-```bash
-# From repo root (dev)
+From the MediaCore repository root (PyPI publish comes later):
+
+::: code-group
+
+```bash [uv]
 export PYTHONPATH=sdk/python:$PYTHONPATH
 # httpx is already in the MediaCore workspace deps
+uv run python -c "from mediacore_sdk import MediaCore"
 ```
+
+```bash [pip]
+export PYTHONPATH=sdk/python:$PYTHONPATH
+pip install httpx
+python -c "from mediacore_sdk import MediaCore"
+```
+
+:::
 
 ```python
 from mediacore_sdk import MediaCore
 ```
+
+::: tip
+Point `PYTHONPATH` at `sdk/python` until `mediacore_sdk` is published. Do not rely on an old pip cache for a package that is not on PyPI yet.
+:::
 
 ## Runtime
 

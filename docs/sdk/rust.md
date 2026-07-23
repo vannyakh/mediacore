@@ -6,14 +6,24 @@ Async client built for Tokio services.
 
 ## Install
 
-```bash
+From the MediaCore repository root (crates.io publish comes later):
+
+::: code-group
+
+```bash [cargo]
 cargo add --path sdk/rust
 ```
 
-```toml
+```toml [Cargo.toml]
 [dependencies]
 mediacore_sdk = { path = "sdk/rust" }
 ```
+
+:::
+
+::: tip
+Use a path dependency until `mediacore_sdk` is on crates.io.
+:::
 
 ## Runtime
 
