@@ -81,6 +81,9 @@ def main() -> int:
             return 1
 
     subprocess.check_call([sys.executable, str(ROOT / "scripts" / "generate_providers.py")])
+    subprocess.check_call(
+        [sys.executable, str(ROOT / "scripts" / "materialize_catalog_providers.py")]
+    )
     print("MediaCore platform catalog ready.")
     return 0
 

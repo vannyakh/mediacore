@@ -1,0 +1,18 @@
+"""Auto-generated MediaCore catalog stub for `bandcamp`.
+
+Upgrade this file to a working provider using official/permitted APIs only.
+Regenerate with: uv run python scripts/materialize_catalog_providers.py
+"""
+
+from __future__ import annotations
+
+from providers.base_stub import StubProvider
+
+
+class BandcampProvider(StubProvider):
+    name = 'bandcamp'
+    status = 'not_configured'
+    host_suffixes = ('bandcamp.com',)
+    ie_names = ('Bandcamp', 'Bandcamp:album', 'Bandcamp:user', 'Bandcamp:weekly')
+    source = "catalog"
+    description = 'Catalog stub for bandcamp'

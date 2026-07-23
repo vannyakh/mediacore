@@ -83,15 +83,21 @@ def build_default_registry() -> ProviderRegistry:
     ):
         _register_module(registry, module_name)
 
-    # All catalog extractors as stub providers (host-matched ones resolve URLs)
+    # All catalog extractors as stub providers (folders under providers/stubs/)
     try:
-        from providers.platforms.factory import build_all_providers
+        from providers.platforms.factory import build_all_providers, catalog_package_count
 
-        for stub in build_all_providers():
+        stubs = build_all_providers()
+        for stub in stubs:
             # Skip names already registered as working providers
             if registry.get(stub.name):
                 continue
             registry.register(stub)
+        logger.info(
+            "Registered %s catalog stubs (%s on-disk packages)",
+            len(stubs),
+            catalog_package_count(),
+        )
     except Exception as exc:  # noqa: BLE001
         logger.warning("Failed to load catalog providers: %s", exc)
 

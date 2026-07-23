@@ -29,10 +29,11 @@ curl -s -H "X-API-Key: dev-api-key-change-me" \
   "http://localhost:8000/v1/providers/catalog/search?q=youtube"
 ```
 
-Regenerate stubs + docs list (`docs/public/platforms.json`):
+Regenerate stubs, on-disk packages (`providers/stubs/<slug>/`), and docs list:
 
 ```bash
 uv run python scripts/sync_platform_catalog.py --offline
+# also writes providers/stubs/_manifest.json (~1370 stub folders)
 ```
 
 ## Status meanings
