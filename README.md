@@ -1,12 +1,22 @@
 # MediaCore
 
-> The open-source media extraction, processing, and automation platform.
+**The Open Source Media Infrastructure Platform**
 
-Build media workflows from a single modular foundation — APIs, SDKs, CLI, dashboard, workers, and a plugin ecosystem.
+Extract • Process • Automate • Deliver
 
-**Principle:** MediaCore is the **platform**, not a pile of provider scrapers. The core provides pipelines, jobs, events, plugins, APIs, and config. Providers stay independent.
+MediaCore is infrastructure for building media applications — not a single-purpose downloader. Use it as a foundation for converters, AI pipelines, desktop apps, cloud services, REST APIs, CLIs, SDKs, and plugin marketplaces.
 
-## Quick start
+> Build once. Run everywhere.
+
+MediaCore គឺជា Open Source Media Infrastructure Platform ដែលត្រូវបានរចនាឡើងសម្រាប់ Developer ក្នុងការបង្កើត Media Applications ដោយមិនចាំបាច់សរសេរ Media Engine ពីដំបូង។
+
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.12+-blue)](https://www.python.org/)
+[![Open Source](https://img.shields.io/badge/Open%20Source-yes-success)](CONTRIBUTING.md)
+
+---
+
+## Quick start (≈5 minutes)
 
 ```bash
 cp .env.example .env
@@ -28,60 +38,88 @@ uv run mediacore doctor
 uv run mediacore analyze https://example.com/video.mp4
 ```
 
-## Ecosystem
-
-| Component | Path | Status |
-|-----------|------|--------|
-| Engine | `packages/engine` | Python foundation (Rust core planned in `crates/`) |
-| API | `apps/api` | REST `/v1/*` |
-| Worker | `apps/worker` | Dramatiq queues |
-| CLI | `apps/cli` | `mediacore` |
-| Dashboard | `apps/dashboard` | Next.js |
-| Studio | `apps/studio` | Scaffold |
-| Desktop | `apps/desktop` | Tauri scaffold |
-| Providers | `providers/` | generic, filesystem, vimeo, example |
-| Plugins | `plugins/` | storage-local, ffmpeg, webhook, … |
-| SDKs | `sdk/` | JS/TS/Python (+ stubs) |
-
-## Pipeline
-
-```text
-URL → Analyze → Metadata → Manifest → Formats → Download → Processing → Export → Events
-```
-
-## API (v1)
-
-`POST /v1/analyze` · `download` · `audio` · `video` · `subtitles` · `thumbnail` · `convert` · `clip` · `jobs`  
-`GET /v1/jobs/{id}` · `providers` · `plugins` · `system` · `GET /health`
-
-`/api/v1/*` remains as a compatibility alias.
-
-## Docker
+Docker:
 
 ```bash
 cd docker && docker compose up --build
 ```
 
-## Docs
+---
 
-- [Architecture](docs/architecture.md)
-- [API](docs/api.md)
-- [Providers](docs/providers.md)
-- [Testing](docs/testing.md)
-- [Roadmap](docs/roadmap.md)
+## CLI
+
+```bash
+mediacore analyze URL
+mediacore download URL [--wait]
+mediacore convert file.mp4 [--wait]
+mediacore subtitle file.mp4 [--wait]
+mediacore plugin list
+mediacore plugin install NAME|PATH
+mediacore worker start
+mediacore doctor
+```
+
+Flags: `--base`, `--key` (or `MEDIACORE_BASE` / `MEDIACORE_API_KEY`).
+
+---
+
+## Project layout
+
+```text
+mediacore/
+  apps/         api, worker, cli, dashboard, desktop, studio, …
+  packages/     core, engine, registry, plugins, events, queue, testkit, mediacore_benchmark, …
+  providers/    platform extractors (independent of core)
+  plugins/      storage, ffmpeg, webhooks, AI, …
+  sdk/          JS, TS, Python, Rust, Go, Dart, C#, …
+  benchmarks/   standalone Criterion + Python performance suite
+  crates/       Rust engine foundation
+  docs/         guides (getting started, architecture, API, …)
+  tests/        unit → load / chaos / benchmark
+  docker/       local compose stack
+  scripts/      catalog + developer tooling
+```
+
+---
+
+## Documentation
+
+Docs are a [VitePress](https://vitepress.dev/) site under [`docs/`](docs/).
+
+```bash
+cd docs
+npm install
+npm run dev      # http://localhost:5173
+npm run build
+npm run preview
+```
+
+| Doc | Description |
+|-----|-------------|
+| [Getting started](docs/getting-started/) | Install, first analyze, CLI |
+| [Architecture](docs/architecture/) | Engine, runtime, events, pipeline |
+| [API](docs/api/) | REST `/v1/*` |
+| [SDK](docs/sdk/) | Multi-language clients |
+| [Plugins](docs/plugins/) | Plugin kinds, storage, providers |
+| [Deployment](docs/deployment/) | Docker, Helm, config |
+| [Vision](docs/getting-started/vision.md) | Product positioning |
+| [Testing](docs/getting-started/testing.md) | TestKit and CI layers |
+| [Benchmarks](docs/benchmarks/) | Latency, memory, regressions |
+| [Roadmap](ROADMAP.md) | Version plan |
+| [Contributing](CONTRIBUTING.md) | How to contribute |
+| [Security](SECURITY.md) | Vulnerability reporting |
+| [Changelog](CHANGELOG.md) | Release notes |
+
+---
 
 ## Compliance
 
 Providers must use official/supported APIs or content you have permission to access. MediaCore does not bypass platform access controls or Terms of Service.
 
-## Tests
+---
 
-```bash
-uv sync --extra dev
-# PR-critical suite
-uv run pytest -m "not load and not stress and not chaos and not benchmark"
-# Coverage
-uv run pytest --cov=packages --cov=providers --cov=apps
-```
+## License
 
-See [docs/testing.md](docs/testing.md) for layers, markers, contracts, and load tests.
+[Apache License 2.0](LICENSE)
+
+Made by the MediaCore community — **One Core • Infinite Media Workflows**

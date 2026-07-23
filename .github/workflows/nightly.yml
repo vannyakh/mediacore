@@ -17,13 +17,24 @@ jobs:
         run: uv sync --extra dev
       - name: Stress + chaos
         run: uv run pytest -m "stress or chaos" --tb=short
-      - name: Benchmarks
+      - name: Benchmark smoke + reports
+        run: uv run python -m packages.mediacore_benchmark.runner
+      - name: Benchmarks (pytest-benchmark)
         run: >
           uv run pytest -m benchmark --benchmark-only
           --benchmark-json=benchmark.json
-      - name: Upload benchmark JSON
+      - name: Upload benchmark artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: benchmark-json
-          path: benchmark.json
+          name: benchmark-artifacts
+          path: |
+            benchmark.json
+            benchmarks/reports/**
           if-no-files-found: ignore
+      - name: Criterion (Rust)
+        continue-on-error: true
+        run: |
+          rustup show || curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+          source "$HOME/.cargo/env" 2>/dev/null || true
+          cargo bench -p mediacore-benchmarks -- --sample-size 10 --warm-up-time 1 --measurement-time 1
+

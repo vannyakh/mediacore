@@ -1,8 +1,9 @@
 [project]
 name = "mediacore"
 version = "0.1.0"
-description = "MediaCore — open-source media extraction, processing, and automation platform"
+description = "MediaCore — The Open Source Media Infrastructure Platform"
 readme = "README.md"
+license = "Apache-2.0"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115.0",
@@ -32,6 +33,12 @@ dev = [
     "locust>=2.32.0",
     "ruff>=0.8.0",
     "httpx>=0.28.0",
+]
+storage-s3 = ["boto3>=1.35.0"]
+storage-azure = ["azure-storage-blob>=12.24.0"]
+storage-cloud = [
+    "mediacore[storage-s3]",
+    "mediacore[storage-azure]",
 ]
 
 [project.scripts]

@@ -39,4 +39,4 @@ def test_plugin_loader_discovers_all():
 
     loader = PluginLoader(root=ROOT / "plugins")
     plugins = loader.discover()
-    assert len(plugins) >= 10
+    assert len(plugins) >= 14

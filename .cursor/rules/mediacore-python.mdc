@@ -1,0 +1,16 @@
+---
+description: Python conventions for MediaCore packages, apps, and providers
+globs: "**/*.py"
+alwaysApply: false
+---
+
+# MediaCore Python
+
+- Python `>=3.12`, manage deps with `uv`, config in root `pyproject.toml`.
+- Prefer `packages.*` imports over legacy `extractor.*` shims.
+- Domain errors: `packages.core.exceptions.MediaCoreError` subclasses with `code`.
+- Settings: `packages.config.settings` (API re-exports via `apps.api.config`).
+- Auth helpers: `packages.auth` (API re-exports via `apps.api.security`).
+- Tests: `uv run pytest`; use markers (`unit`, `api`, `provider`, …). Prefer `packages.testkit` contracts.
+- After provider catalog changes: `uv run python scripts/sync_platform_catalog.py --offline`.
+- Keep modules focused; avoid drive-by refactors unrelated to the task.

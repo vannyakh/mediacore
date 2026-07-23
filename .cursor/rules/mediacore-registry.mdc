@@ -1,0 +1,11 @@
+---
+description: MediaCore provider registry and catalog script conventions
+globs: packages/registry/**/*
+alwaysApply: false
+---
+
+# Registry
+
+- Build order: working providers → catalog stubs → generic/example.
+- Use `reset_registry()` in tests after changing registration.
+- Catalog generation: `scripts/sync_platform_catalog.py --offline` and `scripts/generate_providers.py`.

@@ -1,15 +1,48 @@
+/**
+ * MediaCore TypeScript SDK — same surface as JS / Python / Go / Rust / Dart / C#.
+ */
+
 export type AnalyzeResult = {
   platform: string;
   title: string;
+  url?: string;
   formats: Array<{ id: string; quality: string; container: string }>;
   manifest?: Record<string, unknown>;
+};
+
+export type JobCreateResult = {
+  job_id: string;
+  status: string;
+  type: string;
+};
+
+export type JobResult = {
+  id: string;
+  status: string;
+  type: string;
+  url: string;
+  platform?: string | null;
+  format_id?: string | null;
+  error?: string | null;
+  result_url?: string | null;
+};
+
+export type PluginResult = {
+  name: string;
+  version: string;
+  kind: string;
+  description: string;
+  status: string;
+  capabilities?: string[];
 };
 
 export class MediaCore {
   constructor(
     private apiKey: string,
     private baseUrl = "http://localhost:8000",
-  ) {}
+  ) {
+    this.baseUrl = baseUrl.replace(/\/$/, "");
+  }
 
   private async request<T>(path: string, init?: RequestInit): Promise<T> {
     const res = await fetch(`${this.baseUrl}${path}`, {
@@ -31,28 +64,31 @@ export class MediaCore {
         body: JSON.stringify({ url }),
       }),
     download: (url: string, format = "original") =>
-      this.request("/v1/download", {
+      this.request<JobCreateResult>("/v1/download", {
         method: "POST",
         body: JSON.stringify({ url, format }),
       }),
     convert: (path: string, options: Record<string, unknown> = {}) =>
-      this.request("/v1/convert", {
+      this.request<JobCreateResult>("/v1/convert", {
         method: "POST",
         body: JSON.stringify({ path, options }),
       }),
     thumbnail: (url: string) =>
-      this.request("/v1/thumbnail", {
+      this.request<JobCreateResult>("/v1/thumbnail", {
         method: "POST",
         body: JSON.stringify({ url }),
       }),
   };
 
   jobs = {
-    get: (id: string) => this.request(`/v1/jobs/${id}`),
-    list: async () => [] as unknown[],
+    list: (limit = 50) =>
+      this.request<JobResult[]>(`/v1/jobs?limit=${encodeURIComponent(String(limit))}`),
+    get: (id: string) => this.request<JobResult>(`/v1/jobs/${id}`),
   };
 
   plugins = {
-    list: () => this.request("/v1/plugins"),
+    list: () => this.request<PluginResult[]>("/v1/plugins"),
   };
 }
+
+export default MediaCore;

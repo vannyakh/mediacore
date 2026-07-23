@@ -7,7 +7,14 @@ from urllib.parse import unquote, urlparse
 
 from packages.core.downloader import download_file, head_content_type
 from packages.core.exceptions import FormatNotFoundError, ProviderError
-from packages.core.models import DownloadResult, FormatInfo, MediaMetadata
+from packages.core.models import (
+    DownloadResult,
+    FormatInfo,
+    Manifest,
+    MediaMetadata,
+    ProviderCapabilities,
+    ThumbnailInfo,
+)
 from packages.core.parser import is_direct_media_url
 from packages.core.provider import Provider
 
@@ -22,11 +29,20 @@ def _extension_from_url(url: str, default: str = "mp4") -> str:
 class GenericHTTPProvider(Provider):
     name = "generic"
     status = "active"
+    capabilities = ProviderCapabilities(
+        metadata=True,
+        manifest=True,
+        formats=True,
+        download=True,
+        thumbnail=False,
+        subtitle=False,
+        live=False,
+    )
 
     def supports(self, url: str) -> bool:
         return url.startswith(("http://", "https://")) and is_direct_media_url(url)
 
-    def get_metadata(self, url: str) -> MediaMetadata:
+    def metadata(self, url: str) -> MediaMetadata:
         filename = unquote(urlparse(url).path.rsplit("/", 1)[-1] or "media")
         content_type = head_content_type(url)
         ext = _extension_from_url(url)
@@ -37,19 +53,25 @@ class GenericHTTPProvider(Provider):
             mime_type=content_type,
             url=url,
         )
+        manifest = Manifest(
+            type="direct",
+            provider=self.name,
+            url=url,
+            format_ids=[fmt.id],
+        )
         return MediaMetadata(
             platform=self.name,
             url=url,
             title=filename,
             formats=[fmt],
-            manifest={"type": "direct", "url": url},
+            manifest=manifest,
         )
 
-    def list_formats(self, url: str) -> list[FormatInfo]:
-        return self.get_metadata(url).formats
+    def formats(self, url: str) -> list[FormatInfo]:
+        return self.metadata(url).formats
 
     def download(self, url: str, format_id: str, dest: Path) -> DownloadResult:
-        meta = self.get_metadata(url)
+        meta = self.metadata(url)
         fmt = next((f for f in meta.formats if f.id == format_id or f.quality == format_id), None)
         if fmt is None:
             raise FormatNotFoundError(format_id)
@@ -64,3 +86,6 @@ class GenericHTTPProvider(Provider):
             filesize=size,
             content_type=content_type or fmt.mime_type,
         )
+
+    def thumbnail(self, url: str) -> ThumbnailInfo | None:
+        return None

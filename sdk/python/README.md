@@ -1,12 +1,15 @@
-# Python SDK
+# MediaCore Python SDK
 
 ```python
-from apidownloader_sdk import VideoExtractor
+from mediacore_sdk import MediaCore
 
-api = VideoExtractor("dev-api-key-change-me")
-info = api.analyze("https://example.com/video.mp4")
-job = api.download("https://example.com/video.mp4", info["formats"][0]["id"])
-status = api.job(job["job_id"])
+client = MediaCore("dev-api-key-change-me")
+meta = client.media.analyze("https://example.com/video.mp4")
+job = client.media.download(meta["url"], meta["formats"][0]["id"])
+client.media.convert("/tmp/out.mp4", container="webm")
+client.media.thumbnail(meta["url"])
+jobs = client.jobs.list()
+plugins = client.plugins.list()
 ```
 
-Add `sdk/python` to `PYTHONPATH` or install locally during development.
+Add `sdk/python` to `PYTHONPATH` during development. See [docs/sdk/](../../docs/sdk/).

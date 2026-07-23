@@ -38,6 +38,8 @@ jobs:
           --cov=packages --cov=providers --cov=apps
           --cov-report=term-missing
           --cov-report=xml
+      - name: Benchmark smoke
+        run: uv run python -m packages.mediacore_benchmark.runner
       - name: Upload coverage
         uses: actions/upload-artifact@v4
         with:

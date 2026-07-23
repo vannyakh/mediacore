@@ -12,6 +12,19 @@ class AnalyzeRequest(BaseModel):
     url: str = Field(..., min_length=1)
 
 
+class LiveRequest(BaseModel):
+    url: str = Field(..., min_length=1)
+
+
+class LiveResponse(BaseModel):
+    is_live: bool
+    status: str = "unknown"
+    stream_url: str | None = None
+    started_at: str | None = None
+    viewer_count: int | None = None
+    extra: dict[str, Any] = Field(default_factory=dict)
+
+
 class FormatOut(BaseModel):
     id: str
     quality: str
@@ -32,6 +45,8 @@ class AnalyzeResponse(BaseModel):
     formats: list[FormatOut]
     url: str | None = None
     manifest: dict[str, Any] | None = None
+    is_live: bool = False
+    subtitles: list[dict[str, Any]] = []
 
 
 class DownloadRequest(BaseModel):
@@ -68,6 +83,25 @@ class JobResponse(BaseModel):
 class ProviderOut(BaseModel):
     name: str
     status: str
+    source: str | None = None
+    capabilities: list[str] = []
+
+
+class CatalogSummaryOut(BaseModel):
+    source: str | None = None
+    extractors: int
+    base_platforms: int
+    providers_indexed: int = 0
+    providers_with_hosts: int = 0
+    broken: int
+    note: str
+
+
+class CatalogExtractorOut(BaseModel):
+    ie_name: str
+    description: str = ""
+    broken: bool = False
+    source: str = "catalog"
 
 
 class PluginOut(BaseModel):
@@ -94,3 +128,14 @@ class HealthResponse(BaseModel):
     status: str
     service: str
     version: str
+
+
+class EventOut(BaseModel):
+    type: str
+    payload: dict[str, Any] = Field(default_factory=dict)
+    at: str
+
+
+class EventsListOut(BaseModel):
+    events: list[EventOut]
+    count: int

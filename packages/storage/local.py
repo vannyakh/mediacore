@@ -1,13 +1,16 @@
-"""Local filesystem storage backend."""
+"""Local filesystem storage — default backend; no cloud services required."""
 
 from __future__ import annotations
 
 from pathlib import Path
 
 from packages.config.settings import get_settings
+from packages.storage.base import StorageBackend
 
 
-class LocalStorage:
+class LocalStorage(StorageBackend):
+    name = "local"
+
     def __init__(self, root: str | Path | None = None) -> None:
         settings = get_settings()
         self.root = Path(root or settings.storage_root)
@@ -30,3 +33,7 @@ class LocalStorage:
             for child in path.iterdir():
                 child.unlink(missing_ok=True)
             path.rmdir()
+
+    @property
+    def requires_cloud(self) -> bool:
+        return False

@@ -1,3 +1,11 @@
+/**
+ * MediaCore JavaScript SDK — unified client surface.
+ *
+ * client.media.analyze / download / convert / thumbnail
+ * client.jobs.list / get
+ * client.plugins.list
+ */
+
 export class MediaCore {
   constructor(apiKey, baseUrl = "http://localhost:8000") {
     this.apiKey = apiKey;
@@ -14,6 +22,7 @@ export class MediaCore {
       },
     });
     if (!res.ok) throw new Error(`API ${res.status}: ${await res.text()}`);
+    if (res.status === 204) return null;
     return res.json();
   }
 
@@ -38,8 +47,8 @@ export class MediaCore {
   };
 
   jobs = {
+    list: (limit = 50) => this.#request(`/v1/jobs?limit=${encodeURIComponent(limit)}`),
     get: (id) => this.#request(`/v1/jobs/${id}`),
-    list: async () => [],
   };
 
   plugins = {
@@ -47,4 +56,4 @@ export class MediaCore {
   };
 }
 
-export const VideoExtractor = MediaCore;
+export default MediaCore;

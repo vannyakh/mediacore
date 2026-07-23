@@ -20,11 +20,15 @@ def assert_valid_metadata(meta: MediaMetadata) -> None:
 
 def assert_provider_contract_basics(provider: Provider, url: str) -> None:
     assert provider.supports(url) is True
-    meta = provider.get_metadata(url)
+    meta = provider.metadata(url)
     assert_valid_metadata(meta)
-    formats = provider.list_formats(url)
+    formats = provider.formats(url)
     assert formats
     assert all(f.id for f in formats)
+    caps = getattr(provider, "capabilities", None)
+    if caps is not None:
+        assert caps.metadata is True
+        assert "metadata" in caps.to_list()
 
 
 def assert_storage_paths(storage: Any, job_id: str = "job-1") -> None:

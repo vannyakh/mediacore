@@ -29,6 +29,13 @@ tmp/
 apps/admin/node_modules/
 apps/admin/.next/
 apps/admin/out/
+apps/dashboard/node_modules/
+apps/dashboard/.next/
+
+# Docs (VitePress)
+docs/node_modules/
+docs/.vitepress/dist/
+docs/.vitepress/cache/
 
 # IDE / OS
 .DS_Store
@@ -39,8 +46,12 @@ apps/admin/out/
 # Docker volumes
 docker/data/
 
-# Benchmarks / coverage
+# Benchmarks / coverage / Rust
 .benchmarks/
+benchmarks/reports/*
+!benchmarks/reports/.gitkeep
+target/
+Cargo.lock
 .coverage
 htmlcov/
 coverage.xml

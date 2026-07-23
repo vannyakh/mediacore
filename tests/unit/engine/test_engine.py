@@ -36,5 +36,19 @@ def test_download(engine: MediaCoreEngine, tmp_path: Path):
 
 
 def test_providers(engine: MediaCoreEngine):
-    names = {p["name"] for p in engine.providers()}
+    providers = engine.providers()
+    names = {p["name"] for p in providers}
     assert "fake" in names
+    fake = next(p for p in providers if p["name"] == "fake")
+    assert "metadata" in fake["capabilities"]
+    assert "download" in fake["capabilities"]
+
+
+def test_provider_surface(engine: MediaCoreEngine):
+    url = "https://fake.mediacore.test/clip.mp4"
+    assert engine.manifest(url).type == "fake"
+    thumb = engine.thumbnail(url)
+    assert thumb is not None and thumb.url
+    assert engine.subtitles(url) == []
+    live = engine.live(url)
+    assert live is None or live.is_live is False

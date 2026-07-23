@@ -16,16 +16,40 @@ from apps.api.db.session import init_db
 from apps.api.middleware.logging import RequestLoggingMiddleware
 from apps.api.routes import health, v1
 from mediacore import __version__
+from packages.events.bus import get_event_bus
+from packages.events.plugins import register_event_plugins
+from packages.events.redis_bridge import RedisEventBridge, configure_event_bridge
 from packages.logging.setup import setup_logging
 from packages.telemetry.metrics import render_metrics
 
 setup_logging()
+logger = logging.getLogger("mediacore.api")
+
+_event_bridge: RedisEventBridge | None = None
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
+    global _event_bridge
     init_db()
+    settings = get_settings()
+    bus = get_event_bus()
+    register_event_plugins(bus)
+    if settings.events_redis_enabled:
+        try:
+            _event_bridge = configure_event_bridge(
+                bus,
+                settings.redis_url,
+                subscribe=True,
+            )
+            logger.info("Event Redis bridge started")
+        except Exception:  # noqa: BLE001
+            logger.exception("Event Redis bridge failed to start; continuing in-process only")
+            _event_bridge = None
     yield
+    if _event_bridge is not None:
+        _event_bridge.stop()
+        _event_bridge = None
 
 
 def create_app() -> FastAPI:

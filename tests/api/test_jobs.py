@@ -36,3 +36,29 @@ def test_download_creates_job(client: TestClient, api_headers, monkeypatch):
 def test_job_not_found(client: TestClient, api_headers):
     res = client.get("/v1/jobs/does-not-exist", headers=api_headers)
     assert res.status_code == 404
+
+
+def test_list_jobs(client: TestClient, api_headers, monkeypatch):
+    def fake_analyze(self, url, allow_private=False):
+        return MediaMetadata(
+            platform="generic",
+            url=url,
+            title="demo.mp4",
+            formats=[FormatInfo(id="original", quality="original", container="mp4")],
+        )
+
+    monkeypatch.setattr("packages.engine.engine.MediaCoreEngine.analyze", fake_analyze)
+    monkeypatch.setattr("apps.api.routes.v1.enqueue_download", lambda job_id: None)
+
+    created = client.post(
+        "/v1/download",
+        headers=api_headers,
+        json={"url": "https://cdn.example.com/demo.mp4", "format": "original"},
+    )
+    assert created.status_code == 202
+
+    res = client.get("/v1/jobs", headers=api_headers)
+    assert res.status_code == 200
+    jobs = res.json()
+    assert isinstance(jobs, list)
+    assert any(j["id"] == created.json()["job_id"] for j in jobs)

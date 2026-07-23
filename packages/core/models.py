@@ -1,4 +1,4 @@
-"""Shared domain models."""
+"""Shared domain models for the MediaCore provider architecture."""
 
 from __future__ import annotations
 
@@ -36,6 +36,122 @@ class FormatInfo:
 
 
 @dataclass(slots=True)
+class Manifest:
+    """Playback / delivery manifest for a media resource."""
+
+    type: str
+    provider: str
+    url: str | None = None
+    format_ids: list[str] = field(default_factory=list)
+    is_live: bool = False
+    extra: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "type": self.type,
+            "provider": self.provider,
+            "url": self.url,
+            "format_ids": list(self.format_ids),
+            "is_live": self.is_live,
+            "extra": self.extra,
+        }
+
+
+@dataclass(slots=True)
+class ThumbnailInfo:
+    url: str | None = None
+    width: int | None = None
+    height: int | None = None
+    path: str | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "url": self.url,
+            "width": self.width,
+            "height": self.height,
+            "path": self.path,
+        }
+
+
+@dataclass(slots=True)
+class SubtitleTrack:
+    id: str
+    language: str
+    label: str | None = None
+    format: str = "vtt"
+    url: str | None = None
+    content: str | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "id": self.id,
+            "language": self.language,
+            "label": self.label,
+            "format": self.format,
+            "url": self.url,
+        }
+
+
+@dataclass(slots=True)
+class LiveInfo:
+    """Live stream state when the provider supports Live."""
+
+    is_live: bool
+    status: str = "unknown"  # live | ended | scheduled | unknown
+    stream_url: str | None = None
+    started_at: str | None = None
+    viewer_count: int | None = None
+    extra: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "is_live": self.is_live,
+            "status": self.status,
+            "stream_url": self.stream_url,
+            "started_at": self.started_at,
+            "viewer_count": self.viewer_count,
+            "extra": self.extra,
+        }
+
+
+@dataclass(slots=True)
+class ProviderCapabilities:
+    metadata: bool = True
+    manifest: bool = True
+    formats: bool = True
+    download: bool = False
+    thumbnail: bool = False
+    subtitle: bool = False
+    live: bool = False
+
+    def to_list(self) -> list[str]:
+        return [
+            name
+            for name in (
+                "metadata",
+                "manifest",
+                "formats",
+                "download",
+                "thumbnail",
+                "subtitle",
+                "live",
+            )
+            if getattr(self, name)
+        ]
+
+    def to_dict(self) -> dict[str, bool]:
+        return {
+            "metadata": self.metadata,
+            "manifest": self.manifest,
+            "formats": self.formats,
+            "download": self.download,
+            "thumbnail": self.thumbnail,
+            "subtitle": self.subtitle,
+            "live": self.live,
+        }
+
+
+@dataclass(slots=True)
 class MediaMetadata:
     platform: str
     url: str
@@ -45,10 +161,15 @@ class MediaMetadata:
     description: str | None = None
     author: str | None = None
     formats: list[FormatInfo] = field(default_factory=list)
-    manifest: dict[str, Any] | None = None
+    manifest: dict[str, Any] | Manifest | None = None
+    is_live: bool = False
+    subtitles: list[SubtitleTrack] = field(default_factory=list)
     extra: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        manifest = self.manifest
+        if isinstance(manifest, Manifest):
+            manifest = manifest.to_dict()
         return {
             "platform": self.platform,
             "url": self.url,
@@ -58,11 +179,12 @@ class MediaMetadata:
             "description": self.description,
             "author": self.author,
             "formats": [f.to_dict() for f in self.formats],
-            "manifest": self.manifest,
+            "manifest": manifest,
+            "is_live": self.is_live,
+            "subtitles": [s.to_dict() for s in self.subtitles],
         }
 
 
-# Back-compat
 VideoMetadata = MediaMetadata
 
 

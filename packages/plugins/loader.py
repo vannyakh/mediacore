@@ -7,6 +7,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from packages.plugins.kinds import PLUGIN_STATUSES, PluginKind, parse_plugin_kind
+
 logger = logging.getLogger("mediacore.plugins")
 
 
@@ -14,11 +16,12 @@ logger = logging.getLogger("mediacore.plugins")
 class PluginInfo:
     name: str
     version: str = "0.1.0"
-    kind: str = "generic"
+    kind: str = PluginKind.STORAGE.value
     description: str = ""
     status: str = "available"
     path: str | None = None
     capabilities: list[str] = field(default_factory=list)
+    module: dict[str, Any] | None = field(default=None, repr=False)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -49,9 +52,14 @@ class PluginLoader:
             manifest = entry / "plugin.py"
             if not manifest.exists():
                 # Placeholder directory without implementation
+                kind_guess = entry.name.split("-")[0] if "-" in entry.name else entry.name
+                try:
+                    kind = parse_plugin_kind(kind_guess).value
+                except ValueError:
+                    kind = kind_guess
                 info = PluginInfo(
                     name=f"mediacore-plugin-{entry.name}",
-                    kind=entry.name.split("-")[0] if "-" in entry.name else entry.name,
+                    kind=kind,
                     description=f"Scaffold for {entry.name}",
                     status="stub",
                     path=str(entry),
@@ -77,16 +85,28 @@ class PluginLoader:
         code = (entry / "plugin.py").read_text(encoding="utf-8")
         exec(compile(code, str(entry / "plugin.py"), "exec"), ns, ns)  # noqa: S102
         meta = ns.get("PLUGIN") or ns.get("plugin") or {}
-        if hasattr(meta, "to_dict"):
-            return meta
+        if hasattr(meta, "to_dict") and not isinstance(meta, dict):
+            info = meta
+            if isinstance(info, PluginInfo):
+                info.module = ns
+            return info
+        kind_raw = meta.get("kind", "storage")
+        try:
+            kind = parse_plugin_kind(str(kind_raw)).value
+        except ValueError:
+            raise ValueError(f"Unknown plugin kind: {kind_raw}") from None
+        status = meta.get("status", "available")
+        if status not in PLUGIN_STATUSES:
+            raise ValueError(f"Invalid plugin status: {status}")
         return PluginInfo(
             name=meta.get("name", f"mediacore-plugin-{entry.name}"),
             version=meta.get("version", "0.1.0"),
-            kind=meta.get("kind", "generic"),
+            kind=kind,
             description=meta.get("description", ""),
-            status=meta.get("status", "available"),
+            status=status,
             path=str(entry),
             capabilities=list(meta.get("capabilities") or []),
+            module=ns,
         )
 
     def list(self) -> list[PluginInfo]:
@@ -99,6 +119,13 @@ class PluginLoader:
             self.discover()
         return self._plugins.get(name)
 
+    def by_kind(self, kind: PluginKind | str) -> list[PluginInfo]:
+        kind_value = kind.value if isinstance(kind, PluginKind) else parse_plugin_kind(kind).value
+        return [p for p in self.list() if p.kind == kind_value]
+
+    def enabled(self) -> list[PluginInfo]:
+        return [p for p in self.list() if p.status in {"available", "stub"}]
+
 
 _loader: PluginLoader | None = None
 
@@ -109,3 +136,9 @@ def get_plugin_loader() -> PluginLoader:
         _loader = PluginLoader()
         _loader.discover()
     return _loader
+
+
+def reset_plugin_loader() -> None:
+    """Clear the process-wide loader (tests)."""
+    global _loader
+    _loader = None

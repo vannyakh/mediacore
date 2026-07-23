@@ -1,4 +1,4 @@
-from extractor.providers.base_stub import StubProvider
+from providers.base_stub import StubProvider
 
 
 class TikTokProvider(StubProvider):

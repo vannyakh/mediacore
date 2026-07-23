@@ -17,7 +17,7 @@ class ProviderRegistry:
 
     def register(self, provider: Provider) -> None:
         self._providers.append(provider)
-        logger.debug("Registered provider: %s", provider.name)
+        logger.debug("Registered provider: %s", getattr(provider, "name", provider))
 
     def clear(self) -> None:
         self._providers.clear()
@@ -26,8 +26,20 @@ class ProviderRegistry:
     def providers(self) -> list[Provider]:
         return list(self._providers)
 
-    def platforms(self) -> list[dict[str, str]]:
-        return [{"name": p.name, "status": getattr(p, "status", "active")} for p in self._providers]
+    def platforms(self) -> list[dict]:
+        out = []
+        for p in self._providers:
+            caps = getattr(p, "capabilities", None)
+            item = {
+                "name": p.name,
+                "status": getattr(p, "status", "active"),
+                "capabilities": caps.to_list() if caps is not None else [],
+            }
+            source = getattr(p, "source", None)
+            if source:
+                item["source"] = source
+            out.append(item)
+        return out
 
     def resolve(self, url: str) -> Provider:
         for provider in self._providers:
@@ -42,32 +54,54 @@ class ProviderRegistry:
         return None
 
 
+def _register_module(registry: ProviderRegistry, module_name: str) -> None:
+    try:
+        module = importlib.import_module(module_name)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("Failed to load provider module %s: %s", module_name, exc)
+        return
+    for attr_name in dir(module):
+        attr = getattr(module, attr_name)
+        if (
+            isinstance(attr, type)
+            and issubclass(attr, Provider)
+            and attr is not Provider
+            and attr_name.endswith("Provider")
+            and attr.__module__ == module.__name__
+        ):
+            registry.register(attr())
+            break
+
+
 def build_default_registry() -> ProviderRegistry:
     registry = ProviderRegistry()
-    # Built-in providers only — community providers should be separate packages.
-    ordered_modules = [
+
+    # Working providers first
+    for module_name in (
         "providers.filesystem.provider",
         "providers.vimeo.provider",
+    ):
+        _register_module(registry, module_name)
+
+    # All catalog extractors as stub providers (host-matched ones resolve URLs)
+    try:
+        from providers.platforms.factory import build_all_providers
+
+        for stub in build_all_providers():
+            # Skip names already registered as working providers
+            if registry.get(stub.name):
+                continue
+            registry.register(stub)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("Failed to load catalog providers: %s", exc)
+
+    # Generic direct media + example last
+    for module_name in (
         "providers.generic.provider",
         "providers.example.provider",
-    ]
-    for module_name in ordered_modules:
-        try:
-            module = importlib.import_module(module_name)
-        except Exception as exc:  # noqa: BLE001
-            logger.warning("Failed to load provider module %s: %s", module_name, exc)
-            continue
-        for attr_name in dir(module):
-            attr = getattr(module, attr_name)
-            if (
-                isinstance(attr, type)
-                and issubclass(attr, Provider)
-                and attr is not Provider
-                and attr_name.endswith("Provider")
-                and attr.__module__ == module.__name__
-            ):
-                registry.register(attr())
-                break
+    ):
+        _register_module(registry, module_name)
+
     return registry
 
 
@@ -78,4 +112,10 @@ def get_registry() -> ProviderRegistry:
     global _default_registry
     if _default_registry is None:
         _default_registry = build_default_registry()
+    return _default_registry
+
+
+def reset_registry() -> ProviderRegistry:
+    global _default_registry
+    _default_registry = build_default_registry()
     return _default_registry

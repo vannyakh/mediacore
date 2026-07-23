@@ -1,0 +1,54 @@
+---
+description: Provider and catalog conventions for MediaCore
+globs: providers/**/*
+alwaysApply: false
+---
+
+# MediaCore Providers
+
+## Architecture
+
+```
+Provider
+├── Metadata
+├── Manifest
+├── Formats
+├── Download
+├── Thumbnail
+├── Subtitle
+└── Live
+```
+
+Implement `packages.core.provider.Provider`:
+
+```python
+capabilities = ProviderCapabilities(...)
+
+def supports(self, url: str) -> bool: ...
+def metadata(self, url: str) -> MediaMetadata: ...
+def download(self, url: str, format_id: str, dest: Path) -> DownloadResult: ...
+# Optional / capability-gated:
+# manifest, formats, thumbnail, subtitles, live
+```
+
+Declare only capabilities you implement. Defaults handle thumbnail/subtitles/live from metadata when flags are set.
+
+## Registration order
+
+1. Working providers (`filesystem`, `vimeo`) first  
+2. Catalog stubs from `providers/platforms/factory.py`  
+3. `generic` + `example` last  
+
+Use `packages.registry.providers.reset_registry()` in tests after registry changes.
+
+## Catalog stubs
+
+- Index: `providers/data/providers_index.json` (~1370 stubs).
+- Host maps: `providers/platforms/hosts.py` → regenerate with `scripts/generate_providers.py`.
+- Snapshot input: `providers/data/sites_snapshot.json` (MediaCore-owned data; no foreign brand filenames).
+- Stubs: `status=not_configured` (or `broken`); `supports()` only when `host_suffixes` set.
+
+## Do not
+
+- Wire third-party scraper libraries for extract/download.
+- Put platform scrape logic inside `packages/core`.

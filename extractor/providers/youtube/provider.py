@@ -1,6 +1,11 @@
-from extractor.providers.base_stub import StubProvider
+from providers.base_stub import StubProvider
 
 
 class YouTubeProvider(StubProvider):
     name = "youtube"
-    host_suffixes = ("youtube.com", "youtu.be", "youtube-nocookie.com", "m.youtube.com")
+    host_suffixes = (
+        "youtube.com",
+        "youtu.be",
+        "youtube-nocookie.com",
+        "m.youtube.com",
+    )

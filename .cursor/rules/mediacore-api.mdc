@@ -1,0 +1,16 @@
+---
+description: FastAPI app conventions for MediaCore REST API
+globs: "apps/api/**/*.py"
+alwaysApply: false
+---
+
+# MediaCore API
+
+- Entrypoint: `apps.api.main:app` (uvicorn).
+- Routes live under `apps/api/routes/`; v1 router prefix `/v1`.
+- Auth: `X-API-Key` via `require_api_key`; seed key from settings.
+- Map `MediaCoreError` → HTTP 400 with `{error, code}`.
+- Jobs: create DB row + enqueue (`packages.queue`); support `SYNC_DOWNLOAD` for local/dev.
+- Health is public (`GET /health`); providers/plugins/system require API key.
+- Prefer lifespan handlers over deprecated `@app.on_event`.
+- Metrics via `packages.telemetry.metrics.render_metrics()`.

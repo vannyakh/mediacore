@@ -1,128 +1,107 @@
-"""MediaCore CLI."""
+"""MediaCore CLI entrypoint."""
 
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 
 import httpx
 
-DEFAULT_BASE = "http://localhost:8000"
-DEFAULT_KEY = "dev-api-key-change-me"
+from apps.cli import commands
+from apps.cli.client import DEFAULT_BASE, DEFAULT_KEY, eprint, format_http_error, resolve_base, resolve_key
 
 
-def _client(base: str, key: str) -> httpx.Client:
-    return httpx.Client(base_url=base, headers={"X-API-Key": key}, timeout=60.0)
-
-
-def cmd_analyze(args: argparse.Namespace) -> int:
-    with _client(args.base, args.key) as client:
-        res = client.post("/v1/analyze", json={"url": args.url})
-        res.raise_for_status()
-        print(json.dumps(res.json(), indent=2))
-    return 0
-
-
-def cmd_download(args: argparse.Namespace) -> int:
-    with _client(args.base, args.key) as client:
-        res = client.post("/v1/download", json={"url": args.url, "format": args.format})
-        res.raise_for_status()
-        print(json.dumps(res.json(), indent=2))
-    return 0
-
-
-def cmd_convert(args: argparse.Namespace) -> int:
-    with _client(args.base, args.key) as client:
-        res = client.post(
-            "/v1/convert",
-            json={"path": args.file, "options": {"container": args.container}},
-        )
-        res.raise_for_status()
-        print(json.dumps(res.json(), indent=2))
-    return 0
-
-
-def cmd_subtitle(args: argparse.Namespace) -> int:
-    with _client(args.base, args.key) as client:
-        res = client.post("/v1/subtitles", json={"url": args.url or args.file})
-        res.raise_for_status()
-        print(json.dumps(res.json(), indent=2))
-    return 0
-
-
-def cmd_plugins(_args: argparse.Namespace) -> int:
-    with _client(_args.base, _args.key) as client:
-        res = client.get("/v1/plugins")
-        res.raise_for_status()
-        print(json.dumps(res.json(), indent=2))
-    return 0
-
-
-def cmd_doctor(args: argparse.Namespace) -> int:
-    with _client(args.base, args.key) as client:
-        health = client.get("/health")
-        system = client.get("/v1/system")
-        print(json.dumps({"health": health.json(), "system": system.json()}, indent=2))
-        return 0 if health.is_success and system.is_success else 1
-
-
-def cmd_worker(_args: argparse.Namespace) -> int:
-    from apps.worker.main import run
-
-    run()
-    return 0
+def _add_wait_flags(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--wait",
+        action="store_true",
+        help="Poll job status until terminal state",
+    )
+    parser.add_argument(
+        "--wait-timeout",
+        type=float,
+        default=120.0,
+        help="Seconds to wait when --wait is set (default: 120)",
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="mediacore", description="MediaCore CLI")
-    parser.add_argument("--base", default=DEFAULT_BASE)
-    parser.add_argument("--key", default=DEFAULT_KEY)
+    parser.add_argument(
+        "--base",
+        default=None,
+        help=f"API base URL (env MEDIACORE_BASE, default {DEFAULT_BASE})",
+    )
+    parser.add_argument(
+        "--key",
+        default=None,
+        help=f"API key (env MEDIACORE_API_KEY, default {DEFAULT_KEY})",
+    )
     sub = parser.add_subparsers(dest="command", required=True)
 
-    p = sub.add_parser("analyze")
+    p = sub.add_parser("analyze", help="Analyze a media URL")
     p.add_argument("url")
-    p.set_defaults(func=cmd_analyze)
+    p.set_defaults(func=commands.cmd_analyze)
 
-    p = sub.add_parser("download")
+    p = sub.add_parser("download", help="Enqueue a download job")
     p.add_argument("url")
     p.add_argument("--format", default="original")
-    p.set_defaults(func=cmd_download)
+    _add_wait_flags(p)
+    p.set_defaults(func=commands.cmd_download)
 
-    p = sub.add_parser("convert")
+    p = sub.add_parser("convert", help="Enqueue a convert job for a local file")
     p.add_argument("file")
     p.add_argument("--container", default="mp4")
-    p.set_defaults(func=cmd_convert)
+    _add_wait_flags(p)
+    p.set_defaults(func=commands.cmd_convert)
 
-    p = sub.add_parser("subtitle")
+    p = sub.add_parser("subtitle", help="Enqueue a subtitles job")
     p.add_argument("file", nargs="?")
     p.add_argument("--url")
-    p.set_defaults(func=cmd_subtitle)
+    _add_wait_flags(p)
+    p.set_defaults(func=commands.cmd_subtitle)
 
-    p = sub.add_parser("plugin")
+    p = sub.add_parser("plugin", help="Manage plugins")
     plugin_sub = p.add_subparsers(dest="plugin_cmd", required=True)
-    pl = plugin_sub.add_parser("install")
-    pl.set_defaults(func=lambda a: print("Plugin install registry coming in v0.5") or 0)
-    pl = plugin_sub.add_parser("list")
-    pl.set_defaults(func=cmd_plugins)
+    pl = plugin_sub.add_parser("install", help="Install a plugin from a local path or plugins/ name")
+    pl.add_argument("target", help="Directory path or plugin name under plugins/")
+    pl.add_argument(
+        "--plugins-root",
+        default=None,
+        help="Override plugins directory (tests / custom layouts)",
+    )
+    pl.set_defaults(func=commands.cmd_plugin_install)
+    pl = plugin_sub.add_parser("list", help="List discovered plugins")
+    pl.set_defaults(func=commands.cmd_plugin_list)
 
-    p = sub.add_parser("worker")
+    p = sub.add_parser("worker", help="Worker process controls")
     worker_sub = p.add_subparsers(dest="worker_cmd", required=True)
-    w = worker_sub.add_parser("start")
-    w.set_defaults(func=cmd_worker)
+    w = worker_sub.add_parser("start", help="Start the Dramatiq worker")
+    w.set_defaults(func=commands.cmd_worker)
 
-    p = sub.add_parser("doctor")
-    p.set_defaults(func=cmd_doctor)
+    p = sub.add_parser("doctor", help="Check API, plugins, and ffmpeg")
+    p.set_defaults(func=commands.cmd_doctor)
+
+    p = sub.add_parser("events", help="List or follow MediaCore lifecycle events")
+    p.add_argument("--job-id", default=None, help="Filter by job id")
+    p.add_argument("--follow", "-f", action="store_true", help="Follow SSE stream")
+    p.add_argument("--limit", type=int, default=50, help="History limit when not following")
+    p.set_defaults(func=commands.cmd_events)
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+    args.base = resolve_base(args.base)
+    args.key = resolve_key(args.key)
     try:
         return int(args.func(args))
     except httpx.HTTPError as exc:
-        print(f"error: {exc}", file=sys.stderr)
+        eprint(f"error: {format_http_error(exc)}")
+        return 1
+    except TimeoutError as exc:
+        eprint(f"error: {exc}")
         return 1
 
 

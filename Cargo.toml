@@ -1,0 +1,16 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/mediacore-engine",
+    "benchmarks",
+]
+default-members = ["crates/mediacore-engine"]
+
+[workspace.package]
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/mediacore/mediacore"
+
+[profile.bench]
+lto = true
+codegen-units = 1

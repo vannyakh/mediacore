@@ -29,7 +29,7 @@ def run_provider_contract(
     expect_download: bool = True,
 ) -> None:
     assert_provider_contract_basics(provider, url)
-    meta = provider.get_metadata(url)
+    meta = provider.metadata(url)
     assert_valid_metadata(meta)
     format_id = meta.formats[0].id
     if expect_download:
@@ -56,6 +56,10 @@ def run_storage_contract(storage: StorageLike, tmp: Path) -> None:
 
 
 def run_plugin_manifest_contract(info: Any) -> None:
+    from packages.plugins.kinds import PLUGIN_STATUSES, PluginKind
+
     assert info.name.startswith("mediacore-plugin-")
-    assert info.status in {"available", "stub", "error", "disabled"}
+    assert info.status in PLUGIN_STATUSES
     assert isinstance(info.capabilities, list)
+    if info.status != "error":
+        assert info.kind in {k.value for k in PluginKind}

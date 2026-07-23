@@ -7,13 +7,28 @@ from pathlib import Path
 from urllib.parse import unquote, urlparse
 
 from packages.core.exceptions import FormatNotFoundError, ProviderError
-from packages.core.models import DownloadResult, FormatInfo, MediaMetadata
+from packages.core.models import (
+    DownloadResult,
+    FormatInfo,
+    Manifest,
+    MediaMetadata,
+    ProviderCapabilities,
+)
 from packages.core.provider import Provider
 
 
 class FilesystemProvider(Provider):
     name = "filesystem"
     status = "active"
+    capabilities = ProviderCapabilities(
+        metadata=True,
+        manifest=True,
+        formats=True,
+        download=True,
+        thumbnail=False,
+        subtitle=False,
+        live=False,
+    )
 
     def supports(self, url: str) -> bool:
         if url.startswith("file://"):
@@ -27,7 +42,7 @@ class FilesystemProvider(Provider):
             return Path(unquote(parsed.path))
         return Path(url)
 
-    def get_metadata(self, url: str) -> MediaMetadata:
+    def metadata(self, url: str) -> MediaMetadata:
         path = self._resolve(url)
         if not path.exists():
             raise ProviderError(self.name, f"File not found: {path}")
@@ -39,19 +54,26 @@ class FilesystemProvider(Provider):
             filesize=path.stat().st_size,
             url=path.as_uri(),
         )
+        manifest = Manifest(
+            type="filesystem",
+            provider=self.name,
+            url=path.as_uri(),
+            format_ids=[fmt.id],
+            extra={"path": str(path)},
+        )
         return MediaMetadata(
             platform=self.name,
             url=path.as_uri(),
             title=path.name,
             formats=[fmt],
-            manifest={"type": "filesystem", "path": str(path)},
+            manifest=manifest,
         )
 
-    def list_formats(self, url: str) -> list[FormatInfo]:
-        return self.get_metadata(url).formats
+    def formats(self, url: str) -> list[FormatInfo]:
+        return self.metadata(url).formats
 
     def download(self, url: str, format_id: str, dest: Path) -> DownloadResult:
-        meta = self.get_metadata(url)
+        meta = self.metadata(url)
         fmt = next((f for f in meta.formats if f.id == format_id or f.quality == format_id), None)
         if fmt is None:
             raise FormatNotFoundError(format_id)

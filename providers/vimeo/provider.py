@@ -1,4 +1,4 @@
-"""Vimeo provider using public oEmbed (metadata only; no access-control bypass)."""
+"""Vimeo provider using public oEmbed (metadata/thumbnail; download not configured)."""
 
 from __future__ import annotations
 
@@ -7,7 +7,14 @@ from pathlib import Path
 import httpx
 
 from packages.core.exceptions import ProviderError, ProviderNotConfiguredError
-from packages.core.models import DownloadResult, FormatInfo, MediaMetadata
+from packages.core.models import (
+    DownloadResult,
+    FormatInfo,
+    Manifest,
+    MediaMetadata,
+    ProviderCapabilities,
+    ThumbnailInfo,
+)
 from packages.core.parser import hostname
 from packages.core.provider import Provider
 
@@ -15,12 +22,21 @@ from packages.core.provider import Provider
 class VimeoProvider(Provider):
     name = "vimeo"
     status = "metadata_only"
+    capabilities = ProviderCapabilities(
+        metadata=True,
+        manifest=True,
+        formats=True,
+        download=False,
+        thumbnail=True,
+        subtitle=False,
+        live=False,
+    )
 
     def supports(self, url: str) -> bool:
         host = hostname(url)
         return host == "vimeo.com" or host.endswith(".vimeo.com") or host == "player.vimeo.com"
 
-    def get_metadata(self, url: str) -> MediaMetadata:
+    def metadata(self, url: str) -> MediaMetadata:
         try:
             with httpx.Client(timeout=30.0, follow_redirects=True) as client:
                 response = client.get(
@@ -35,6 +51,14 @@ class VimeoProvider(Provider):
         except httpx.HTTPError as exc:
             raise ProviderError(self.name, f"oEmbed request failed: {exc}") from exc
 
+        fmt = FormatInfo(id="oembed", quality="preview", container="html")
+        manifest = Manifest(
+            type="oembed",
+            provider=self.name,
+            url=url,
+            format_ids=[fmt.id],
+            extra={"provider_url": data.get("provider_url")},
+        )
         return MediaMetadata(
             platform=self.name,
             url=url,
@@ -43,17 +67,21 @@ class VimeoProvider(Provider):
             thumbnail=data.get("thumbnail_url"),
             description=data.get("description"),
             author=data.get("author_name"),
-            formats=[
-                FormatInfo(id="oembed", quality="preview", container="html"),
-            ],
-            manifest={"type": "oembed", "provider_url": data.get("provider_url")},
+            formats=[fmt],
+            manifest=manifest,
             extra={"html": data.get("html")},
         )
 
-    def list_formats(self, url: str) -> list[FormatInfo]:
-        return self.get_metadata(url).formats
+    def formats(self, url: str) -> list[FormatInfo]:
+        return self.metadata(url).formats
 
     def download(self, url: str, format_id: str, dest: Path) -> DownloadResult:
         raise ProviderNotConfiguredError(
             f"{self.name} (download requires an authorized Vimeo API token / owned content)"
         )
+
+    def thumbnail(self, url: str) -> ThumbnailInfo | None:
+        meta = self.metadata(url)
+        if not meta.thumbnail:
+            return None
+        return ThumbnailInfo(url=meta.thumbnail)

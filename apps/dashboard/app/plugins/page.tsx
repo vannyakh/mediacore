@@ -24,26 +24,32 @@ export default async function PluginsPage() {
       <p className="lead">MediaCore stays small — capabilities come from plugins.</p>
       {error ? <p className="muted">{error}</p> : null}
       <div className="panel">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Kind</th>
-              <th>Status</th>
-              <th>Capabilities</th>
-            </tr>
-          </thead>
-          <tbody>
-            {plugins.map((p) => (
-              <tr key={p.name}>
-                <td>{p.name}</td>
-                <td>{p.kind}</td>
-                <td>{p.status}</td>
-                <td>{(p.capabilities || []).join(", ")}</td>
+        {plugins.length === 0 && !error ? (
+          <p className="muted">No plugins loaded.</p>
+        ) : (
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Kind</th>
+                <th>Version</th>
+                <th>Status</th>
+                <th>Capabilities</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {plugins.map((p) => (
+                <tr key={p.name}>
+                  <td>{p.name}</td>
+                  <td>{p.kind}</td>
+                  <td>{p.version}</td>
+                  <td>{p.status}</td>
+                  <td>{(p.capabilities || []).join(", ") || "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </section>
   );

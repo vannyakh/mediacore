@@ -63,6 +63,11 @@ a {
   color: var(--text);
 }
 
+.sidebar a.active {
+  background: #222a35;
+  color: var(--accent);
+}
+
 .content {
   padding: 2rem;
 }

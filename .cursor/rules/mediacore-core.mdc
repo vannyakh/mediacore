@@ -1,0 +1,29 @@
+---
+description: MediaCore project identity, architecture, and compliance defaults
+alwaysApply: true
+---
+
+# MediaCore Core
+
+Brand is **MediaCore** only — **The Open Media Infrastructure Platform** (tagline: Extract • Process • Automate • Deliver). Do not introduce other product names, legacy aliases (`apidownloader`, `VideoExtractor`), or third-party downloader brands in code, docs, logs, or package names. Never position MediaCore as “just a video downloader.”
+
+## Architecture
+
+- Platform-first: core stays provider-agnostic (no YouTube/TikTok/etc. knowledge in core).
+- Stack: Engine → Plugin System → Providers → Media Pipeline → SDK → Application.
+- Layout: `apps/` (api, worker, cli, dashboard, desktop, studio…), `packages/` (core, engine, registry, plugins, events…), `providers/`, `plugins/`, `sdk/`, `docs/`.
+- Runtime queue package is `packages/queue` (or `jobqueue` shim) — never shadow stdlib `queue`.
+- API surface: `/v1/*` (compatibility alias `/api/v1/*` allowed).
+- Vision / roadmap: `docs/getting-started/vision.md`, `ROADMAP.md` (detail in `docs/getting-started/roadmap.md`).
+
+## Compliance
+
+- Do not implement scrapers or access-control bypasses.
+- Provider stubs may detect URLs and return `provider_not_configured`.
+- Working downloads/metadata must use official APIs or content the user has permission to access.
+- Do not add scraper runtimes as dependencies for platform extraction.
+
+## Branding
+
+- Loggers, metrics job names, SDK packages: `mediacore` / `@mediacore/*`.
+- User-facing copy says MediaCore, never legacy project names.

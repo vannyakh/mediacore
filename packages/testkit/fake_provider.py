@@ -5,13 +5,27 @@ from __future__ import annotations
 from pathlib import Path
 
 from packages.core.exceptions import FormatNotFoundError
-from packages.core.models import DownloadResult, FormatInfo, MediaMetadata
+from packages.core.models import (
+    DownloadResult,
+    FormatInfo,
+    MediaMetadata,
+    ProviderCapabilities,
+)
 from packages.core.provider import Provider
 
 
 class FakeProvider(Provider):
     name = "fake"
     status = "active"
+    capabilities = ProviderCapabilities(
+        metadata=True,
+        manifest=True,
+        formats=True,
+        download=True,
+        thumbnail=True,
+        subtitle=False,
+        live=False,
+    )
 
     def __init__(
         self,
@@ -30,13 +44,14 @@ class FakeProvider(Provider):
     def supports(self, url: str) -> bool:
         return url.startswith(self.prefix)
 
-    def get_metadata(self, url: str) -> MediaMetadata:
-        self.calls.append("get_metadata")
+    def metadata(self, url: str) -> MediaMetadata:
+        self.calls.append("metadata")
         return MediaMetadata(
             platform=self.name,
             url=url,
             title=self.title,
             duration=1.0,
+            thumbnail="https://fake.mediacore.test/thumb.jpg",
             formats=[
                 FormatInfo(
                     id="original",
@@ -48,15 +63,15 @@ class FakeProvider(Provider):
             manifest={"type": "fake"},
         )
 
-    def list_formats(self, url: str) -> list[FormatInfo]:
-        self.calls.append("list_formats")
-        return self.get_metadata(url).formats
+    def formats(self, url: str) -> list[FormatInfo]:
+        self.calls.append("formats")
+        return self.metadata(url).formats
 
     def download(self, url: str, format_id: str, dest: Path) -> DownloadResult:
         self.calls.append("download")
         if not self.download_enabled:
             raise FormatNotFoundError(format_id)
-        meta = self.get_metadata(url)
+        meta = self.metadata(url)
         fmt = next((f for f in meta.formats if f.id == format_id), None)
         if fmt is None:
             raise FormatNotFoundError(format_id)
