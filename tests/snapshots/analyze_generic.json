@@ -1,0 +1,14 @@
+{
+  "platform": "generic",
+  "title": "demo.mp4",
+  "formats": [
+    {
+      "id": "original",
+      "quality": "original",
+      "container": "mp4"
+    }
+  ],
+  "manifest": {
+    "type": "direct"
+  }
+}

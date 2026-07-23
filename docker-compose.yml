@@ -1,0 +1,3 @@
+# Convenience wrapper — full stack lives under docker/
+include:
+  - path: docker/docker-compose.yml

@@ -1,0 +1,42 @@
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_no_critical_empty_dirs():
+    critical = [
+        ROOT / "packages" / "auth",
+        ROOT / "packages" / "cache",
+        ROOT / "packages" / "config",
+        ROOT / "packages" / "logging",
+        ROOT / "packages" / "scheduler",
+        ROOT / "packages" / "telemetry",
+        ROOT / "packages" / "sdk_generator",
+        ROOT / "plugins" / "whisper",
+        ROOT / "plugins" / "discord",
+        ROOT / "helm" / "mediacore",
+        ROOT / "scripts",
+        ROOT / "benchmarks",
+        ROOT / "sdk" / "csharp",
+        ROOT / "apps" / "desktop" / "src",
+        ROOT / "apps" / "studio" / "src",
+    ]
+    for path in critical:
+        assert path.exists(), f"missing {path}"
+        files = list(path.rglob("*"))
+        assert any(p.is_file() for p in files), f"empty scaffold: {path}"
+
+
+def test_all_plugins_have_manifest():
+    plugins_root = ROOT / "plugins"
+    for entry in plugins_root.iterdir():
+        if entry.is_dir():
+            assert (entry / "plugin.py").exists(), f"missing plugin.py in {entry.name}"
+
+
+def test_plugin_loader_discovers_all():
+    from packages.plugins.loader import PluginLoader
+
+    loader = PluginLoader(root=ROOT / "plugins")
+    plugins = loader.discover()
+    assert len(plugins) >= 10

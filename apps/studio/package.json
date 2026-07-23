@@ -1,0 +1,9 @@
+{
+  "name": "mediacore-studio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MediaCore Studio visual workflow builder — scaffold for v0.4",
+  "scripts": {
+    "dev": "echo 'Studio scaffold — React Flow editor planned for v0.4'"
+  }
+}

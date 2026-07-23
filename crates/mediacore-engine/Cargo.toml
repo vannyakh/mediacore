@@ -1,0 +1,9 @@
+[package]
+name = "mediacore-engine"
+version = "0.1.0"
+edition = "2021"
+description = "MediaCore Rust engine foundation (roadmap)"
+license = "Apache-2.0"
+
+[dependencies]
+# tokio, axum, serde, reqwest, sqlx — wire in v0.5 engine track

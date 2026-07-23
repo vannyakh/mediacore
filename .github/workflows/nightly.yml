@@ -1,0 +1,29 @@
+name: Nightly
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+jobs:
+  heavy-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - name: Sync
+        run: uv sync --extra dev
+      - name: Stress + chaos
+        run: uv run pytest -m "stress or chaos" --tb=short
+      - name: Benchmarks
+        run: >
+          uv run pytest -m benchmark --benchmark-only
+          --benchmark-json=benchmark.json
+      - name: Upload benchmark JSON
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-json
+          path: benchmark.json
+          if-no-files-found: ignore

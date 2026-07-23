@@ -1,0 +1,18 @@
+{
+  "platform": "generic",
+  "url": "https://cdn.example.com/demo.mp4",
+  "title": "demo.mp4",
+  "duration": null,
+  "thumbnail": null,
+  "formats": [
+    {
+      "id": "original",
+      "quality": "original",
+      "container": "mp4",
+      "mime_type": "video/mp4"
+    }
+  ],
+  "manifest": {
+    "type": "direct"
+  }
+}

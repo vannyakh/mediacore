@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg
+.coverage
+htmlcov/
+
+# Env / secrets
+.env
+.env.local
+*.pem
+
+# Media / runtime
+data/
+storage/files/
+*.mp4
+*.webm
+*.mkv
+tmp/
+
+# Node / admin
+apps/admin/node_modules/
+apps/admin/.next/
+apps/admin/out/
+
+# IDE / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Docker volumes
+docker/data/
+
+# Benchmarks / coverage
+.benchmarks/
+.coverage
+htmlcov/
+coverage.xml
