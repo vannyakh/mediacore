@@ -8,6 +8,7 @@ Writes: providers/data/extractors.json
 
 from __future__ import annotations
 
+import ast
 import json
 import re
 from pathlib import Path
@@ -16,8 +17,6 @@ ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "providers" / "data" / "sites_snapshot.json"
 OUT_EXTRACTORS = ROOT / "providers" / "data" / "extractors.json"
 OUT_INDEX = ROOT / "providers" / "data" / "providers_index.json"
-
-import ast
 
 
 def _load_major_platforms() -> dict:

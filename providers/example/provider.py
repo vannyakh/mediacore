@@ -61,9 +61,7 @@ class ExampleProvider(Provider):
         return self.metadata(url).formats
 
     def download(self, url: str, format_id: str, dest: Path) -> DownloadResult:
-        raise ProviderNotConfiguredError(
-            f"{self.name} (demo provider — no real media payload)"
-        )
+        raise ProviderNotConfiguredError(f"{self.name} (demo provider — no real media payload)")
 
     def thumbnail(self, url: str) -> ThumbnailInfo | None:
         meta = self.metadata(url)

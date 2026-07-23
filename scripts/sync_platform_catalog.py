@@ -74,7 +74,10 @@ def main() -> int:
         elif SNAPSHOT.exists():
             print(f"Using existing {SNAPSHOT.name} (pass --url/--file to refresh)")
         else:
-            print("No snapshot found. Provide --file or --url, or run with an existing snapshot.", file=sys.stderr)
+            print(
+                "No snapshot found. Provide --file or --url, or run with an existing snapshot.",
+                file=sys.stderr,
+            )
             return 1
 
     subprocess.check_call([sys.executable, str(ROOT / "scripts" / "generate_providers.py")])

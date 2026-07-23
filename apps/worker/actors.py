@@ -176,14 +176,14 @@ def _process_media_op(job_id: str, operation: str) -> None:
             elif operation == "convert":
                 options = {}
                 if job.meta_json:
-                    options = (json.loads(job.meta_json).get("options") or {})
+                    options = json.loads(job.meta_json).get("options") or {}
                 ext = options.get("container", "mp4")
                 dest = dest_dir / f"converted.{ext}"
                 convert_media(source, dest)
             elif operation == "clip":
                 options = {}
                 if job.meta_json:
-                    options = (json.loads(job.meta_json).get("options") or {})
+                    options = json.loads(job.meta_json).get("options") or {}
                 start = str(options.get("start", 0))
                 duration = str(options.get("duration", 10))
                 dest = dest_dir / "clip.mp4"

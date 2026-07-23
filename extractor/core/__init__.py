@@ -1,4 +1,5 @@
-from packages.core.models import DownloadResult, FormatInfo, MediaMetadata as VideoMetadata
+from packages.core.models import DownloadResult, FormatInfo
+from packages.core.models import MediaMetadata as VideoMetadata
 from packages.engine.engine import MediaCoreEngine as ExtractorEngine
 from packages.registry.providers import ProviderRegistry, get_registry
 

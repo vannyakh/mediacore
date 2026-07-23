@@ -71,10 +71,7 @@ def main() -> None:
     export_markdown(summary, out_dir / "summary.md")
     print(f"wrote {out_dir / 'summary.json'}")
     for b in summary["benchmarks"]:
-        print(
-            f"  {b['name']}: {b['mean_s']*1000:.3f} ms mean, "
-            f"{b['ops_per_sec']:.0f} ops/s"
-        )
+        print(f"  {b['name']}: {b['mean_s'] * 1000:.3f} ms mean, {b['ops_per_sec']:.0f} ops/s")
 
 
 if __name__ == "__main__":

@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from packages.mediacore_benchmark.runner import main
+from packages.mediacore_benchmark.runner import main  # noqa: E402
 
 if __name__ == "__main__":
     main()

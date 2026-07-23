@@ -9,6 +9,7 @@ Create Date: 2026-07-23
 from typing import Sequence, Union
 
 import sqlalchemy as sa
+
 from alembic import op
 
 revision: str = "0001_initial"
@@ -49,7 +50,13 @@ def upgrade() -> None:
         sa.Column("user_id", sa.String(length=36), sa.ForeignKey("users.id"), nullable=True),
         sa.Column("api_key_id", sa.String(length=36), sa.ForeignKey("api_keys.id"), nullable=True),
         sa.Column("type", sa.String(length=32), nullable=False),
-        sa.Column("status", sa.Enum("pending", "queued", "running", "completed", "failed", "expired", name="jobstatus"), nullable=False),
+        sa.Column(
+            "status",
+            sa.Enum(
+                "pending", "queued", "running", "completed", "failed", "expired", name="jobstatus"
+            ),
+            nullable=False,
+        ),
         sa.Column("url", sa.Text(), nullable=False),
         sa.Column("platform", sa.String(length=64), nullable=True),
         sa.Column("format_id", sa.String(length=64), nullable=True),

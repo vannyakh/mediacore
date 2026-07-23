@@ -17,7 +17,9 @@ pytestmark = pytest.mark.unit
 
 
 class _FakeResponse:
-    def __init__(self, status_code: int = 200, payload: object | None = None, text: str = "") -> None:
+    def __init__(
+        self, status_code: int = 200, payload: object | None = None, text: str = ""
+    ) -> None:
         self.status_code = status_code
         self._payload = payload
         self.text = text
@@ -80,7 +82,15 @@ def test_parser_analyze_and_download_wait():
     assert args.url.endswith("a.mp4")
 
     args = parser.parse_args(
-        ["download", "https://example.com/a.mp4", "--format", "720p", "--wait", "--wait-timeout", "30"]
+        [
+            "download",
+            "https://example.com/a.mp4",
+            "--format",
+            "720p",
+            "--wait",
+            "--wait-timeout",
+            "30",
+        ]
     )
     assert args.wait is True
     assert args.wait_timeout == 30.0
@@ -123,11 +133,15 @@ def test_cmd_download_wait(monkeypatch: pytest.MonkeyPatch, capsys: pytest.Captu
         }
     )
     monkeypatch.setattr(commands, "make_client", lambda *a, **k: client)
-    monkeypatch.setattr(commands, "wait_for_job", lambda client, job_id, timeout=120.0: {
-        "id": job_id,
-        "status": "completed",
-        "result_url": "/out",
-    })
+    monkeypatch.setattr(
+        commands,
+        "wait_for_job",
+        lambda client, job_id, timeout=120.0: {
+            "id": job_id,
+            "status": "completed",
+            "result_url": "/out",
+        },
+    )
     args = SimpleNamespace(
         base="http://localhost:8000",
         key="k",
@@ -208,7 +222,9 @@ def test_plugin_install_missing(tmp_path: Path):
     assert commands.cmd_plugin_install(args) == 1
 
 
-def test_plugin_list_falls_back_local(monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]):
+def test_plugin_list_falls_back_local(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+):
     def boom(*_a, **_k):
         raise httpx.ConnectError("down", request=httpx.Request("GET", "http://x"))
 

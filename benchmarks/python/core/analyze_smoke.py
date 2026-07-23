@@ -1,4 +1,4 @@
-"""Backward-compatible entry for analyze latency smoke. """
+"""Backward-compatible entry for analyze latency smoke."""
 
 from packages.mediacore_benchmark.runner import main
 

@@ -57,7 +57,11 @@ class Provider(ABC):
                 url=data.get("url") or meta.url,
                 format_ids=list(data.get("format_ids") or [f.id for f in meta.formats]),
                 is_live=bool(data.get("is_live") or meta.is_live),
-                extra={k: v for k, v in data.items() if k not in {"type", "url", "format_ids", "is_live"}},
+                extra={
+                    k: v
+                    for k, v in data.items()
+                    if k not in {"type", "url", "format_ids", "is_live"}
+                },
             )
         return Manifest(
             type="basic",

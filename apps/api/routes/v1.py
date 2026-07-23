@@ -292,7 +292,12 @@ def cancel_job(
     job = db.scalar(select(Job).where(Job.id == job_id))
     if job is None:
         raise HTTPException(status_code=404, detail="Job not found")
-    if job.status in {JobStatus.completed, JobStatus.failed, JobStatus.cancelled, JobStatus.expired}:
+    if job.status in {
+        JobStatus.completed,
+        JobStatus.failed,
+        JobStatus.cancelled,
+        JobStatus.expired,
+    }:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=f"Job already {job.status.value}",

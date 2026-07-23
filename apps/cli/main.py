@@ -3,12 +3,18 @@
 from __future__ import annotations
 
 import argparse
-import sys
 
 import httpx
 
 from apps.cli import commands
-from apps.cli.client import DEFAULT_BASE, DEFAULT_KEY, eprint, format_http_error, resolve_base, resolve_key
+from apps.cli.client import (
+    DEFAULT_BASE,
+    DEFAULT_KEY,
+    eprint,
+    format_http_error,
+    resolve_base,
+    resolve_key,
+)
 
 
 def _add_wait_flags(parser: argparse.ArgumentParser) -> None:
@@ -63,7 +69,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("plugin", help="Manage plugins")
     plugin_sub = p.add_subparsers(dest="plugin_cmd", required=True)
-    pl = plugin_sub.add_parser("install", help="Install a plugin from a local path or plugins/ name")
+    pl = plugin_sub.add_parser(
+        "install", help="Install a plugin from a local path or plugins/ name"
+    )
     pl.add_argument("target", help="Directory path or plugin name under plugins/")
     pl.add_argument(
         "--plugins-root",

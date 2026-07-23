@@ -73,4 +73,3 @@ def search_extractors(query: str, *, limit: int = 50) -> list[dict[str, Any]]:
             if len(hits) >= limit:
                 break
     return hits
-

@@ -71,7 +71,9 @@ class Job(Base):
     user_id: Mapped[str | None] = mapped_column(ForeignKey("users.id"), nullable=True)
     api_key_id: Mapped[str | None] = mapped_column(ForeignKey("api_keys.id"), nullable=True)
     type: Mapped[str] = mapped_column(String(32), default="download")
-    status: Mapped[JobStatus] = mapped_column(Enum(JobStatus), default=JobStatus.pending, index=True)
+    status: Mapped[JobStatus] = mapped_column(
+        Enum(JobStatus), default=JobStatus.pending, index=True
+    )
     url: Mapped[str] = mapped_column(Text)
     platform: Mapped[str | None] = mapped_column(String(64), nullable=True)
     format_id: Mapped[str | None] = mapped_column(String(64), nullable=True)

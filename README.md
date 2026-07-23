@@ -2,21 +2,36 @@
   <img src="assets/logo.png" alt="MediaCore" width="160" />
 </p>
 
-# MediaCore
+<h1 align="center">MediaCore</h1>
 
-**The Open Source Media Infrastructure Platform**
+<p align="center">
+  <strong>The Open Source Media Infrastructure Platform</strong>
+</p>
 
-Extract • Process • Automate • Deliver
+<p align="center">
+  Extract · Process · Automate · Deliver
+</p>
 
-MediaCore is infrastructure for building media applications — not a single-purpose downloader. Use it as a foundation for converters, AI pipelines, desktop apps, cloud services, REST APIs, CLIs, SDKs, and plugin marketplaces.
+<p align="center">
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-0.1.0-0ea5e9?style=flat-square" alt="Version 0.1.0" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square" alt="License" /></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.12+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python" /></a>
+  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/Open%20Source-yes-22c55e?style=flat-square" alt="Open Source" /></a>
+</p>
 
-> Build once. Run everywhere.
+<p align="center">
+  MediaCore is infrastructure for building media applications — not a single-purpose downloader.<br />
+  Use it as a foundation for converters, AI pipelines, desktop apps, cloud services, REST APIs, CLIs, SDKs, and plugin marketplaces.
+</p>
 
-MediaCore គឺជា Open Source Media Infrastructure Platform ដែលត្រូវបានរចនាឡើងសម្រាប់ Developer ក្នុងការបង្កើត Media Applications ដោយមិនចាំបាច់សរសេរ Media Engine ពីដំបូង។
+<p align="center">
+  <em>Build once. Run everywhere.</em>
+</p>
 
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.12+-blue)](https://www.python.org/)
-[![Open Source](https://img.shields.io/badge/Open%20Source-yes-success)](CONTRIBUTING.md)
+<p align="center">
+  MediaCore គឺជា Open Source Media Infrastructure Platform ដែលត្រូវបានរចនាឡើងសម្រាប់ Developer<br />
+  ក្នុងការបង្កើត Media Applications ដោយមិនចាំបាច់សរសេរ Media Engine ពីដំបូង។
+</p>
 
 ---
 
@@ -126,4 +141,6 @@ Providers must use official/supported APIs or content you have permission to acc
 
 [Apache License 2.0](LICENSE)
 
-Made by the MediaCore community — **One Core • Infinite Media Workflows**
+<p align="center">
+  Made by the MediaCore community — <strong>One Core • Infinite Media Workflows</strong>
+</p>

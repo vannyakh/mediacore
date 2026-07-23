@@ -31,7 +31,9 @@ def _is_url(value: str) -> bool:
     return parsed.scheme in {"http", "https"} and bool(parsed.netloc)
 
 
-def _maybe_wait(client: httpx.Client, body: dict[str, Any], args: argparse.Namespace) -> dict[str, Any]:
+def _maybe_wait(
+    client: httpx.Client, body: dict[str, Any], args: argparse.Namespace
+) -> dict[str, Any]:
     if not getattr(args, "wait", False):
         return body
     job_id = body.get("job_id") or body.get("id")
@@ -166,7 +168,8 @@ def _resolve_install_source(target: str, plugins_root: Path) -> Path:
             if info.path:
                 return Path(info.path)
     raise FileNotFoundError(
-        f"plugin not found: {target!r} (expected a directory with plugin.py or a name under {plugins_root})"
+        f"plugin not found: {target!r} "
+        f"(expected a directory with plugin.py or a name under {plugins_root})"
     )
 
 

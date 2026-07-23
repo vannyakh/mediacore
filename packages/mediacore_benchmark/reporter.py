@@ -17,7 +17,7 @@ def export_json(summary: dict[str, Any], path: Path) -> Path:
 def export_markdown(summary: dict[str, Any], path: Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     lines = [
-        f"# MediaCore Benchmark Report",
+        "# MediaCore Benchmark Report",
         "",
         f"- Generated: {summary.get('generated_at', '')}",
         f"- Suite: {summary.get('suite', 'python-smoke')}",

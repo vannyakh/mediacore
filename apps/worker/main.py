@@ -18,7 +18,16 @@ def run() -> None:
     import sys
 
     # Delegate to dramatiq CLI for process management.
-    cmd = [sys.executable, "-m", "dramatiq", "apps.worker.actors", "--processes", "1", "--threads", "4"]
+    cmd = [
+        sys.executable,
+        "-m",
+        "dramatiq",
+        "apps.worker.actors",
+        "--processes",
+        "1",
+        "--threads",
+        "4",
+    ]
     raise SystemExit(subprocess.call(cmd))
 
 
