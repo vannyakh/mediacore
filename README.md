@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.png" alt="MediaCore" width="160" />
+</p>
+
 # MediaCore
 
 **The Open Source Media Infrastructure Platform**
