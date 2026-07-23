@@ -51,6 +51,11 @@ Back-compat aliases: `get_metadata` → `metadata`, `list_formats` → `formats`
 | `reddit` | Public oEmbed metadata |
 | `ted` | Public oEmbed metadata |
 | `wikimedia.org` | MediaWiki REST summary metadata |
+| `bandcamp` | Public oEmbed metadata |
+| `mixcloud` | Public oEmbed metadata |
+| `streamable` | Public oEmbed metadata |
+| `imgur` | Public oEmbed metadata |
+| `archiveorg` | Public oEmbed metadata |
 | `example` | `mediacore://example/...` demo |
 
 ## Full platform catalog

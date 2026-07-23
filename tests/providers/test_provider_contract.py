@@ -4,12 +4,17 @@ from unittest.mock import patch
 import pytest
 
 from packages.testkit.contracts import run_provider_contract
+from providers.archiveorg.provider import ArchiveorgProvider
+from providers.bandcamp.provider import BandcampProvider
 from providers.dailymotion.provider import DailymotionProvider
 from providers.example.provider import ExampleProvider
 from providers.filesystem.provider import FilesystemProvider
 from providers.generic.provider import GenericHTTPProvider
+from providers.imgur.provider import ImgurProvider
+from providers.mixcloud.provider import MixcloudProvider
 from providers.reddit.provider import RedditProvider
 from providers.soundcloud.provider import SoundcloudProvider
+from providers.streamable.provider import StreamableProvider
 from providers.ted.provider import TedProvider
 from providers.vimeo.provider import VimeoProvider
 from providers.wikimedia.provider import WikimediaProvider
@@ -126,11 +131,63 @@ def test_wikimedia_contract_metadata_only(tmp_path: Path):
         )
 
 
+def test_bandcamp_contract_metadata_only(tmp_path: Path):
+    _run_oembed_contract(
+        BandcampProvider(),
+        "https://artist.bandcamp.com/track/example",
+        tmp_path / "out.mp4",
+    )
+
+
+def test_mixcloud_contract_metadata_only(tmp_path: Path):
+    _run_oembed_contract(
+        MixcloudProvider(),
+        "https://www.mixcloud.com/artist/show/",
+        tmp_path / "out.mp4",
+    )
+
+
+def test_streamable_contract_metadata_only(tmp_path: Path):
+    _run_oembed_contract(
+        StreamableProvider(),
+        "https://streamable.com/abcd",
+        tmp_path / "out.mp4",
+    )
+
+
+def test_imgur_contract_metadata_only(tmp_path: Path):
+    _run_oembed_contract(
+        ImgurProvider(),
+        "https://imgur.com/gallery/abc",
+        tmp_path / "out.mp4",
+    )
+
+
+def test_archiveorg_contract_metadata_only(tmp_path: Path):
+    _run_oembed_contract(
+        ArchiveorgProvider(),
+        "https://archive.org/details/example",
+        tmp_path / "out.mp4",
+    )
+
+
 def test_oembed_providers_override_catalog_stubs():
     from packages.registry.providers import reset_registry
 
     registry = reset_registry()
-    for name in ("dailymotion", "soundcloud", "reddit", "ted", "wikimedia.org", "vimeo"):
+    for name in (
+        "dailymotion",
+        "soundcloud",
+        "reddit",
+        "ted",
+        "wikimedia.org",
+        "vimeo",
+        "bandcamp",
+        "mixcloud",
+        "streamable",
+        "imgur",
+        "archiveorg",
+    ):
         provider = registry.get(name)
         assert provider is not None
         assert getattr(provider, "status", None) == "metadata_only"

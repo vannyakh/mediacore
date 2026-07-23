@@ -1,7 +1,7 @@
-"""Auto-generated MediaCore catalog stub for `bandcamp`.
+"""Catalog stub for `bandcamp` (overridden at runtime).
 
-Upgrade this file to a working provider using official/permitted APIs only.
-Regenerate with: uv run python scripts/materialize_catalog_providers.py
+Working implementation: ``providers.bandcamp.provider``.
+Regenerate stubs with: uv run python scripts/materialize_catalog_providers.py
 """
 
 from __future__ import annotations

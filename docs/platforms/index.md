@@ -49,6 +49,11 @@ uv run python scripts/sync_platform_catalog.py --offline
 | `reddit` | `metadata_only` | Public oEmbed |
 | `ted` | `metadata_only` | Public oEmbed |
 | `wikimedia.org` | `metadata_only` | MediaWiki REST summary API |
+| `bandcamp` | `metadata_only` | Public oEmbed |
+| `mixcloud` | `metadata_only` | Public oEmbed |
+| `streamable` | `metadata_only` | Public oEmbed |
+| `imgur` | `metadata_only` | Public oEmbed |
+| `archiveorg` | `metadata_only` | Public oEmbed |
 
 Catalog stubs with the same `name` are skipped when these modules register first.
 

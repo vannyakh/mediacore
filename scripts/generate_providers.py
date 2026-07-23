@@ -19,6 +19,21 @@ OUT_EXTRACTORS = ROOT / "providers" / "data" / "extractors.json"
 OUT_INDEX = ROOT / "providers" / "data" / "providers_index.json"
 OUT_DOCS = ROOT / "docs" / "public" / "platforms.json"
 
+# Working providers registered early in packages/registry/providers.py — docs UI status.
+DOCS_WORKING_STATUS: dict[str, str] = {
+    "vimeo": "metadata_only",
+    "dailymotion": "metadata_only",
+    "soundcloud": "metadata_only",
+    "reddit": "metadata_only",
+    "ted": "metadata_only",
+    "wikimedia.org": "metadata_only",
+    "bandcamp": "metadata_only",
+    "mixcloud": "metadata_only",
+    "streamable": "metadata_only",
+    "imgur": "metadata_only",
+    "archiveorg": "metadata_only",
+}
+
 
 def _load_major_platforms() -> dict:
     """Parse MAJOR_PLATFORMS from hosts.py without importing the package tree."""
@@ -191,20 +206,27 @@ def main() -> int:
     OUT_INDEX.write_text(json.dumps(index, indent=2) + "\n", encoding="utf-8")
 
     # Slim catalog for docs site (/platforms/)
+    docs_providers = []
+    for p in providers:
+        name = p["name"]
+        if p.get("broken"):
+            status = "broken"
+        else:
+            status = DOCS_WORKING_STATUS.get(name, p.get("status", "not_configured"))
+        docs_providers.append(
+            {
+                "name": name,
+                "status": status,
+                "hosts": p.get("hosts") or [],
+                "description": p.get("description") or "",
+                "logo": brand_logo_url(name, p.get("hosts") or []),
+            }
+        )
     docs_payload = {
         "version": 1,
         "count": index["count"],
         "with_hosts": index["with_hosts"],
-        "providers": [
-            {
-                "name": p["name"],
-                "status": "broken" if p.get("broken") else p.get("status", "not_configured"),
-                "hosts": p.get("hosts") or [],
-                "description": p.get("description") or "",
-                "logo": brand_logo_url(p["name"], p.get("hosts") or []),
-            }
-            for p in providers
-        ],
+        "providers": docs_providers,
     }
     OUT_DOCS.parent.mkdir(parents=True, exist_ok=True)
     OUT_DOCS.write_text(json.dumps(docs_payload) + "\n", encoding="utf-8")

@@ -41,6 +41,13 @@ const SIMPLE_ICON_SLUGS: Record<string, string> = {
   patreon: "patreon",
   bandcamp: "bandcamp",
   mixcloud: "mixcloud",
+  streamable: "streamable",
+  imgur: "imgur",
+  archiveorg: "internetarchive",
+  "internet archive": "internetarchive",
+  ted: "ted",
+  "wikimedia.org": "wikimedia",
+  wikimedia: "wikimedia",
   apple: "apple",
   amazon: "amazon",
   google: "google",
@@ -63,18 +70,87 @@ const WORKING: CatalogRow[] = [
     logo: "https://cdn.simpleicons.org/http/0ea5e9",
   },
   {
-    name: "vimeo",
-    status: "metadata",
-    hosts: ["vimeo.com"],
-    description: "Public oEmbed metadata only.",
-    logo: "https://cdn.simpleicons.org/vimeo/1AB7EA",
-  },
-  {
     name: "example",
     status: "available",
     hosts: [],
     description: "Demo provider for tests/docs (mediacore://example/).",
     logo: "/logo.png",
+  },
+  {
+    name: "vimeo",
+    status: "metadata_only",
+    hosts: ["vimeo.com"],
+    description: "Public oEmbed metadata only.",
+    logo: "https://cdn.simpleicons.org/vimeo/1AB7EA",
+  },
+  {
+    name: "dailymotion",
+    status: "metadata_only",
+    hosts: ["dailymotion.com", "dai.ly"],
+    description: "Public oEmbed metadata only.",
+    logo: "https://cdn.simpleicons.org/dailymotion",
+  },
+  {
+    name: "soundcloud",
+    status: "metadata_only",
+    hosts: ["soundcloud.com"],
+    description: "Public oEmbed metadata only.",
+    logo: "https://cdn.simpleicons.org/soundcloud",
+  },
+  {
+    name: "reddit",
+    status: "metadata_only",
+    hosts: ["reddit.com", "v.redd.it"],
+    description: "Public oEmbed metadata only.",
+    logo: "https://cdn.simpleicons.org/reddit",
+  },
+  {
+    name: "ted",
+    status: "metadata_only",
+    hosts: ["ted.com"],
+    description: "Public oEmbed metadata only.",
+    logo: "https://cdn.simpleicons.org/ted",
+  },
+  {
+    name: "wikimedia.org",
+    status: "metadata_only",
+    hosts: ["wikimedia.org", "commons.wikimedia.org"],
+    description: "MediaWiki REST summary metadata.",
+    logo: "https://cdn.simpleicons.org/wikimedia",
+  },
+  {
+    name: "bandcamp",
+    status: "metadata_only",
+    hosts: ["bandcamp.com"],
+    description: "Public oEmbed metadata only.",
+    logo: "https://cdn.simpleicons.org/bandcamp",
+  },
+  {
+    name: "mixcloud",
+    status: "metadata_only",
+    hosts: ["mixcloud.com"],
+    description: "Public oEmbed metadata only.",
+    logo: "https://cdn.simpleicons.org/mixcloud",
+  },
+  {
+    name: "streamable",
+    status: "metadata_only",
+    hosts: ["streamable.com"],
+    description: "Public oEmbed metadata only.",
+  },
+  {
+    name: "imgur",
+    status: "metadata_only",
+    hosts: ["imgur.com", "i.imgur.com"],
+    description: "Public oEmbed metadata only.",
+    logo: "https://cdn.simpleicons.org/imgur",
+  },
+  {
+    name: "archiveorg",
+    status: "metadata_only",
+    hosts: ["archive.org"],
+    description: "Public oEmbed metadata only.",
+    logo: "https://cdn.simpleicons.org/internetarchive",
   },
 ];
 
@@ -108,11 +184,10 @@ const filtered = computed(() => {
   return rows.value.filter((r) => {
     if (statusFilter.value === "hosts" && !(r.hosts && r.hosts.length)) return false;
     if (statusFilter.value === "broken" && r.status !== "broken") return false;
-    if (statusFilter.value === "available" && !["available", "active", "metadata"].includes(r.status))
-      return false;
+    const workingStatuses = ["available", "active", "metadata", "metadata_only"];
+    if (statusFilter.value === "available" && !workingStatuses.includes(r.status)) return false;
     if (statusFilter.value === "not_configured" && r.status === "broken") return false;
-    if (statusFilter.value === "not_configured" && ["available", "active", "metadata"].includes(r.status))
-      return false;
+    if (statusFilter.value === "not_configured" && workingStatuses.includes(r.status)) return false;
     if (!q) return true;
     const hay = [r.name, r.description, ...(r.hosts || [])].join(" ").toLowerCase();
     return hay.includes(q);

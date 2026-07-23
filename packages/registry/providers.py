@@ -85,6 +85,11 @@ def build_default_registry() -> ProviderRegistry:
         "providers.reddit.provider",
         "providers.ted.provider",
         "providers.wikimedia.provider",
+        "providers.bandcamp.provider",
+        "providers.mixcloud.provider",
+        "providers.streamable.provider",
+        "providers.imgur.provider",
+        "providers.archiveorg.provider",
     ):
         _register_module(registry, module_name)
 
