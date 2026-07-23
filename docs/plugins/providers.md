@@ -46,6 +46,11 @@ Back-compat aliases: `get_metadata` → `metadata`, `list_formats` → `formats`
 | `filesystem` | `file://` and local paths |
 | `generic` | Direct media HTTP(S) URLs |
 | `vimeo` | Public oEmbed metadata |
+| `dailymotion` | Public oEmbed metadata |
+| `soundcloud` | Public oEmbed metadata |
+| `reddit` | Public oEmbed metadata |
+| `ted` | Public oEmbed metadata |
+| `wikimedia.org` | MediaWiki REST summary metadata |
 | `example` | `mediacore://example/...` demo |
 
 ## Full platform catalog

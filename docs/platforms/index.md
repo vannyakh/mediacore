@@ -36,6 +36,22 @@ uv run python scripts/sync_platform_catalog.py --offline
 # also writes providers/stubs/_manifest.json (~1370 stub folders)
 ```
 
+## Working builtins (metadata / download)
+
+| Provider | Status | Access |
+|----------|--------|--------|
+| `filesystem` | `active` | Local `file://` paths |
+| `generic` | `active` | Direct HTTP(S) media URLs |
+| `example` | `example` | Demo `mediacore://` URLs |
+| `vimeo` | `metadata_only` | Public oEmbed |
+| `dailymotion` | `metadata_only` | Public oEmbed |
+| `soundcloud` | `metadata_only` | Public oEmbed |
+| `reddit` | `metadata_only` | Public oEmbed |
+| `ted` | `metadata_only` | Public oEmbed |
+| `wikimedia.org` | `metadata_only` | MediaWiki REST summary API |
+
+Catalog stubs with the same `name` are skipped when these modules register first.
+
 ## Status meanings
 
 | Status | Meaning |

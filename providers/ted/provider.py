@@ -1,4 +1,4 @@
-"""Vimeo provider using public oEmbed (metadata/thumbnail; download not configured)."""
+"""TED provider using public oEmbed (metadata only)."""
 
 from __future__ import annotations
 
@@ -16,11 +16,11 @@ from packages.core.parser import hostname
 from packages.core.provider import Provider
 from providers.oembed import fetch_oembed, metadata_from_oembed
 
-OEMBED_ENDPOINT = "https://vimeo.com/api/oembed.json"
+OEMBED_ENDPOINT = "https://www.ted.com/services/v1/oembed.json"
 
 
-class VimeoProvider(Provider):
-    name = "vimeo"
+class TedProvider(Provider):
+    name = "ted"
     status = "metadata_only"
     capabilities = ProviderCapabilities(
         metadata=True,
@@ -34,18 +34,18 @@ class VimeoProvider(Provider):
 
     def supports(self, url: str) -> bool:
         host = hostname(url)
-        return host == "vimeo.com" or host.endswith(".vimeo.com") or host == "player.vimeo.com"
+        return host in {"ted.com", "www.ted.com"} or host.endswith(".ted.com")
 
     def metadata(self, url: str) -> MediaMetadata:
         data = fetch_oembed(OEMBED_ENDPOINT, url, provider_name=self.name)
-        return metadata_from_oembed(self.name, url, data, title_fallback="Vimeo video")
+        return metadata_from_oembed(self.name, url, data, title_fallback="TED talk")
 
     def formats(self, url: str) -> list[FormatInfo]:
         return self.metadata(url).formats
 
     def download(self, url: str, format_id: str, dest: Path) -> DownloadResult:
         raise ProviderNotConfiguredError(
-            f"{self.name} (download requires an authorized Vimeo API token / owned content)"
+            f"{self.name} (download requires authorized TED / content-owner access)"
         )
 
     def thumbnail(self, url: str) -> ThumbnailInfo | None:

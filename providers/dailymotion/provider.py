@@ -1,4 +1,4 @@
-"""Vimeo provider using public oEmbed (metadata/thumbnail; download not configured)."""
+"""Dailymotion provider using public oEmbed (metadata only)."""
 
 from __future__ import annotations
 
@@ -16,11 +16,11 @@ from packages.core.parser import hostname
 from packages.core.provider import Provider
 from providers.oembed import fetch_oembed, metadata_from_oembed
 
-OEMBED_ENDPOINT = "https://vimeo.com/api/oembed.json"
+OEMBED_ENDPOINT = "https://www.dailymotion.com/services/oembed"
 
 
-class VimeoProvider(Provider):
-    name = "vimeo"
+class DailymotionProvider(Provider):
+    name = "dailymotion"
     status = "metadata_only"
     capabilities = ProviderCapabilities(
         metadata=True,
@@ -34,18 +34,20 @@ class VimeoProvider(Provider):
 
     def supports(self, url: str) -> bool:
         host = hostname(url)
-        return host == "vimeo.com" or host.endswith(".vimeo.com") or host == "player.vimeo.com"
+        return host in {"dailymotion.com", "www.dailymotion.com", "dai.ly"} or host.endswith(
+            ".dailymotion.com"
+        )
 
     def metadata(self, url: str) -> MediaMetadata:
         data = fetch_oembed(OEMBED_ENDPOINT, url, provider_name=self.name)
-        return metadata_from_oembed(self.name, url, data, title_fallback="Vimeo video")
+        return metadata_from_oembed(self.name, url, data, title_fallback="Dailymotion video")
 
     def formats(self, url: str) -> list[FormatInfo]:
         return self.metadata(url).formats
 
     def download(self, url: str, format_id: str, dest: Path) -> DownloadResult:
         raise ProviderNotConfiguredError(
-            f"{self.name} (download requires an authorized Vimeo API token / owned content)"
+            f"{self.name} (download requires authorized Dailymotion API access)"
         )
 
     def thumbnail(self, url: str) -> ThumbnailInfo | None:

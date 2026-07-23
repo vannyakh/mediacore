@@ -76,10 +76,15 @@ def _register_module(registry: ProviderRegistry, module_name: str) -> None:
 def build_default_registry() -> ProviderRegistry:
     registry = ProviderRegistry()
 
-    # Working providers first
+    # Working providers first (same name as a catalog stub → stub is skipped)
     for module_name in (
         "providers.filesystem.provider",
         "providers.vimeo.provider",
+        "providers.dailymotion.provider",
+        "providers.soundcloud.provider",
+        "providers.reddit.provider",
+        "providers.ted.provider",
+        "providers.wikimedia.provider",
     ):
         _register_module(registry, module_name)
 
