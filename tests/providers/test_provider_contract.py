@@ -151,18 +151,26 @@ def test_ted_contract_metadata_only(tmp_path: Path):
     )
 
 
-def test_wikimedia_contract_metadata_only(tmp_path: Path):
+def test_wikimedia_contract_active_download(tmp_path: Path):
     provider = WikimediaProvider()
     fake = {
         "title": "Example.jpg",
         "displaytitle": "Example.jpg",
         "extract": "A sample file on Commons.",
         "thumbnail": {"source": "https://upload.wikimedia.org/t.jpg"},
+        "originalimage": {
+            "source": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Example.jpg",
+            "width": 100,
+            "height": 80,
+        },
         "type": "standard",
         "lang": "en",
     }
-    with patch("providers.wikimedia.provider.httpx.Client") as client_cls:
-        client = client_cls.return_value.__enter__.return_value
+    with (
+        patch("providers.wikimedia.provider.create_client") as create_client,
+        patch("providers.wikimedia.provider.download_file", return_value=(4, "image/jpeg")),
+    ):
+        client = create_client.return_value.__enter__.return_value
         response = client.get.return_value
         response.status_code = 200
         response.raise_for_status.return_value = None
@@ -170,8 +178,8 @@ def test_wikimedia_contract_metadata_only(tmp_path: Path):
         run_provider_contract(
             provider,
             "https://commons.wikimedia.org/wiki/File:Example.jpg",
-            tmp_path / "out.mp4",
-            expect_download=False,
+            tmp_path / "out.jpg",
+            expect_download=True,
         )
 
 
@@ -199,7 +207,7 @@ def test_streamable_contract_metadata_only(tmp_path: Path):
     )
 
 
-def test_imgur_contract_metadata_only(tmp_path: Path):
+def test_imgur_gallery_contract_no_download(tmp_path: Path):
     _run_oembed_contract(
         ImgurProvider(),
         "https://imgur.com/gallery/abc",
@@ -207,12 +215,40 @@ def test_imgur_contract_metadata_only(tmp_path: Path):
     )
 
 
-def test_archiveorg_contract_metadata_only(tmp_path: Path):
-    _run_oembed_contract(
-        ArchiveorgProvider(),
-        "https://archive.org/details/example",
-        tmp_path / "out.mp4",
-    )
+def test_imgur_direct_contract_active(tmp_path: Path):
+    provider = ImgurProvider()
+    url = "https://i.imgur.com/abc123.mp4"
+    with (
+        patch("providers.imgur.provider.head_content_type", return_value="video/mp4"),
+        patch("providers.imgur.provider.download_file", return_value=(4, "video/mp4")),
+    ):
+        run_provider_contract(provider, url, tmp_path / "out.mp4", expect_download=True)
+
+
+def test_archiveorg_contract_active_download(tmp_path: Path):
+    provider = ArchiveorgProvider()
+    fake = {
+        "metadata": {"title": "Example item", "creator": "Author", "mediatype": "movies"},
+        "files": [
+            {"name": "clip.mp4", "format": "h.264", "size": "1234"},
+            {"name": "clip_meta.xml", "format": "Metadata"},
+        ],
+    }
+    with (
+        patch("providers.archiveorg.provider.create_client") as create_client,
+        patch("providers.archiveorg.provider.download_file", return_value=(4, "video/mp4")),
+    ):
+        client = create_client.return_value.__enter__.return_value
+        response = client.get.return_value
+        response.status_code = 200
+        response.raise_for_status.return_value = None
+        response.json.return_value = fake
+        run_provider_contract(
+            provider,
+            "https://archive.org/details/example",
+            tmp_path / "out.mp4",
+            expect_download=True,
+        )
 
 
 def test_flickr_contract_metadata_only(tmp_path: Path):
@@ -443,13 +479,10 @@ def test_oembed_providers_override_catalog_modules():
         "soundcloud",
         "reddit",
         "ted",
-        "wikimedia.org",
         "vimeo",
         "bandcamp",
         "mixcloud",
         "streamable",
-        "imgur",
-        "archiveorg",
         "flickr",
         "applepodcasts",
         "abc.net.au",
@@ -461,7 +494,14 @@ def test_oembed_providers_override_catalog_modules():
         assert provider is not None
         assert getattr(provider, "status", None) == "metadata_only"
         assert getattr(provider, "source", None) != "catalog"
-    for name in ("dropbox", "google_drive", "media.ccc.de"):
+    for name in (
+        "dropbox",
+        "google_drive",
+        "media.ccc.de",
+        "archiveorg",
+        "imgur",
+        "wikimedia.org",
+    ):
         provider = registry.get(name)
         assert provider is not None
         assert provider.status == "active"

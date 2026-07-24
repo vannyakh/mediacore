@@ -4,15 +4,12 @@ from __future__ import annotations
 
 import httpx
 
-DEFAULT_HEADERS = {
-    "User-Agent": "MediaCore/0.1 (+https://github.com/mediacore/mediacore)",
-    "Accept": "*/*",
-}
+from packages.core.networking.defaults import DEFAULT_HEADERS
+from packages.core.networking.session import create_client
+
+__all__ = ["DEFAULT_HEADERS", "get_client"]
 
 
 def get_client(timeout: float = 30.0) -> httpx.Client:
-    return httpx.Client(
-        timeout=httpx.Timeout(timeout),
-        follow_redirects=True,
-        headers=DEFAULT_HEADERS,
-    )
+    """Return a configured client (caller should close or use as context manager)."""
+    return create_client(timeout=timeout)

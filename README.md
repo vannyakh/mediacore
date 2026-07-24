@@ -97,7 +97,7 @@ Full path table: [`docs/architecture/layout.md`](docs/architecture/layout.md).
 | Direct media download (`generic`, `filesystem`) | Watch-page scraping (YouTube/etc.) |
 | Direct HLS/DASH stream URLs (`.m3u8` / `.mpd` via ffmpeg) | Extracting streams from watch pages |
 | Dropbox / Google Drive public share download | Bypassing platform ToS |
-| media.ccc.de public recordings | yt-dlp as a dependency |
+| media.ccc.de · archive.org · Wikimedia original · Imgur direct | yt-dlp as a dependency |
 | Metadata via oEmbed / public APIs | Universal “download any site” |
 
 Use `mediacore -s URL` for metadata; `providers list --download-only` for file fetch.

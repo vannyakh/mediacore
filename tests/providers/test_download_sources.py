@@ -50,6 +50,30 @@ _DOWNLOAD_CASES: list[tuple[str, str, list[str]]] = [
             "providers.media_ccc_de.provider.download_file",
         ],
     ),
+    (
+        "archiveorg",
+        "https://archive.org/details/example",
+        [
+            "providers.archiveorg.provider.create_client",
+            "providers.archiveorg.provider.download_file",
+        ],
+    ),
+    (
+        "imgur",
+        "https://i.imgur.com/abc123.mp4",
+        [
+            "providers.imgur.provider.head_content_type",
+            "providers.imgur.provider.download_file",
+        ],
+    ),
+    (
+        "wikimedia.org",
+        "https://commons.wikimedia.org/wiki/File:Example.jpg",
+        [
+            "providers.wikimedia.provider.create_client",
+            "providers.wikimedia.provider.download_file",
+        ],
+    ),
 ]
 
 _METADATA_ONLY_URLS: list[tuple[str, str]] = [
@@ -63,31 +87,47 @@ def _patch_download_io(targets: list[str]) -> ExitStack:
     """Stack patches so metadata HEAD + download do not hit the network."""
     stack = ExitStack()
     for target in targets:
-        if target.endswith("httpx.Client"):
+        if target.endswith("httpx.Client") or target.endswith("create_client"):
             client_cls = stack.enter_context(patch(target))
             client = client_cls.return_value.__enter__.return_value
             response = client.get.return_value
             response.status_code = 200
             response.raise_for_status.return_value = None
-            response.json.return_value = {
-                "title": "Demo talk",
-                "description": "Desc",
-                "length": 60,
-                "thumb_url": "https://static.media.ccc.de/t.jpg",
-                "persons": ["Speaker"],
-                "guid": "abc",
-                "slug": "camp2023-demo",
-                "recordings": [
-                    {
-                        "recording_url": "https://cdn.example.com/demo.mp4",
-                        "folder": "h264-hd",
-                        "language": "eng",
-                        "mime_type": "video/mp4",
-                        "height": 720,
-                        "width": 1280,
-                    }
-                ],
-            }
+            if "archiveorg" in target:
+                response.json.return_value = {
+                    "metadata": {"title": "Demo", "mediatype": "movies"},
+                    "files": [{"name": "demo.mp4", "format": "h.264", "size": "16"}],
+                }
+            elif "wikimedia" in target:
+                response.json.return_value = {
+                    "title": "Example.jpg",
+                    "originalimage": {
+                        "source": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Example.jpg",
+                        "width": 100,
+                        "height": 80,
+                    },
+                    "thumbnail": {"source": "https://upload.wikimedia.org/t.jpg"},
+                }
+            else:
+                response.json.return_value = {
+                    "title": "Demo talk",
+                    "description": "Desc",
+                    "length": 60,
+                    "thumb_url": "https://static.media.ccc.de/t.jpg",
+                    "persons": ["Speaker"],
+                    "guid": "abc",
+                    "slug": "camp2023-demo",
+                    "recordings": [
+                        {
+                            "recording_url": "https://cdn.example.com/demo.mp4",
+                            "folder": "h264-hd",
+                            "language": "eng",
+                            "mime_type": "video/mp4",
+                            "height": 720,
+                            "width": 1280,
+                        }
+                    ],
+                }
         elif target.endswith("head_content_type"):
             stack.enter_context(patch(target, return_value="video/mp4"))
         elif target.endswith("download_file"):

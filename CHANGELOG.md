@@ -22,10 +22,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Architecture map: `docs/architecture/mediacore-vs-ytdlp.md`
 - Thin download SDKs under `sdk/` with install docs: Python (`pip`), JS/TS (`npm`), PHP (`composer`), Go (`go mod`)
 - Direct HLS/DASH stream download for permitted playlist URLs (`.m3u8` / `.mpd`) via ffmpeg in `packages/core/downloader/`
+- Networking v2: shared session, timeout profiles, retries, header merge
+- Downloader v2: stream/resume/progress modules; Range resume when servers allow
+- Engine format default (`original`/`best`) + pipeline stage advances; `engine.process` postprocess
+- `packages/core/postprocess.py` remux / extract_audio chain
+- Active permitted download: Internet Archive metadata API, Wikimedia originalimage, Imgur `i.imgur.com` direct
 
 ### Changed
 
 - Align `packages/core` with [yt-dlp `yt_dlp` layout](https://github.com/yt-dlp/yt-dlp/tree/master/yt_dlp): `networking/` + `downloader/` subpackages (compat `http.py` re-export; no scraper ports)
+- CLI `-F` shows filesize; `doctor` checks local storage writability
 - Slim download-tool core: keep `apps/api|cli|worker`, providers (extractors), `plugins/ffmpeg` + `storage-local`; remove dashboard/desktop/studio/gateway/scheduler, benchmarks, crates, helm, cloud storage backends, and extra plugins (SDKs restored as thin clients)
 - Clarify extractor path = `providers/`; core = `packages/core` (no top-level `extractor/`)
 - Canonical path guide: `docs/architecture/layout.md`; removed empty `providers/facebook` / `providers/instagram` shells (catalog modules remain)

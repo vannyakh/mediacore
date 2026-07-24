@@ -12,10 +12,10 @@ Inspired by the [yt_dlp package tree](https://github.com/yt-dlp/yt-dlp/tree/mast
 |--------|-----------|------|
 | `extractor/` | `providers/` + `providers/modules/` | Site detect + permitted metadata/download |
 | `YoutubeDL.py` | `packages/engine` | Orchestration |
-| `downloader/` | `packages/core/downloader/` | HTTP + HLS (ffmpeg) fetch |
-| `networking/` | `packages/core/networking/` | Shared httpx client |
-| `postprocessor/` | `plugins/ffmpeg` + `packages/media` | Convert / stream fetch |
-| `utils/` | `packages/core/parser.py`, `validator.py` | Shared helpers |
+| `downloader/` | `packages/core/downloader/` | HTTP + resume + HLS (ffmpeg) |
+| `networking/` | `packages/core/networking/` | Session, retries, headers |
+| `postprocessor/` | `packages/core/postprocess.py` + ffmpeg plugin | Remux / extract audio |
+| `utils/` | `parser.py`, `validator.py`, `format_select.py` | Shared helpers |
 | CLI | `apps/cli` | User commands |
 
 ```text

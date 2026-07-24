@@ -63,6 +63,20 @@ def _collect_urls(args: argparse.Namespace) -> list[str]:
     return out
 
 
+def _human_size(value: Any) -> str:
+    try:
+        n = int(value)
+    except (TypeError, ValueError):
+        return "-"
+    if n < 1024:
+        return f"{n}B"
+    if n < 1024**2:
+        return f"{n / 1024:.1f}KiB"
+    if n < 1024**3:
+        return f"{n / (1024**2):.1f}MiB"
+    return f"{n / (1024**3):.2f}GiB"
+
+
 def _format_rows(meta: dict[str, Any]) -> list[dict[str, Any]]:
     rows = []
     for fmt in meta.get("formats") or []:
@@ -75,6 +89,7 @@ def _format_rows(meta: dict[str, Any]) -> list[dict[str, Any]]:
                 "container": fmt.get("container"),
                 "height": fmt.get("height"),
                 "width": fmt.get("width"),
+                "filesize": fmt.get("filesize"),
             }
         )
     return rows
@@ -84,14 +99,18 @@ def _print_formats(meta: dict[str, Any]) -> None:
     platform = meta.get("platform") or "?"
     title = meta.get("title") or ""
     print(f"[{platform}] {title}".rstrip())
-    print(f"{'ID':<16} {'QUALITY':<12} {'CONTAINER':<10} {'SIZE'}")
-    print("-" * 52)
+    print(f"{'ID':<28} {'QUALITY':<12} {'EXT':<8} {'SIZE':<10} {'RES'}")
+    print("-" * 72)
     for row in _format_rows(meta):
+        res = "-"
+        if row.get("width") or row.get("height"):
+            res = f"{row.get('width') or '-'}x{row.get('height') or '-'}"
         print(
-            f"{str(row.get('id') or '-'):<16} "
+            f"{str(row.get('id') or '-'):<28} "
             f"{str(row.get('quality') or '-'):<12} "
-            f"{str(row.get('container') or '-'):<10} "
-            f"{row.get('width') or '-'}x{row.get('height') or '-'}"
+            f"{str(row.get('container') or '-'):<8} "
+            f"{_human_size(row.get('filesize')):<10} "
+            f"{res}"
         )
 
 
@@ -603,7 +622,7 @@ def cmd_doctor(args: argparse.Namespace) -> int:
     report["checks"]["ffmpeg"] = {"ok": ff_ok, "available": ff_ok}
     if not ff_ok:
         # ffmpeg missing is a warning for doctor, not a hard failure of the platform
-        report["checks"]["ffmpeg"]["warning"] = "ffmpeg not found on PATH"
+        report["checks"]["ffmpeg"]["warning"] = "ffmpeg not found on PATH (needed for HLS/DASH + convert)"
 
     try:
         from packages.config.settings import get_settings
@@ -619,6 +638,20 @@ def cmd_doctor(args: argparse.Namespace) -> int:
         }
     except Exception as exc:  # noqa: BLE001
         report["checks"]["events_redis"] = {"ok": True, "warning": str(exc)}
+
+    try:
+        from packages.storage.factory import resolve_storage
+
+        storage = resolve_storage()
+        root = Path(getattr(storage, "root", ".")).expanduser()
+        root.mkdir(parents=True, exist_ok=True)
+        probe = root / ".mediacore_doctor_write"
+        probe.write_text("ok", encoding="utf-8")
+        probe.unlink(missing_ok=True)
+        report["checks"]["storage"] = {"ok": True, "root": str(root), "writable": True}
+    except Exception as exc:  # noqa: BLE001
+        report["ok"] = False
+        report["checks"]["storage"] = {"ok": False, "error": str(exc)}
 
     print_json(report)
     return 0 if report["ok"] else 1
