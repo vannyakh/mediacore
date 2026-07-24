@@ -4,7 +4,19 @@ MediaCore **never hardcodes scrape logic in core**. Platforms live under `provid
 
 **Permitted access:** “Supports platform X” means host detection plus metadata/download when a public or official API (or direct media) allows it — not watch-URL scraping for every site. Catalog modules stay for routing; page URLs without a permitted path return `provider_not_configured`. Contributor layout: repository file `providers/README.md`.
 
-Rough scale: ~20+ working builtins (`active` / `metadata_only`) and ~1300 catalog modules for host detection. CLI: `mediacore providers list` / `mediacore providers search QUERY`.
+Rough scale: ~20+ working builtins (`active` / `metadata_only`) and ~1300 catalog modules for host detection. CLI: `mediacore providers list [--download-only]` / `mediacore providers search QUERY`.
+
+## Try these downloads
+
+| Provider | Example |
+|----------|---------|
+| `generic` | `mediacore https://example.com/video.mp4` |
+| `filesystem` | `mediacore file:///path/to/local.mp4` (when allowed) |
+| `dropbox` | Shared file link (official `dl=1` rewrite) |
+| `google_drive` | Public file share (`uc?export=download`) |
+| `media.ccc.de` | Event/talk page with public recording URLs |
+
+For YouTube/TikTok-class pages use `mediacore -s URL` (metadata). File download of watch URLs stays `provider_not_configured` until a permitted API path exists.
 
 ```mermaid
 flowchart LR
@@ -77,9 +89,9 @@ Catalog modules with the same `name` are skipped when these working providers re
 
 | Status | Meaning |
 |--------|---------|
-| `available` / `active` | Safe to use in local/dev workflows |
-| `metadata` / `metadata_only` | Metadata only (no download of page URLs) |
-| `not_configured` | Catalog module — direct media OK; page URLs need official APIs |
+| `active` | Permitted download (also accepts legacy `available`) |
+| `metadata_only` | Analyze / metadata only (no page-URL file download) |
+| `not_configured` | Catalog module — host detect + direct media OK; page URLs need official APIs |
 
 ## Next
 

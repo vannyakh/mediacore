@@ -13,6 +13,15 @@ DEFAULT_BASE = "http://localhost:8000"
 DEFAULT_KEY = "dev-api-key-change-me"
 TERMINAL_JOB_STATUSES = frozenset({"completed", "failed", "cancelled", "expired"})
 
+_quiet = False
+_verbose = False
+
+
+def set_verbosity(*, quiet: bool = False, verbose: bool = False) -> None:
+    global _quiet, _verbose
+    _quiet = quiet
+    _verbose = verbose
+
 
 def resolve_base(cli_value: str | None = None) -> str:
     return (cli_value or os.environ.get("MEDIACORE_BASE") or DEFAULT_BASE).rstrip("/")
@@ -30,13 +39,24 @@ def make_client(base: str, key: str, timeout: float = 60.0) -> httpx.Client:
     )
 
 
+def eprint(message: str) -> None:
+    print(message, file=sys.stderr)
+
+
 def print_json(data: Any) -> None:
+    if _quiet:
+        return
     print(json.dumps(data, indent=2, default=str))
+
+
+def vprint(message: str) -> None:
+    if _verbose:
+        eprint(message)
 
 
 _NOT_CONFIGURED_HINT = (
     "Page/watch URLs need a permitted API; direct media on known hosts may still download. "
-    "See: mediacore providers list"
+    "Try metadata: mediacore -s URL  |  downloads: mediacore providers list --download-only"
 )
 
 
@@ -97,7 +117,3 @@ def wait_for_job(
             return last
         time.sleep(interval)
     raise TimeoutError(f"job {job_id} did not finish within {timeout:.0f}s (last={last})")
-
-
-def eprint(message: str) -> None:
-    print(message, file=sys.stderr)

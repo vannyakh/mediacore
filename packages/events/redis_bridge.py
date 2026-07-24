@@ -83,9 +83,15 @@ class RedisEventBridge:
                 if not isinstance(data, dict):
                     continue
                 self.bus.emit_remote(data)
-        except Exception:  # noqa: BLE001
+        except Exception as exc:  # noqa: BLE001
             if not self._stop.is_set():
-                logger.exception("Redis event subscriber stopped")
+                # Local/dev often has no Redis — warn once; API/CLI still work via in-process bus.
+                logger.warning(
+                    "Redis event subscriber unavailable (%s). "
+                    "Set EVENTS_REDIS_ENABLED=false or start Redis at %s",
+                    exc,
+                    self.redis_url,
+                )
         finally:
             try:
                 if self._pubsub is not None:

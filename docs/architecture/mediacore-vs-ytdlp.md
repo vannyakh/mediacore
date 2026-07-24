@@ -36,11 +36,23 @@ sdk/           language clients
 
 ```text
 URL → Registry → Provider
-  → metadata (oEmbed / official API / token)
-  → download (direct media or permitted share links only)
+  → metadata (oEmbed / official or public API)
+  → download (direct media / share links / public recording APIs only)
   → plugins (ffmpeg convert, whisper, storage)
 ```
 
-CLI shortcut: `mediacore process URL` runs download → convert (ffmpeg plugin) for **permitted** sources only — not scrape+ffmpeg.
+| Provider status | CLI expectation |
+|-----------------|-----------------|
+| `active` | `mediacore URL` can fetch a file |
+| `metadata_only` | `mediacore -s URL` works; download fails with `provider_not_configured` |
+| catalog / `not_configured` | Direct media on known hosts may download; watch pages do not |
+
+CLI shortcuts (usage style only — not a yt-dlp port):
+
+- `mediacore URL` / `-F` / `-s` / `-o` / `-a urls.txt` — analyze or permitted download
+- `mediacore providers list --download-only` — what can fetch a file today
+- `mediacore process URL` — download → convert (ffmpeg plugin) for **permitted** sources only
+
+Not scrape+ffmpeg. No promise of “download every site.”
 
 Page/watch URLs without a permitted API return `provider_not_configured`. yt-dlp extractors are used only for **host / `_VALID_URL` research** — never ported.

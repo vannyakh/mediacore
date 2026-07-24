@@ -48,3 +48,17 @@ def test_legacy_shims_removed():
         assert not path.exists(), f"legacy path should be gone: {path}"
     assert not (ROOT / "providers" / "stubs").exists()
     assert (ROOT / "providers" / "modules").is_dir()
+
+
+def test_working_provider_packages_have_provider_py():
+    """No empty providers/<name>/ shells (catalog lives under modules/)."""
+    skip = {"modules", "data", "platforms", "__pycache__"}
+    for entry in (ROOT / "providers").iterdir():
+        if not entry.is_dir() or entry.name in skip:
+            continue
+        if entry.name.startswith("."):
+            continue
+        assert (entry / "provider.py").is_file(), (
+            f"working provider package missing provider.py: {entry.name} "
+            "(use providers/modules/ for catalog-only, or delete empty shells)"
+        )

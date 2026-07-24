@@ -34,20 +34,19 @@ Full product story: [Vision](/getting-started/vision).
 
 ## Layout
 
+Full path table: [Repository layout](./layout).
+
 ```text
-apps/        api, worker, cli, dashboard, scheduler, desktop, studio, gateway
-packages/    core (downloader, http), engine, registry, plugins, events, queue, storage, …
-providers/   working providers + modules/ catalog (independent of core)
-plugins/     storage-*, ffmpeg, whisper, webhook, telegram, …
-sdk/         multi-language clients
-benchmarks/  standalone performance suite
-crates/      mediacore-engine (Rust foundation)
-mediacore/   package version (__version__)
+apps/        api · worker · cli · dashboard · scheduler · desktop · studio · gateway
+packages/    core · engine · registry · queue · storage · events · plugins · …
+providers/   <name>/ working  ·  modules/ catalog  ·  platforms/ hosts
+plugins/     ffmpeg · whisper · storage-* · webhook · …
+sdk/ · docs/ · tests/ · scripts/ · docker/ · helm/ · benchmarks/ · crates/ · mediacore/
 ```
 
-Legacy shims removed: `extractor/`, top-level `ffmpeg/`, `storage/`, `jobqueue/`, top-level `queue/`.
+Legacy roots removed: `extractor/`, top-level `ffmpeg/` / `storage/` / `queue/` / `jobqueue/`.
 
-Contributor map: [MediaCore vs yt-dlp layout](./mediacore-vs-ytdlp) · [`providers/README.md`](../../providers/README.md).
+Contributor map: [MediaCore vs yt-dlp](./mediacore-vs-ytdlp) · [`providers/README.md`](../../providers/README.md).
 
 ## Engine vs runtime
 

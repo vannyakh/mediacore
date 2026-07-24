@@ -5,16 +5,17 @@ MediaCore resolves media URLs through a **provider registry**. Core stays platfo
 ## One-screen map (whole repo)
 
 ```text
-providers/<name>/     Working site logic (oEmbed / official / share-link download)
+providers/<name>/     Working site logic (must have provider.py)
 providers/modules/    ~1300 catalog packages — host detect + direct media only
 packages/core/        downloader.py · http.py · models · provider protocol
-packages/engine/      Orchestration (like yt-dlp's YoutubeDL coordinator)
+packages/engine/      Orchestration
 packages/registry/    URL → provider resolve
 plugins/              Postprocess: ffmpeg, whisper, storage-* (not scrapers)
 apps/cli · apps/api   User surfaces
 ```
 
-Full concept map: [docs/architecture/mediacore-vs-ytdlp.md](../docs/architecture/mediacore-vs-ytdlp.md).
+Canonical paths: [docs/architecture/layout.md](../docs/architecture/layout.md).  
+vs yt-dlp folders: [docs/architecture/mediacore-vs-ytdlp.md](../docs/architecture/mediacore-vs-ytdlp.md).
 
 ## Layout (this folder)
 
@@ -55,6 +56,16 @@ When you add a working provider, also add its folder name to `WORKING_SKIP` in `
 3. **Download** — direct media on known hosts, or authorized/permitted APIs only
 
 Page/watch URLs without a permitted API return `provider_not_configured`. That is expected, not a bug.
+
+## Download capability matrix
+
+| Capability | Status | Behavior |
+|------------|--------|----------|
+| **download** | `active` (legacy `available`) | Permitted file fetch (direct media, share links, public recording APIs) |
+| **metadata** | `metadata_only` | Analyze / oEmbed / public API metadata; page download blocked |
+| **catalog** | `not_configured` | Host detect + direct media on that host; watch pages not configured |
+
+CLI: `mediacore providers list --download-only`
 
 ## Adding a working provider
 

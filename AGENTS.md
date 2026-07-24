@@ -9,7 +9,13 @@ This repository is **MediaCore** — **The Open Media Infrastructure Platform** 
 
 ## Layout (canonical)
 
-`apps/` · `packages/` · `providers/` · `plugins/` · `sdk/` · `benchmarks/` · `crates/` · `mediacore/` · `docs/` · `tests/` · `scripts/` · `docker/`
+`apps/` · `packages/` · `providers/` · `plugins/` · `sdk/` · `benchmarks/` · `crates/` · `mediacore/` · `docs/` · `tests/` · `scripts/` · `docker/` · `helm/`
+
+Path roles: [`docs/architecture/layout.md`](docs/architecture/layout.md).
+
+- Working site code: `providers/<name>/provider.py` (never empty shells)
+- Catalog host detect: `providers/modules/<slug>/`
+- Queue/storage/ffmpeg live under `packages/` or `plugins/` — not top-level
 
 Do **not** recreate: `extractor/`, top-level `ffmpeg/`, `storage/`, `jobqueue/`, or a top-level `queue/` package (stdlib shadow).
 

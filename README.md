@@ -46,15 +46,16 @@ uv run uvicorn apps.api.main:app --reload --port 8000
 
 Dev API key: `dev-api-key-change-me`
 
+Primary local workflow: **permitted download** (direct media / share links / public APIs).
+
 ```bash
 curl -s http://localhost:8000/health
-curl -s -H "X-API-Key: dev-api-key-change-me" \
-  -H "Content-Type: application/json" \
-  -d '{"url":"https://example.com/video.mp4"}' \
-  http://localhost:8000/v1/analyze
-
 uv run mediacore doctor
-uv run mediacore analyze https://example.com/video.mp4
+# Working download (generic direct media):
+uv run mediacore https://example.com/video.mp4 -o './out/{title}.mp4'
+# Metadata only for YouTube-class pages (no page scrape download):
+uv run mediacore -s 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+uv run mediacore providers list --download-only
 ```
 
 Docker:
@@ -67,14 +68,26 @@ cd docker && docker compose up --build
 
 ## CLI
 
+URL-first (yt-dlp-like UX, **permitted sources only** — not a scraper clone):
+
+```bash
+mediacore URL                      # download + wait when permitted
+mediacore -F URL                   # list formats (analyze)
+mediacore -s URL                   # simulate / analyze only
+mediacore -o './out/{title}.mp4' URL
+mediacore -a urls.txt              # batch file (# comments ok)
+```
+
+Subcommands:
+
 ```bash
 mediacore analyze URL
 mediacore download URL [--wait]
-mediacore process URL [--container mp4]   # download → ffmpeg convert (permitted sources)
+mediacore process URL [--container mp4]   # download → ffmpeg convert
 mediacore convert file.mp4 [--wait]
 mediacore subtitle file.mp4 [--wait]
-mediacore providers              # working providers + catalog summary
-mediacore providers list [--status STATUS]
+mediacore providers              # download vs metadata groups + catalog
+mediacore providers list [--status STATUS] [--download-only]
 mediacore providers search QUERY
 mediacore plugin list
 mediacore plugin install NAME|PATH
@@ -82,32 +95,35 @@ mediacore worker start
 mediacore doctor
 ```
 
-Flags: `--base`, `--key` (or `MEDIACORE_BASE` / `MEDIACORE_API_KEY`).
+Flags: `--base`, `--key`, `-q`/`-v` (or `MEDIACORE_BASE` / `MEDIACORE_API_KEY`).
 
 ---
 
 ## Project layout
 
 ```text
-mediacore/
-  apps/         api, worker, cli, dashboard, scheduler, desktop, studio, gateway
-  packages/     core, engine, registry, queue, storage, media, plugins, events, …
-  providers/    working providers + modules/ catalog (core-agnostic)
-  plugins/      storage-*, ffmpeg, webhook, AI, …
-  sdk/          JS, TS, Python, Rust, Go, Dart, C#, …
-  benchmarks/   standalone performance suite
-  crates/       Rust engine foundation
-  mediacore/    package version (__version__)
-  docs/         VitePress site
-  tests/        unit → load / chaos / benchmark
-  docker/       compose stack (root docker-compose.yml includes it)
-  scripts/      catalog + developer tooling
+apps/         api · worker · cli · dashboard · scheduler · desktop · studio · gateway
+packages/     core · engine · registry · queue · storage · media · plugins · events · …
+providers/    <name>/ working providers  ·  modules/ catalog (~1300)
+plugins/      ffmpeg · whisper · storage-* · webhook · …
+sdk/          JS, TS, Python, Rust, Go, Dart, C#, …
+docs/         VitePress  ·  tests/  ·  scripts/  ·  docker/  ·  helm/
+benchmarks/   crates/   mediacore/ (__version__)
 ```
 
-Legacy top-level shims (`extractor/`, `ffmpeg/`, `storage/`, `jobqueue/`, `queue/`) were removed — use `packages/*` instead.
+| Path | Put new code here |
+|------|-------------------|
+| Download / HTTP / models | `packages/core/` |
+| Jobs / orchestration | `packages/engine/`, `packages/queue/` |
+| Site detect + permitted fetch | `providers/<name>/` or `providers/modules/` |
+| Convert / AI / storage plugins | `plugins/` |
+| CLI / API | `apps/cli/`, `apps/api/` |
 
-Provider layout for contributors: [`providers/README.md`](providers/README.md).  
-Folder map (vs yt-dlp concepts): [`docs/architecture/mediacore-vs-ytdlp.md`](docs/architecture/mediacore-vs-ytdlp.md).
+Full path table: [`docs/architecture/layout.md`](docs/architecture/layout.md).  
+Providers: [`providers/README.md`](providers/README.md).  
+vs yt-dlp folders: [`docs/architecture/mediacore-vs-ytdlp.md`](docs/architecture/mediacore-vs-ytdlp.md).
+
+Do not recreate removed roots: `extractor/`, top-level `ffmpeg/` / `storage/` / `queue/` / `jobqueue/`.
 
 ### What works today / what does not
 
@@ -115,10 +131,10 @@ Folder map (vs yt-dlp concepts): [`docs/architecture/mediacore-vs-ytdlp.md`](doc
 |-------|----------------------|
 | Analyze many platforms (host detection via catalog modules) | Scraping watch pages like a generic video downloader |
 | Metadata via public oEmbed / permitted APIs (YouTube, TikTok, Vimeo, …) | Bypassing platform access controls or Terms of Service |
-| Download **direct media** URLs (and local `file://`) | Unofficial stream extraction for every site |
+| Download **direct media**, Dropbox/`dl=1`, Google Drive public shares, media.ccc.de recordings | Unofficial stream extraction for every site |
 | Jobs, plugins, SDKs, pipeline around permitted media | Shipping yt-dlp (or any scraper runtime) as a dependency |
 
-Page/watch URLs without a permitted API return `provider_not_configured` until an official path is wired.
+Page/watch URLs without a permitted API return `provider_not_configured` until an official path is wired. Use `mediacore -s URL` for metadata; `mediacore providers list --download-only` for what can fetch a file today.
 
 ---
 

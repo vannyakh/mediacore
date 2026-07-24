@@ -16,6 +16,7 @@ from apps.cli.client import (
     make_client,
     print_json,
     request_json,
+    vprint,
     wait_for_job,
 )
 from packages.media.wrapper import ffmpeg_available
@@ -29,6 +30,93 @@ def _plugins_root() -> Path:
 def _is_url(value: str) -> bool:
     parsed = urlparse(value)
     return parsed.scheme in {"http", "https"} and bool(parsed.netloc)
+
+
+def _read_batch_file(path: str) -> list[str]:
+    text = Path(path).expanduser().read_text(encoding="utf-8")
+    urls: list[str] = []
+    for line in text.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        urls.append(line.split()[0])
+    return urls
+
+
+def _collect_urls(args: argparse.Namespace) -> list[str]:
+    urls: list[str] = []
+    batch = getattr(args, "batch_file", None)
+    if batch:
+        urls.extend(_read_batch_file(batch))
+    single = getattr(args, "url", None)
+    if single:
+        urls.append(single)
+    for u in getattr(args, "urls", None) or []:
+        urls.append(u)
+    # dedupe preserve order
+    seen: set[str] = set()
+    out: list[str] = []
+    for u in urls:
+        if u not in seen:
+            seen.add(u)
+            out.append(u)
+    return out
+
+
+def _format_rows(meta: dict[str, Any]) -> list[dict[str, Any]]:
+    rows = []
+    for fmt in meta.get("formats") or []:
+        if not isinstance(fmt, dict):
+            continue
+        rows.append(
+            {
+                "id": fmt.get("id") or fmt.get("format_id"),
+                "quality": fmt.get("quality"),
+                "container": fmt.get("container"),
+                "height": fmt.get("height"),
+                "width": fmt.get("width"),
+            }
+        )
+    return rows
+
+
+def _print_formats(meta: dict[str, Any]) -> None:
+    platform = meta.get("platform") or "?"
+    title = meta.get("title") or ""
+    print(f"[{platform}] {title}".rstrip())
+    print(f"{'ID':<16} {'QUALITY':<12} {'CONTAINER':<10} {'SIZE'}")
+    print("-" * 52)
+    for row in _format_rows(meta):
+        print(
+            f"{str(row.get('id') or '-'):<16} "
+            f"{str(row.get('quality') or '-'):<12} "
+            f"{str(row.get('container') or '-'):<10} "
+            f"{row.get('width') or '-'}x{row.get('height') or '-'}"
+        )
+
+
+def _apply_output_template(template: str, meta: dict[str, Any], url: str) -> Path:
+    title = str(meta.get("title") or "media").replace("/", "_").strip() or "media"
+    vid = str(meta.get("id") or meta.get("platform") or "file")
+    path = template.replace("{title}", title).replace("{id}", vid).replace("{ext}", "mp4")
+    if path.endswith(("/", "\\")):
+        path = str(Path(path) / f"{title}.mp4")
+    return Path(path).expanduser()
+
+
+def _copy_result_to_output(job: dict[str, Any], meta: dict[str, Any], url: str, output: str) -> str | None:
+    src = job.get("result_path")
+    if not src:
+        return None
+    src_path = Path(str(src))
+    if not src_path.is_file():
+        return None
+    dest = _apply_output_template(output, meta, url)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    if dest.exists() and dest.is_dir():
+        dest = dest / src_path.name
+    shutil.copy2(src_path, dest)
+    return str(dest)
 
 
 def _maybe_wait(
@@ -80,25 +168,78 @@ def cmd_events(args: argparse.Namespace) -> int:
 
 
 def cmd_analyze(args: argparse.Namespace) -> int:
+    urls = _collect_urls(args)
+    if not urls:
+        eprint("error: provide a URL")
+        return 2
+    code = 0
     with make_client(args.base, args.key) as client:
-        data = request_json(client, "POST", "/v1/analyze", json_body={"url": args.url})
-        print_json(data)
-        _maybe_hint_not_configured(data)
-    return 0
+        for url in urls:
+            vprint(f"analyze {url}")
+            data = request_json(client, "POST", "/v1/analyze", json_body={"url": url})
+            if getattr(args, "list_formats", False):
+                _print_formats(data if isinstance(data, dict) else {})
+            else:
+                print_json(data)
+            _maybe_hint_not_configured(data if isinstance(data, dict) else {})
+    return code
 
 
 def cmd_download(args: argparse.Namespace) -> int:
+    urls = _collect_urls(args)
+    if not urls:
+        eprint("error: provide a URL or --batch-file")
+        return 2
+    if getattr(args, "list_formats", False) or getattr(args, "simulate", False):
+        args.urls = urls
+        args.url = None
+        return cmd_analyze(args)
+
+    fmt = getattr(args, "format", "original") or "original"
+    output = getattr(args, "output", None)
+    exit_code = 0
     with make_client(args.base, args.key) as client:
-        data = request_json(
-            client,
-            "POST",
-            "/v1/download",
-            json_body={"url": args.url, "format": args.format},
-        )
-        data = _maybe_wait(client, data, args)
-        print_json(data)
-        _maybe_hint_not_configured(data)
-    return 0
+        for url in urls:
+            vprint(f"download {url}")
+            meta: dict[str, Any] = {}
+            if output:
+                try:
+                    meta = request_json(client, "POST", "/v1/analyze", json_body={"url": url}) or {}
+                except httpx.HTTPError:
+                    meta = {}
+            data = request_json(
+                client,
+                "POST",
+                "/v1/download",
+                json_body={"url": url, "format": fmt},
+            )
+            data = _maybe_wait(client, data, args)
+            if output and isinstance(data, dict) and data.get("status") == "completed":
+                copied = _copy_result_to_output(data, meta, url, output)
+                if copied:
+                    data = {**data, "output_path": copied}
+            print_json(data)
+            _maybe_hint_not_configured(data if isinstance(data, dict) else {})
+            if isinstance(data, dict) and str(data.get("status")) in {"failed", "cancelled"}:
+                exit_code = 1
+    return exit_code
+
+
+def cmd_get(args: argparse.Namespace) -> int:
+    """URL-first entry (yt-dlp-like UX): -F/-s analyze; else download with --wait."""
+    urls = _collect_urls(args)
+    if not urls:
+        eprint("error: provide URL(s) or -a/--batch-file")
+        return 2
+    args.urls = urls
+    args.url = None
+    if getattr(args, "list_formats", False) or getattr(args, "simulate", False):
+        return cmd_analyze(args)
+    # Default get = download + wait (permitted sources only)
+    if not hasattr(args, "wait") or args.wait is None:
+        args.wait = True
+    args.wait = True
+    return cmd_download(args)
 
 
 def cmd_process(args: argparse.Namespace) -> int:
@@ -166,12 +307,30 @@ def _maybe_hint_not_configured(data: Any) -> None:
         platform = data.get("platform") or data.get("provider") or "this platform"
         eprint(
             f"hint: detected {platform} — page download needs a permitted API; "
-            "direct media on known hosts may work. Try: mediacore providers list"
+            "direct media on known hosts may work. "
+            "Try: mediacore -s URL  |  mediacore providers list --download-only"
         )
+
+
+_DOWNLOAD_STATUSES = frozenset({"active", "available"})
+_METADATA_STATUSES = frozenset({"metadata_only", "metadata"})
+_WORKING_STATUSES = _DOWNLOAD_STATUSES | _METADATA_STATUSES | frozenset({"example"})
+
+
+def _provider_capability(status: str) -> str:
+    s = status.lower()
+    if s in _DOWNLOAD_STATUSES:
+        return "download"
+    if s in _METADATA_STATUSES:
+        return "metadata"
+    if s == "example":
+        return "example"
+    return "catalog"
 
 
 def cmd_providers_list(args: argparse.Namespace) -> int:
     status_filter = getattr(args, "status", None)
+    download_only = bool(getattr(args, "download_only", False))
     try:
         with make_client(args.base, args.key) as client:
             providers = request_json(client, "GET", "/v1/providers")
@@ -190,30 +349,62 @@ def cmd_providers_list(args: argparse.Namespace) -> int:
     if status_filter:
         wanted = status_filter.lower()
         rows = [p for p in rows if str(p.get("status", "")).lower() == wanted]
+    if download_only:
+        rows = [p for p in rows if str(p.get("status", "")).lower() in _DOWNLOAD_STATUSES]
 
     working = [
         p
         for p in (providers or [])
-        if str(p.get("status", ""))
-        in {"active", "available", "metadata_only", "metadata", "example"}
+        if str(p.get("status", "")) in _WORKING_STATUSES
     ]
     by_status: dict[str, int] = {}
     for p in providers or []:
         key = str(p.get("status") or "unknown")
         by_status[key] = by_status.get(key, 0) + 1
 
+    listed = rows if (status_filter or download_only) else working
+    download_providers = [
+        {**p, "capability": "download"}
+        for p in listed
+        if str(p.get("status", "")).lower() in _DOWNLOAD_STATUSES
+    ]
+    metadata_providers = [
+        {**p, "capability": "metadata"}
+        for p in listed
+        if str(p.get("status", "")).lower() in _METADATA_STATUSES
+    ]
+    other_providers = [
+        {**p, "capability": _provider_capability(str(p.get("status", "")))}
+        for p in listed
+        if str(p.get("status", "")).lower()
+        not in _DOWNLOAD_STATUSES | _METADATA_STATUSES
+    ]
+
     print_json(
         {
             "source": source,
             "working_count": len(working),
-            "listed": len(rows),
+            "listed": len(listed),
             "status_filter": status_filter,
+            "download_only": download_only,
             "by_status": by_status,
+            "by_capability": {
+                "download": len(download_providers),
+                "metadata": len(metadata_providers),
+                "other": len(other_providers),
+            },
             "catalog": catalog,
-            "providers": rows if status_filter else working,
+            "download": download_providers,
+            "metadata": metadata_providers,
+            "other": other_providers,
+            "providers": [
+                {**p, "capability": _provider_capability(str(p.get("status", "")))}
+                for p in listed
+            ],
             "note": (
-                "Catalog modules detect hosts; page/watch download needs a permitted API. "
-                "Use: mediacore providers search QUERY"
+                "active/available = permitted download; metadata_only = analyze only; "
+                "catalog modules detect hosts (direct media may still download). "
+                "Filter: --download-only  |  search: mediacore providers search QUERY"
             ),
         }
     )
@@ -413,6 +604,21 @@ def cmd_doctor(args: argparse.Namespace) -> int:
     if not ff_ok:
         # ffmpeg missing is a warning for doctor, not a hard failure of the platform
         report["checks"]["ffmpeg"]["warning"] = "ffmpeg not found on PATH"
+
+    try:
+        from packages.config.settings import get_settings
+
+        settings = get_settings()
+        report["checks"]["events_redis"] = {
+            "ok": True,
+            "enabled": bool(settings.events_redis_enabled),
+            "note": (
+                "Redis optional locally when EVENTS_REDIS_ENABLED=false "
+                "(default). Enable for multi-process event fan-out."
+            ),
+        }
+    except Exception as exc:  # noqa: BLE001
+        report["checks"]["events_redis"] = {"ok": True, "warning": str(exc)}
 
     print_json(report)
     return 0 if report["ok"] else 1
