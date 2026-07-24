@@ -13,7 +13,7 @@ from providers.base_module import PlatformModule
 class DaumNetProvider(PlatformModule):
     name = 'daum.net'
     status = 'not_configured'
-    host_suffixes = ('daum.net',)
-    ie_names = ('daum.net', 'daum.net:clip', 'daum.net:playlist', 'daum.net:user')
+    host_suffixes = ('daum.net', 'www.daum.net', 'tv.kakao.com', 'kakaotv.daum.net')
+    ie_names = ('daum.net', 'Daum', 'Kakao', 'daum.net:clip', 'daum.net:playlist', 'daum.net:user')
     source = "catalog"
     description = 'Platform module for daum.net'

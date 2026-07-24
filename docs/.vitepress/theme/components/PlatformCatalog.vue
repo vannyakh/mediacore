@@ -51,6 +51,9 @@ const SIMPLE_ICON_SLUGS: Record<string, string> = {
   bbc: "bbc",
   bilibili: "bilibili",
   bitchute: "bitchute",
+  dropbox: "dropbox",
+  google_drive: "googledrive",
+  "google drive": "googledrive",
   ted: "ted",
   "wikimedia.org": "wikimedia",
   wikimedia: "wikimedia",
@@ -213,6 +216,27 @@ const WORKING: CatalogRow[] = [
     hosts: ["bitchute.com"],
     description: "Public beta video API metadata.",
     logo: "https://cdn.simpleicons.org/bitchute",
+  },
+  {
+    name: "dropbox",
+    status: "available",
+    hosts: ["dropbox.com", "dl.dropboxusercontent.com"],
+    description: "Shared file links via official dl=1 download parameter.",
+    logo: "https://cdn.simpleicons.org/dropbox",
+  },
+  {
+    name: "google_drive",
+    status: "available",
+    hosts: ["drive.google.com", "docs.google.com"],
+    description: "Public file shares via uc?export=download.",
+    logo: "https://cdn.simpleicons.org/googledrive",
+  },
+  {
+    name: "media.ccc.de",
+    status: "available",
+    hosts: ["media.ccc.de"],
+    description: "Public JSON API with direct recording downloads.",
+    logo: "https://cdn.simpleicons.org/ccc",
   },
 ];
 

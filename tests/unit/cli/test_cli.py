@@ -52,8 +52,14 @@ class _FakeClient:
     def __exit__(self, *args: object) -> None:
         return None
 
-    def request(self, method: str, path: str, json: dict | None = None) -> _FakeResponse:
-        self.calls.append((method, path, json))
+    def request(
+        self,
+        method: str,
+        path: str,
+        json: dict | None = None,
+        params: dict | None = None,
+    ) -> _FakeResponse:
+        self.calls.append((method, path, json if json is not None else params))
         key = (method.upper(), path)
         value = self.routes[key]
         if isinstance(value, list):
@@ -261,3 +267,109 @@ def test_main_http_error(monkeypatch: pytest.MonkeyPatch, capsys: pytest.Capture
     code = main(["analyze", "https://example.com/v.mp4"])
     assert code == 1
     assert "error:" in capsys.readouterr().err
+
+
+def test_cmd_process_chains_convert(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+):
+    client = _FakeClient(
+        {
+            ("POST", "/v1/download"): _FakeResponse(
+                payload={"job_id": "d1", "status": "queued", "type": "download"}
+            ),
+            ("POST", "/v1/convert"): _FakeResponse(
+                payload={"job_id": "c1", "status": "queued", "type": "convert"}
+            ),
+        }
+    )
+    monkeypatch.setattr(commands, "make_client", lambda *a, **k: client)
+
+    def fake_wait(_client, body, _args):
+        jid = body.get("job_id")
+        if jid == "d1":
+            return {
+                "id": "d1",
+                "status": "completed",
+                "result_path": "/tmp/in.mp4",
+                "result_url": "/files/in.mp4",
+            }
+        return {"id": "c1", "status": "completed", "result_path": "/tmp/out.mp4"}
+
+    monkeypatch.setattr(commands, "_maybe_wait", fake_wait)
+    args = SimpleNamespace(
+        base="http://x",
+        key="k",
+        url="https://example.com/v.mp4",
+        format="original",
+        container="mp4",
+        wait_timeout=30.0,
+    )
+    assert commands.cmd_process(args) == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["pipeline"] == "download→convert"
+    assert payload["convert"]["status"] == "completed"
+
+
+def test_parser_providers_list_and_search():
+    parser = build_parser()
+    args = parser.parse_args(["providers"])
+    assert args.func is commands.cmd_providers_list
+    args = parser.parse_args(["providers", "list", "--status", "active"])
+    assert args.status == "active"
+    args = parser.parse_args(["providers", "search", "youtube", "--limit", "10"])
+    assert args.query == "youtube"
+    assert args.limit == 10
+
+
+def test_cmd_providers_list(monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]):
+    client = _FakeClient(
+        {
+            ("GET", "/v1/providers"): _FakeResponse(
+                payload=[
+                    {"name": "dropbox", "status": "active"},
+                    {"name": "youtube", "status": "metadata_only"},
+                    {"name": "stub", "status": "not_configured"},
+                ]
+            ),
+            ("GET", "/v1/providers/catalog"): _FakeResponse(
+                payload={"providers_indexed": 1000, "providers_with_hosts": 100}
+            ),
+        }
+    )
+    monkeypatch.setattr(commands, "make_client", lambda *a, **k: client)
+    args = SimpleNamespace(base="http://localhost:8000", key="k", status=None)
+    assert commands.cmd_providers_list(args) == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["working_count"] == 2
+    assert payload["catalog"]["providers_indexed"] == 1000
+
+
+def test_cmd_providers_search(monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]):
+    client = _FakeClient(
+        {
+            ("GET", "/v1/providers/catalog/search"): _FakeResponse(
+                payload=[{"ie_name": "youtube", "description": "YouTube"}]
+            )
+        }
+    )
+    monkeypatch.setattr(commands, "make_client", lambda *a, **k: client)
+    args = SimpleNamespace(base="http://x", key="k", query="you", limit=20)
+    assert commands.cmd_providers_search(args) == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["count"] == 1
+    assert payload["results"][0]["ie_name"] == "youtube"
+
+
+def test_format_http_error_provider_not_configured_hint():
+    from apps.cli.client import format_http_error
+
+    response = httpx.Response(
+        400,
+        json={"detail": {"error": "Provider 'youtube' is not configured", "code": "provider_not_configured"}},
+        request=httpx.Request("POST", "http://test/v1/download"),
+    )
+    exc = httpx.HTTPStatusError("err", request=response.request, response=response)
+    text = format_http_error(exc)
+    assert "provider_not_configured" in text
+    assert "hint:" in text
+    assert "providers list" in text

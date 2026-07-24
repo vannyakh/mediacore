@@ -12,10 +12,13 @@ from providers.bbc.provider import BbcProvider
 from providers.bilibili.provider import BilibiliProvider
 from providers.bitchute.provider import BitchuteProvider
 from providers.dailymotion.provider import DailymotionProvider
+from providers.dropbox.provider import DropboxProvider
 from providers.example.provider import ExampleProvider
 from providers.filesystem.provider import FilesystemProvider
 from providers.flickr.provider import FlickrProvider
 from providers.generic.provider import GenericHTTPProvider
+from providers.google_drive.provider import GoogleDriveProvider
+from providers.media_ccc_de.provider import MediaCccDeProvider
 from providers.imgur.provider import ImgurProvider
 from providers.mixcloud.provider import MixcloudProvider
 from providers.reddit.provider import RedditProvider
@@ -369,6 +372,66 @@ def test_bitchute_contract_metadata_only(tmp_path: Path):
         )
 
 
+def test_dropbox_contract_shared_link_download(tmp_path: Path):
+    provider = DropboxProvider()
+    url = "https://www.dropbox.com/s/abc123/demo.mp4?dl=0"
+    with (
+        patch("providers.dropbox.provider.head_content_type", return_value="video/mp4"),
+        patch("providers.dropbox.provider.download_file", return_value=(8, "video/mp4")),
+    ):
+        run_provider_contract(provider, url, tmp_path / "out.mp4", expect_download=True)
+    assert provider.supports(url)
+    meta = provider.metadata(url)
+    assert meta.formats[0].url and "dl=1" in meta.formats[0].url
+
+
+def test_google_drive_contract_public_file_download(tmp_path: Path):
+    provider = GoogleDriveProvider()
+    url = "https://drive.google.com/file/d/1AbCDefGhIjK/view?usp=sharing"
+    with (
+        patch("providers.google_drive.provider.head_content_type", return_value="video/mp4"),
+        patch("providers.google_drive.provider.download_file", return_value=(8, "video/mp4")),
+    ):
+        run_provider_contract(provider, url, tmp_path / "out.bin", expect_download=True)
+    meta = provider.metadata(url)
+    assert "export=download" in (meta.formats[0].url or "")
+    assert "1AbCDefGhIjK" in (meta.formats[0].url or "")
+
+
+def test_media_ccc_de_contract_public_api(tmp_path: Path):
+    provider = MediaCccDeProvider()
+    url = "https://media.ccc.de/v/camp2023-demo"
+    fake = {
+        "title": "Demo talk",
+        "description": "Desc",
+        "length": 120,
+        "thumb_url": "https://static.media.ccc.de/t.jpg",
+        "persons": ["Speaker"],
+        "guid": "abc",
+        "slug": "camp2023-demo",
+        "recordings": [
+            {
+                "recording_url": "https://cdn.example.com/demo.mp4",
+                "folder": "h264-hd",
+                "language": "eng",
+                "mime_type": "video/mp4",
+                "height": 720,
+                "width": 1280,
+            }
+        ],
+    }
+    with (
+        patch("providers.media_ccc_de.provider.httpx.Client") as client_cls,
+        patch("providers.media_ccc_de.provider.download_file", return_value=(16, "video/mp4")),
+    ):
+        client = client_cls.return_value.__enter__.return_value
+        response = client.get.return_value
+        response.status_code = 200
+        response.raise_for_status.return_value = None
+        response.json.return_value = fake
+        run_provider_contract(provider, url, tmp_path / "out.mp4", expect_download=True)
+
+
 def test_oembed_providers_override_catalog_modules():
     from packages.registry.providers import reset_registry
 
@@ -397,4 +460,9 @@ def test_oembed_providers_override_catalog_modules():
         provider = registry.get(name)
         assert provider is not None
         assert getattr(provider, "status", None) == "metadata_only"
+        assert getattr(provider, "source", None) != "catalog"
+    for name in ("dropbox", "google_drive", "media.ccc.de"):
+        provider = registry.get(name)
+        assert provider is not None
+        assert provider.status == "active"
         assert getattr(provider, "source", None) != "catalog"

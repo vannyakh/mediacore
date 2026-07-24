@@ -13,7 +13,7 @@ from providers.base_module import PlatformModule
 class IgnComProvider(PlatformModule):
     name = 'ign.com'
     status = 'not_configured'
-    host_suffixes = ('ign.com',)
-    ie_names = ('ign.com',)
+    host_suffixes = ('ign.com', 'www.ign.com')
+    ie_names = ('ign.com', 'IGN')
     source = "catalog"
     description = 'Platform module for ign.com'

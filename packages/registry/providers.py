@@ -97,6 +97,9 @@ def build_default_registry() -> ProviderRegistry:
         "providers.bbc.provider",
         "providers.bilibili.provider",
         "providers.bitchute.provider",
+        "providers.dropbox.provider",
+        "providers.google_drive.provider",
+        "providers.media_ccc_de.provider",
     ):
         _register_module(registry, module_name)
 

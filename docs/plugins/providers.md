@@ -64,6 +64,9 @@ Back-compat aliases: `get_metadata` → `metadata`, `list_formats` → `formats`
 | `bbc` | Public programmes JSON metadata |
 | `bilibili` | Public web view API metadata (BV/av) |
 | `bitchute` | Public beta video API metadata |
+| `dropbox` | Shared file download via official `dl=1` |
+| `google_drive` | Public file download via `uc?export=download` |
+| `media.ccc.de` | Public JSON API + recording downloads |
 | `example` | `mediacore://example/...` demo |
 
 ## Full platform catalog

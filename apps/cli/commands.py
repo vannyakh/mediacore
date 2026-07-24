@@ -83,6 +83,7 @@ def cmd_analyze(args: argparse.Namespace) -> int:
     with make_client(args.base, args.key) as client:
         data = request_json(client, "POST", "/v1/analyze", json_body={"url": args.url})
         print_json(data)
+        _maybe_hint_not_configured(data)
     return 0
 
 
@@ -96,6 +97,147 @@ def cmd_download(args: argparse.Namespace) -> int:
         )
         data = _maybe_wait(client, data, args)
         print_json(data)
+        _maybe_hint_not_configured(data)
+    return 0
+
+
+def cmd_process(args: argparse.Namespace) -> int:
+    """Download (permitted sources) then convert via ffmpeg plugin — not scrape+ffmpeg."""
+    container = getattr(args, "container", "mp4") or "mp4"
+    wait_timeout = float(getattr(args, "wait_timeout", 120.0))
+    with make_client(args.base, args.key) as client:
+        download_job = request_json(
+            client,
+            "POST",
+            "/v1/download",
+            json_body={"url": args.url, "format": args.format},
+        )
+        # Always wait for download so we can chain convert
+        wait_ns = argparse.Namespace(wait=True, wait_timeout=wait_timeout)
+        download_job = _maybe_wait(client, download_job, wait_ns)
+        if str(download_job.get("status")) != "completed":
+            print_json({"step": "download", "job": download_job})
+            _maybe_hint_not_configured(download_job)
+            eprint(
+                "hint: process needs a completed permitted download, then ffmpeg convert. "
+                "Check: mediacore doctor"
+            )
+            return 1
+        local_path = download_job.get("result_path")
+        if not local_path:
+            print_json({"step": "download", "job": download_job})
+            eprint("error: download completed without result_path (cannot chain convert)")
+            return 1
+        convert_job = request_json(
+            client,
+            "POST",
+            "/v1/convert",
+            json_body={"path": local_path, "options": {"container": container}},
+        )
+        convert_job = _maybe_wait(client, convert_job, wait_ns)
+        print_json(
+            {
+                "pipeline": "download→convert",
+                "note": "Uses permitted download + ffmpeg plugin; not watch-page scrape.",
+                "download": download_job,
+                "convert": convert_job,
+            }
+        )
+        if str(convert_job.get("status")) != "completed":
+            eprint("hint: convert failed — is ffmpeg installed? Try: mediacore doctor")
+            return 1
+    return 0
+
+
+def _maybe_hint_not_configured(data: Any) -> None:
+    if not isinstance(data, dict):
+        return
+    code = data.get("code")
+    nested = data.get("error")
+    if isinstance(nested, dict):
+        code = code or nested.get("code")
+        err = str(nested.get("message") or nested.get("error") or nested)
+    else:
+        err = str(nested or data.get("message") or "")
+    status = str(data.get("status") or "")
+    if code == "provider_not_configured" or "provider_not_configured" in err or (
+        status == "failed" and "not configured" in err.lower()
+    ):
+        platform = data.get("platform") or data.get("provider") or "this platform"
+        eprint(
+            f"hint: detected {platform} — page download needs a permitted API; "
+            "direct media on known hosts may work. Try: mediacore providers list"
+        )
+
+
+def cmd_providers_list(args: argparse.Namespace) -> int:
+    status_filter = getattr(args, "status", None)
+    try:
+        with make_client(args.base, args.key) as client:
+            providers = request_json(client, "GET", "/v1/providers")
+            catalog = request_json(client, "GET", "/v1/providers/catalog")
+            source = "api"
+    except httpx.HTTPError:
+        from packages.registry.providers import get_registry
+        from providers.catalog import catalog_summary
+
+        registry = get_registry()
+        providers = registry.platforms()
+        catalog = catalog_summary()
+        source = "local"
+
+    rows = list(providers or [])
+    if status_filter:
+        wanted = status_filter.lower()
+        rows = [p for p in rows if str(p.get("status", "")).lower() == wanted]
+
+    working = [
+        p
+        for p in (providers or [])
+        if str(p.get("status", ""))
+        in {"active", "available", "metadata_only", "metadata", "example"}
+    ]
+    by_status: dict[str, int] = {}
+    for p in providers or []:
+        key = str(p.get("status") or "unknown")
+        by_status[key] = by_status.get(key, 0) + 1
+
+    print_json(
+        {
+            "source": source,
+            "working_count": len(working),
+            "listed": len(rows),
+            "status_filter": status_filter,
+            "by_status": by_status,
+            "catalog": catalog,
+            "providers": rows if status_filter else working,
+            "note": (
+                "Catalog modules detect hosts; page/watch download needs a permitted API. "
+                "Use: mediacore providers search QUERY"
+            ),
+        }
+    )
+    return 0
+
+
+def cmd_providers_search(args: argparse.Namespace) -> int:
+    query = args.query
+    limit = int(getattr(args, "limit", 50) or 50)
+    try:
+        with make_client(args.base, args.key) as client:
+            hits = request_json(
+                client,
+                "GET",
+                "/v1/providers/catalog/search",
+                params={"q": query, "limit": limit},
+            )
+            source = "api"
+    except httpx.HTTPError:
+        from providers.catalog import search_extractors
+
+        hits = search_extractors(query, limit=limit)
+        source = "local"
+    print_json({"source": source, "query": query, "count": len(hits or []), "results": hits})
     return 0
 
 

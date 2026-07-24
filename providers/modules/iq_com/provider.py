@@ -13,7 +13,7 @@ from providers.base_module import PlatformModule
 class IqComProvider(PlatformModule):
     name = 'iq.com'
     status = 'not_configured'
-    host_suffixes = ('iq.com',)
+    host_suffixes = ('iq.com', 'www.iq.com')
     ie_names = ('iq.com', 'iq.com:album')
     source = "catalog"
     description = 'International version of iQiyi'

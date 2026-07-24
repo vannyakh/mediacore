@@ -248,6 +248,7 @@ def _job_response(job: Job) -> JobResponse:
         platform=job.platform,
         format_id=job.format_id,
         error=job.error,
+        result_path=job.result_path,
         result_url=job.result_url,
         created_at=job.created_at,
         completed_at=job.completed_at,

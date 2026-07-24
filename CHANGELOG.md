@@ -15,7 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Root OSS files: `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `ARCHITECTURE.md`, `ROADMAP.md`, `LICENSE` (Apache-2.0)
 - `providers/README.md` — working vs catalog layout, registration order, and yt-dlp research-only policy
 - README “What works today / what does not” table for permitted-access downloads
-- `.env.example` placeholders for optional future keys (`YOUTUBE_API_KEY`, `META_ACCESS_TOKEN`; not wired)
+- `dropbox` working provider — shared file download via official `dl=1`
+- `google_drive` working provider — public file download via `uc?export=download`
+- CLI `mediacore providers` / `providers list` / `providers search` plus `provider_not_configured` hints
+- CLI `mediacore process` — permitted download → ffmpeg convert pipeline
+- Architecture map: `docs/architecture/mediacore-vs-ytdlp.md` (folder concepts vs yt-dlp)
+- `media.ccc.de` working provider (public API + recording download)
 
 ### Changed
 
@@ -25,11 +30,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Aligned `WORKING_SKIP` / `RESERVED` in `scripts/materialize_catalog_providers.py` with early-register list in `packages/registry/providers.py`
 - Agent rules (`AGENTS.md`, `.cursor/rules`): catalog modules are intentional — do not mass-delete; do not reintroduce stub shims
 - Regenerated offline platform catalog / materialized modules to match working providers
+- Upgrade queue batches: Dropbox/Google Drive `done`; several platforms `hosts_only` (daum, douyin, espn, …)
+- Roadmap v0.2 notes permitted-provider growth and CLI providers UX
 
 ### Removed
 
 - `providers/base_stub.py` deprecated shim (use `providers.base_module.PlatformModule`)
 - `StubProvider` alias from `providers/base_module.py`
+- Optional `YOUTUBE_API_KEY` / `META_ACCESS_TOKEN` metadata wiring (YouTube stays public oEmbed; Facebook/Instagram stay catalog/`blocked`)
 
 ## [0.1.0] — 2026-07-23
 

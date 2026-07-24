@@ -55,6 +55,8 @@ flowchart LR
 | Workers | done | Dramatiq |
 | Plugin system | partial | Loader + storage/ffmpeg/webhook |
 | REST API | done | `/v1/*` |
+| Permitted providers | partial | Upgrade loop; Dropbox/Google Drive shared-file download; many `metadata_only` |
+| CLI providers UX | done | `mediacore providers list\|search` + honest `not_configured` hints |
 
 ## v0.3 — Desktop, Studio & quality
 

@@ -56,6 +56,9 @@ RESERVED = frozenset(
         "bbc",
         "bilibili",
         "bitchute",
+        "dropbox",
+        "google_drive",
+        "media_ccc_de",
     }
 )
 
@@ -85,6 +88,10 @@ WORKING_SKIP = frozenset(
         "bbc",
         "bilibili",
         "bitchute",
+        "dropbox",
+        "google_drive",
+        "media_ccc_de",
+        "media.ccc.de",
     }
 )
 

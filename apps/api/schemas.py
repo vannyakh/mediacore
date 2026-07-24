@@ -75,6 +75,7 @@ class JobResponse(BaseModel):
     platform: str | None = None
     format_id: str | None = None
     error: str | None = None
+    result_path: str | None = None
     result_url: str | None = None
     created_at: datetime | None = None
     completed_at: datetime | None = None

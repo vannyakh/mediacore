@@ -36,20 +36,18 @@ Full product story: [Vision](/getting-started/vision).
 
 ```text
 apps/        api, worker, cli, dashboard, scheduler, desktop, studio, gateway
-packages/    core, engine, registry, plugins, events, queue, storage, media, …
+packages/    core (downloader, http), engine, registry, plugins, events, queue, storage, …
 providers/   working providers + modules/ catalog (independent of core)
-plugins/     storage-*, ffmpeg, webhook, …
+plugins/     storage-*, ffmpeg, whisper, webhook, telegram, …
 sdk/         multi-language clients
 benchmarks/  standalone performance suite
 crates/      mediacore-engine (Rust foundation)
 mediacore/   package version (__version__)
 ```
 
-Legacy shims removed: `extractor/`, top-level `ffmpeg/`, `storage/`, `jobqueue/`, `queue/`.
-plugins/     storage-*, ffmpeg, whisper, webhook, telegram, …
-sdk/         javascript, typescript, python, rust, go, dart, csharp, …
-crates/      mediacore-engine (Rust foundation — roadmap)
-```
+Legacy shims removed: `extractor/`, top-level `ffmpeg/`, `storage/`, `jobqueue/`, top-level `queue/`.
+
+Contributor map: [MediaCore vs yt-dlp layout](./mediacore-vs-ytdlp) · [`providers/README.md`](../../providers/README.md).
 
 ## Engine vs runtime
 

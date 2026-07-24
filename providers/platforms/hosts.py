@@ -215,6 +215,14 @@ MAJOR_PLATFORMS: dict[str, dict] = {
         "hosts": ("espn.com", "www.espn.com"),
         "ie_names": ("ESPN",),
     },
+    "faz.net": {
+        "hosts": ("faz.net", "www.faz.net"),
+        "ie_names": ("faz.net", "FAZ"),
+    },
+    "freespeech.org": {
+        "hosts": ("freespeech.org", "www.freespeech.org"),
+        "ie_names": ("freespeech.org",),
+    },
     "nba": {
         "hosts": ("nba.com", "www.nba.com"),
         "ie_names": ("NBA",),
@@ -340,8 +348,21 @@ MAJOR_PLATFORMS: dict[str, dict] = {
         "hosts": ("drive.google.com", "docs.google.com"),
         "ie_names": ("GoogleDrive",),
     },
+    "daum.net": {
+        "hosts": ("daum.net", "www.daum.net", "tv.kakao.com", "kakaotv.daum.net"),
+        "ie_names": ("daum.net", "Daum", "Kakao"),
+    },
+    "dzen.ru": {
+        "hosts": ("dzen.ru", "www.dzen.ru", "zen.yandex.ru"),
+        "ie_names": ("dzen.ru", "Dzen", "ZenYandex"),
+    },
     "dropbox": {
-        "hosts": ("dropbox.com", "www.dropbox.com", "dl.dropboxusercontent.com"),
+        "hosts": (
+            "dropbox.com",
+            "www.dropbox.com",
+            "dl.dropbox.com",
+            "dl.dropboxusercontent.com",
+        ),
         "ie_names": ("Dropbox",),
     },
     "mega": {
@@ -356,6 +377,10 @@ MAJOR_PLATFORMS: dict[str, dict] = {
         "hosts": ("loom.com", "www.loom.com"),
         "ie_names": ("Loom",),
     },
+    "media.ccc.de": {
+        "hosts": ("media.ccc.de", "api.media.ccc.de"),
+        "ie_names": ("media.ccc.de", "CCC"),
+    },
     "wistia": {
         "hosts": ("wistia.com", "www.wistia.com", "fast.wistia.net"),
         "ie_names": ("Wistia",),
@@ -363,6 +388,18 @@ MAJOR_PLATFORMS: dict[str, dict] = {
     "brightcove": {
         "hosts": ("brightcove.com", "players.brightcove.net"),
         "ie_names": ("Brightcove",),
+    },
+    "hgtv.com": {
+        "hosts": ("hgtv.com", "www.hgtv.com"),
+        "ie_names": ("hgtv.com",),
+    },
+    "ign.com": {
+        "hosts": ("ign.com", "www.ign.com"),
+        "ie_names": ("ign.com", "IGN"),
+    },
+    "iq.com": {
+        "hosts": ("iq.com", "www.iq.com"),
+        "ie_names": ("iq.com",),
     },
     "jwplatform": {
         "hosts": ("jwplatform.com", "cdn.jwplayer.com"),

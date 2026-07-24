@@ -55,6 +55,21 @@ def build_parser() -> argparse.ArgumentParser:
     _add_wait_flags(p)
     p.set_defaults(func=commands.cmd_download)
 
+    p = sub.add_parser(
+        "process",
+        help="Download then convert (permitted sources + ffmpeg plugin)",
+    )
+    p.add_argument("url")
+    p.add_argument("--format", default="original")
+    p.add_argument("--container", default="mp4")
+    p.add_argument(
+        "--wait-timeout",
+        type=float,
+        default=180.0,
+        help="Seconds to wait per job step (default: 180)",
+    )
+    p.set_defaults(func=commands.cmd_process)
+
     p = sub.add_parser("convert", help="Enqueue a convert job for a local file")
     p.add_argument("file")
     p.add_argument("--container", default="mp4")
@@ -95,6 +110,25 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--follow", "-f", action="store_true", help="Follow SSE stream")
     p.add_argument("--limit", type=int, default=50, help="History limit when not following")
     p.set_defaults(func=commands.cmd_events)
+
+    p = sub.add_parser(
+        "providers",
+        help="List working providers or search the platform catalog",
+    )
+    prov_sub = p.add_subparsers(dest="providers_cmd")
+    pl = prov_sub.add_parser("list", help="List working providers (and catalog summary)")
+    pl.add_argument(
+        "--status",
+        default=None,
+        help="Filter by status (active, metadata_only, not_configured, …)",
+    )
+    pl.set_defaults(func=commands.cmd_providers_list)
+    ps = prov_sub.add_parser("search", help="Search catalog extractors by name")
+    ps.add_argument("query", help="Search query")
+    ps.add_argument("--limit", type=int, default=50, help="Max results (default: 50)")
+    ps.set_defaults(func=commands.cmd_providers_search)
+    # `mediacore providers` with no subcommand → list
+    p.set_defaults(func=commands.cmd_providers_list, status=None)
     return parser
 
 

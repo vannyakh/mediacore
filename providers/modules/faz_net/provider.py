@@ -13,7 +13,7 @@ from providers.base_module import PlatformModule
 class FazNetProvider(PlatformModule):
     name = 'faz.net'
     status = 'not_configured'
-    host_suffixes = ('faz.net',)
-    ie_names = ('faz.net',)
+    host_suffixes = ('faz.net', 'www.faz.net')
+    ie_names = ('faz.net', 'FAZ')
     source = "catalog"
     description = 'Platform module for faz.net'

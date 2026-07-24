@@ -70,8 +70,12 @@ cd docker && docker compose up --build
 ```bash
 mediacore analyze URL
 mediacore download URL [--wait]
+mediacore process URL [--container mp4]   # download → ffmpeg convert (permitted sources)
 mediacore convert file.mp4 [--wait]
 mediacore subtitle file.mp4 [--wait]
+mediacore providers              # working providers + catalog summary
+mediacore providers list [--status STATUS]
+mediacore providers search QUERY
 mediacore plugin list
 mediacore plugin install NAME|PATH
 mediacore worker start
@@ -102,7 +106,8 @@ mediacore/
 
 Legacy top-level shims (`extractor/`, `ffmpeg/`, `storage/`, `jobqueue/`, `queue/`) were removed — use `packages/*` instead.
 
-Provider layout for contributors: [`providers/README.md`](providers/README.md).
+Provider layout for contributors: [`providers/README.md`](providers/README.md).  
+Folder map (vs yt-dlp concepts): [`docs/architecture/mediacore-vs-ytdlp.md`](docs/architecture/mediacore-vs-ytdlp.md).
 
 ### What works today / what does not
 

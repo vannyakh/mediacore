@@ -2,7 +2,21 @@
 
 MediaCore resolves media URLs through a **provider registry**. Core stays platform-agnostic; all site knowledge lives here.
 
-## Layout
+## One-screen map (whole repo)
+
+```text
+providers/<name>/     Working site logic (oEmbed / official / share-link download)
+providers/modules/    ~1300 catalog packages — host detect + direct media only
+packages/core/        downloader.py · http.py · models · provider protocol
+packages/engine/      Orchestration (like yt-dlp's YoutubeDL coordinator)
+packages/registry/    URL → provider resolve
+plugins/              Postprocess: ffmpeg, whisper, storage-* (not scrapers)
+apps/cli · apps/api   User surfaces
+```
+
+Full concept map: [docs/architecture/mediacore-vs-ytdlp.md](../docs/architecture/mediacore-vs-ytdlp.md).
+
+## Layout (this folder)
 
 ```text
 providers/
@@ -22,6 +36,9 @@ providers/
 | `providers/modules/<slug>/` | Catalog module — intentional; **do not mass-delete** |
 | `providers/platforms/hosts.py` | Curated host maps merged into the index |
 | `scripts/provider_upgrade_queue.py` | Batch upgrade queue |
+| `packages/core/downloader.py` | HTTP fetch used by providers |
+| `packages/core/http.py` | Shared networking client |
+| `plugins/ffmpeg` | Convert/remux after a permitted download |
 
 ## Registration order
 

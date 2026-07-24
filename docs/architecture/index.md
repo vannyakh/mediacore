@@ -5,6 +5,7 @@ title: Architecture
 <script setup>
 const links = [
   { title: "Overview", href: "/architecture/overview", hint: "Engine, events, flow", icon: "https://cdn.simpleicons.org/python/3776AB" },
+  { title: "vs yt-dlp layout", href: "/architecture/mediacore-vs-ytdlp", hint: "Where folders map", icon: "https://cdn.simpleicons.org/files/0ea5e9" },
   { title: "Relationships", href: "/architecture/relationships", hint: "Interactive dependency graph", icon: "https://cdn.simpleicons.org/graphql/E10098" },
   { title: "Vision", href: "/getting-started/vision", hint: "Product positioning", icon: "https://cdn.simpleicons.org/rocket/FF4438" },
   { title: "Plugins", href: "/plugins/", hint: "Extension model", icon: "https://cdn.simpleicons.org/npm/CB3837" },

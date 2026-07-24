@@ -4,6 +4,8 @@ MediaCore **never hardcodes scrape logic in core**. Platforms live under `provid
 
 **Permitted access:** “Supports platform X” means host detection plus metadata/download when a public or official API (or direct media) allows it — not watch-URL scraping for every site. Catalog modules stay for routing; page URLs without a permitted path return `provider_not_configured`. Contributor layout: repository file `providers/README.md`.
 
+Rough scale: ~20+ working builtins (`active` / `metadata_only`) and ~1300 catalog modules for host detection. CLI: `mediacore providers list` / `mediacore providers search QUERY`.
+
 ```mermaid
 flowchart LR
   URL[Media_URL] --> Registry[ProviderRegistry]
@@ -65,6 +67,9 @@ uv run python scripts/sync_platform_catalog.py --offline
 | `bbc` | `metadata_only` | Public `/programmes/{pid}.json` |
 | `bilibili` | `metadata_only` | Public web view API (BV/av) |
 | `bitchute` | `metadata_only` | Public beta video API |
+| `dropbox` | `active` | Shared file links via official `dl=1` |
+| `google_drive` | `active` | Public file shares via `uc?export=download` |
+| `media.ccc.de` | `active` | Public JSON API + recording download URLs |
 
 Catalog modules with the same `name` are skipped when these working providers register first.
 

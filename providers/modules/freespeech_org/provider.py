@@ -13,7 +13,7 @@ from providers.base_module import PlatformModule
 class FreespeechOrgProvider(PlatformModule):
     name = 'freespeech.org'
     status = 'not_configured'
-    host_suffixes = ('freespeech.org',)
+    host_suffixes = ('freespeech.org', 'www.freespeech.org')
     ie_names = ('freespeech.org',)
     source = "catalog"
     description = 'Platform module for freespeech.org'

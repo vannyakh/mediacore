@@ -58,7 +58,8 @@ class YoutubeProvider(Provider):
 
     def download(self, url: str, format_id: str, dest: Path) -> DownloadResult:
         raise ProviderNotConfiguredError(
-            f"{self.name} (download requires YouTube Data API / authorized access)"
+            f"{self.name} (page download requires authorized YouTube access; "
+            "public oEmbed is metadata-only)"
         )
 
     def thumbnail(self, url: str) -> ThumbnailInfo | None:

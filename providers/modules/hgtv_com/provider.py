@@ -13,7 +13,7 @@ from providers.base_module import PlatformModule
 class HgtvComProvider(PlatformModule):
     name = 'hgtv.com'
     status = 'not_configured'
-    host_suffixes = ('hgtv.com',)
-    ie_names = ('hgtv.com:show',)
+    host_suffixes = ('hgtv.com', 'www.hgtv.com')
+    ie_names = ('hgtv.com:show', 'hgtv.com')
     source = "catalog"
     description = 'Platform module for hgtv.com'

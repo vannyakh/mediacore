@@ -34,6 +34,12 @@ def print_json(data: Any) -> None:
     print(json.dumps(data, indent=2, default=str))
 
 
+_NOT_CONFIGURED_HINT = (
+    "Page/watch URLs need a permitted API; direct media on known hosts may still download. "
+    "See: mediacore providers list"
+)
+
+
 def format_http_error(exc: Exception) -> str:
     if isinstance(exc, httpx.HTTPStatusError):
         res = exc.response
@@ -42,7 +48,17 @@ def format_http_error(exc: Exception) -> str:
             detail = res.json()
         except Exception:  # noqa: BLE001
             detail = res.text
-        return f"HTTP {res.status_code}: {detail}"
+        message = f"HTTP {res.status_code}: {detail}"
+        code = None
+        if isinstance(detail, dict):
+            nested = detail.get("detail")
+            if isinstance(nested, dict):
+                code = nested.get("code")
+            else:
+                code = detail.get("code")
+        if code == "provider_not_configured":
+            message = f"{message}\nhint: {_NOT_CONFIGURED_HINT}"
+        return message
     if isinstance(exc, httpx.RequestError):
         return f"request failed: {exc}"
     return str(exc)
@@ -54,8 +70,9 @@ def request_json(
     path: str,
     *,
     json_body: dict[str, Any] | None = None,
+    params: dict[str, Any] | None = None,
 ) -> Any:
-    res = client.request(method, path, json=json_body)
+    res = client.request(method, path, json=json_body, params=params)
     res.raise_for_status()
     if res.status_code == 204 or not res.content:
         return None

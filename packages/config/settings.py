@@ -79,13 +79,36 @@ class MediaCoreSettings(BaseSettings):
     cache_ttl_seconds: int = 300
 
 
+_settings_override: MediaCoreSettings | None = None
+
+
 @lru_cache
-def get_settings() -> MediaCoreSettings:
+def _cached_settings() -> MediaCoreSettings:
     return MediaCoreSettings()
 
 
+def get_settings() -> MediaCoreSettings:
+    if _settings_override is not None:
+        return _settings_override
+    return _cached_settings()
+
+
+def _clear_settings_cache() -> None:
+    global _settings_override
+    _settings_override = None
+    _cached_settings.cache_clear()
+
+
+# Tests and callers historically used get_settings.cache_clear()
+get_settings.cache_clear = _clear_settings_cache  # type: ignore[attr-defined]
+
+
 def load_settings(**overrides: object) -> MediaCoreSettings:
-    get_settings.cache_clear()
+    """Reload settings; optional kwargs override env/.env for tests and tooling."""
+    global _settings_override
+    _cached_settings.cache_clear()
     if overrides:
-        return MediaCoreSettings(**overrides)  # type: ignore[arg-type]
-    return get_settings()
+        _settings_override = MediaCoreSettings(**overrides)  # type: ignore[arg-type]
+        return _settings_override
+    _settings_override = None
+    return _cached_settings()

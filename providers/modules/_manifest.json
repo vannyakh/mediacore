@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "count": 1352,
+  "count": 1348,
   "providers": [
     {
       "slug": "p_10play",
@@ -2045,7 +2045,10 @@
       "name": "daum.net",
       "module": "providers.modules.daum_net.provider",
       "hosts": [
-        "daum.net"
+        "daum.net",
+        "www.daum.net",
+        "tv.kakao.com",
+        "kakaotv.daum.net"
       ],
       "broken": false,
       "status": "not_configured"
@@ -2287,18 +2290,6 @@
       "status": "not_configured"
     },
     {
-      "slug": "dropbox",
-      "name": "dropbox",
-      "module": "providers.modules.dropbox.provider",
-      "hosts": [
-        "dropbox.com",
-        "www.dropbox.com",
-        "dl.dropboxusercontent.com"
-      ],
-      "broken": false,
-      "status": "not_configured"
-    },
-    {
       "slug": "dropout",
       "name": "dropout",
       "module": "providers.modules.dropout.provider",
@@ -2383,7 +2374,9 @@
       "name": "dzen.ru",
       "module": "providers.modules.dzen_ru.provider",
       "hosts": [
-        "dzen.ru"
+        "dzen.ru",
+        "www.dzen.ru",
+        "zen.yandex.ru"
       ],
       "broken": false,
       "status": "not_configured"
@@ -2755,7 +2748,8 @@
       "name": "faz.net",
       "module": "providers.modules.faz_net.provider",
       "hosts": [
-        "faz.net"
+        "faz.net",
+        "www.faz.net"
       ],
       "broken": false,
       "status": "not_configured"
@@ -2973,7 +2967,8 @@
       "name": "freespeech.org",
       "module": "providers.modules.freespeech_org.provider",
       "hosts": [
-        "freespeech.org"
+        "freespeech.org",
+        "www.freespeech.org"
       ],
       "broken": false,
       "status": "not_configured"
@@ -3406,17 +3401,6 @@
       "status": "not_configured"
     },
     {
-      "slug": "google_drive",
-      "name": "google_drive",
-      "module": "providers.modules.google_drive.provider",
-      "hosts": [
-        "drive.google.com",
-        "docs.google.com"
-      ],
-      "broken": false,
-      "status": "not_configured"
-    },
-    {
       "slug": "gopro",
       "name": "gopro",
       "module": "providers.modules.gopro.provider",
@@ -3509,7 +3493,8 @@
       "name": "hgtv.com",
       "module": "providers.modules.hgtv_com.provider",
       "hosts": [
-        "hgtv.com"
+        "hgtv.com",
+        "www.hgtv.com"
       ],
       "broken": false,
       "status": "not_configured"
@@ -3783,7 +3768,8 @@
       "name": "ign.com",
       "module": "providers.modules.ign_com.provider",
       "hosts": [
-        "ign.com"
+        "ign.com",
+        "www.ign.com"
       ],
       "broken": false,
       "status": "not_configured"
@@ -3928,7 +3914,8 @@
       "name": "iq.com",
       "module": "providers.modules.iq_com.provider",
       "hosts": [
-        "iq.com"
+        "iq.com",
+        "www.iq.com"
       ],
       "broken": false,
       "status": "not_configured"
@@ -4112,14 +4099,6 @@
         "jwplatform.com",
         "cdn.jwplayer.com"
       ],
-      "broken": false,
-      "status": "not_configured"
-    },
-    {
-      "slug": "kakao",
-      "name": "kakao",
-      "module": "providers.modules.kakao.provider",
-      "hosts": [],
       "broken": false,
       "status": "not_configured"
     },
@@ -4819,16 +4798,6 @@
       "name": "medaltv",
       "module": "providers.modules.medaltv.provider",
       "hosts": [],
-      "broken": false,
-      "status": "not_configured"
-    },
-    {
-      "slug": "media_ccc_de",
-      "name": "media.ccc.de",
-      "module": "providers.modules.media_ccc_de.provider",
-      "hosts": [
-        "media.ccc.de"
-      ],
       "broken": false,
       "status": "not_configured"
     },
