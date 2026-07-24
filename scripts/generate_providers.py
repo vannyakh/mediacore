@@ -40,9 +40,9 @@ DOCS_WORKING_STATUS: dict[str, str] = {
     "bbc": "metadata_only",
     "bilibili": "metadata_only",
     "bitchute": "metadata_only",
-    "dropbox": "available",
-    "google_drive": "available",
-    "media.ccc.de": "available",
+    "dropbox": "active",
+    "google_drive": "active",
+    "media.ccc.de": "active",
 }
 
 

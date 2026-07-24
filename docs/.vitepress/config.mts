@@ -96,7 +96,9 @@ export default withMermaid(
             text: "Architecture",
             items: [
               { text: "Overview", link: "/architecture/" },
+              { text: "Repository layout", link: "/architecture/layout" },
               { text: "Engine & events", link: "/architecture/overview" },
+              { text: "vs yt-dlp layout", link: "/architecture/mediacore-vs-ytdlp" },
               { text: "Relationships", link: "/architecture/relationships" },
             ],
           },

@@ -6,7 +6,7 @@ title: Getting started
 const steps = [
   { title: "Install deps", body: "Copy .env, uv sync, enable SQLite sync mode." },
   { title: "Run the API", body: "uvicorn on :8000 with your dev API key." },
-  { title: "Analyze a URL", body: "curl /v1/analyze or mediacore analyze." },
+  { title: "Download permitted media", body: "mediacore URL for direct media; -s for YouTube-class metadata." },
 ]
 const next = [
   { title: "Vision", href: "/getting-started/vision", hint: "Why MediaCore", icon: "https://cdn.simpleicons.org/rocket/FF4438" },
@@ -23,7 +23,7 @@ const next = [
 <DocHero
   eyebrow="Quick start"
   title="Getting started"
-  lead="Run MediaCore locally in a few minutes — API, CLI, and your first analyze call."
+  lead="Run MediaCore locally in a few minutes — API, permitted download CLI, and analyze."
 />
 
 ## Path
@@ -33,8 +33,8 @@ const next = [
 ```mermaid
 flowchart LR
   Install[uv_sync] --> Run[API_port_8000]
-  Run --> Analyze[POST_v1_analyze]
-  Analyze --> Next[CLI_SDK_Plugins]
+  Run --> Download[permitted_download]
+  Download --> Next[CLI_SDK_Plugins]
 ```
 
 ## Requirements
@@ -54,7 +54,15 @@ uv run uvicorn apps.api.main:app --reload --port 8000
 
 Dev API key: `dev-api-key-change-me`
 
-## First request
+## First download (works today)
+
+Direct HTTP(S) media via the `generic` provider:
+
+```bash
+uv run mediacore doctor
+uv run mediacore https://example.com/video.mp4 -o './out/{title}.mp4'
+uv run mediacore providers list --download-only
+```
 
 ```bash
 curl -s -H "X-API-Key: dev-api-key-change-me" \
@@ -63,17 +71,26 @@ curl -s -H "X-API-Key: dev-api-key-change-me" \
   http://localhost:8000/v1/analyze
 ```
 
+## Metadata-only contrast (YouTube)
+
+Watch pages use public oEmbed — analyze works; page file download does not:
+
+```bash
+uv run mediacore -s 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+# download of that URL returns provider_not_configured by design
+```
+
 ## CLI
 
 ```bash
-uv run mediacore doctor
 uv run mediacore analyze https://example.com/video.mp4
 uv run mediacore download https://example.com/video.mp4 --wait
+uv run mediacore providers list [--download-only]
 uv run mediacore plugin list
 uv run mediacore worker start
 ```
 
-Global flags: `--base`, `--key` (env: `MEDIACORE_BASE`, `MEDIACORE_API_KEY`).
+Global flags: `--base`, `--key` (env: `MEDIACORE_BASE`, `MEDIACORE_API_KEY`). Redis is optional locally (`EVENTS_REDIS_ENABLED=false` in `.env.example`).
 
 ## Explore next
 

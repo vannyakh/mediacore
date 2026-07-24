@@ -19,7 +19,8 @@ class MediaCoreSettings(BaseSettings):
     use_sqlite: bool = True
 
     redis_url: str = "redis://localhost:6379/0"
-    events_redis_enabled: bool = True
+    # Off by default for local SQLite/dev (no Redis required). Set true for multi-process events.
+    events_redis_enabled: bool = False
     api_key_header: str = "X-API-Key"
     seed_api_key: str = "dev-api-key-change-me"
     jwt_secret: str = "dev-jwt-secret-change-me"

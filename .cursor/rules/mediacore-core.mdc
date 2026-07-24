@@ -11,7 +11,8 @@ Brand is **MediaCore** only — **The Open Media Infrastructure Platform** (tagl
 
 - Platform-first: core stays provider-agnostic (no YouTube/TikTok/etc. knowledge in core).
 - Stack: Engine → Plugin System → Providers → Media Pipeline → SDK → Application.
-- Layout: `apps/` (api, worker, cli, dashboard, desktop, studio…), `packages/` (core, engine, registry, plugins, events…), `providers/`, `plugins/`, `sdk/`, `docs/`.
+- Layout: `apps/` (api, worker, cli, dashboard, desktop, studio…), `packages/` (core, engine, registry, plugins, events…), `providers/`, `plugins/`, `sdk/`, `docs/`. Path table: `docs/architecture/layout.md`.
+- Working providers need `providers/<name>/provider.py`; catalog-only sites stay under `providers/modules/` — no empty working shells.
 - Runtime queue package is `packages/queue` only — never add a top-level `queue/` Python package (shadows stdlib).
 - Do not recreate legacy shims: `extractor/`, `ffmpeg/`, `storage/`, `jobqueue/`.
 - API surface: `/v1/*` (compatibility alias `/api/v1/*` allowed).
