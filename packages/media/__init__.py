@@ -1,6 +1,7 @@
 from packages.media.wrapper import (
     FFmpegError,
     convert_media,
+    download_stream,
     extract_audio,
     extract_thumbnail,
     ffmpeg_available,
@@ -10,6 +11,7 @@ from packages.media.wrapper import (
 __all__ = [
     "FFmpegError",
     "convert_media",
+    "download_stream",
     "extract_audio",
     "extract_thumbnail",
     "ffmpeg_available",

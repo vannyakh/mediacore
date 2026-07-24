@@ -3,23 +3,22 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_no_critical_empty_dirs():
+def test_download_tool_core_dirs():
     critical = [
-        ROOT / "packages" / "auth",
-        ROOT / "packages" / "cache",
+        ROOT / "apps" / "api",
+        ROOT / "apps" / "cli",
+        ROOT / "apps" / "worker",
+        ROOT / "packages" / "core",
+        ROOT / "packages" / "engine",
+        ROOT / "packages" / "registry",
+        ROOT / "packages" / "queue",
+        ROOT / "packages" / "storage",
         ROOT / "packages" / "config",
         ROOT / "packages" / "logging",
-        ROOT / "packages" / "scheduler",
-        ROOT / "packages" / "telemetry",
-        ROOT / "packages" / "sdk_generator",
-        ROOT / "plugins" / "whisper",
-        ROOT / "plugins" / "discord",
-        ROOT / "helm" / "mediacore",
+        ROOT / "plugins" / "ffmpeg",
+        ROOT / "plugins" / "storage-local",
+        ROOT / "providers" / "modules",
         ROOT / "scripts",
-        ROOT / "benchmarks",
-        ROOT / "sdk" / "csharp",
-        ROOT / "apps" / "desktop" / "src",
-        ROOT / "apps" / "studio" / "src",
     ]
     for path in critical:
         assert path.exists(), f"missing {path}"
@@ -27,19 +26,55 @@ def test_no_critical_empty_dirs():
         assert any(p.is_file() for p in files), f"empty scaffold: {path}"
 
 
+def test_removed_product_surfaces_gone():
+    for name in (
+        "benchmarks",
+        "crates",
+        "helm",
+        "patches",
+        "apps/dashboard",
+        "apps/desktop",
+        "apps/studio",
+        "apps/gateway",
+        "apps/scheduler",
+        "packages/telemetry",
+        "packages/scheduler",
+        "packages/sdk_generator",
+        "packages/mediacore_benchmark",
+        "plugins/whisper",
+        "plugins/telegram",
+        "plugins/discord",
+    ):
+        assert not (ROOT / name).exists(), f"should be removed: {name}"
+
+
+def test_sdk_packages_present():
+    for rel in (
+        "sdk/python/mediacore_sdk/__init__.py",
+        "sdk/javascript/package.json",
+        "sdk/typescript/package.json",
+        "sdk/php/composer.json",
+        "sdk/go/go.mod",
+    ):
+        assert (ROOT / rel).is_file(), f"missing SDK package: {rel}"
+
+
 def test_all_plugins_have_manifest():
     plugins_root = ROOT / "plugins"
     for entry in plugins_root.iterdir():
-        if entry.is_dir():
+        if entry.is_dir() and not entry.name.startswith(".") and entry.name != "__pycache__":
             assert (entry / "plugin.py").exists(), f"missing plugin.py in {entry.name}"
 
 
-def test_plugin_loader_discovers_all():
+def test_plugin_loader_discovers_download_plugins():
     from packages.plugins.loader import PluginLoader
 
     loader = PluginLoader(root=ROOT / "plugins")
     plugins = loader.discover()
-    assert len(plugins) >= 14
+    names = {p.name for p in plugins}
+    assert "mediacore-plugin-ffmpeg" in names
+    assert "mediacore-plugin-storage-local" in names
+    assert len(plugins) == 2
 
 
 def test_legacy_shims_removed():

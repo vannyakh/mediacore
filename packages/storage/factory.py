@@ -9,19 +9,9 @@ from packages.core.exceptions import PluginError
 from packages.storage.base import StorageBackend
 from packages.storage.local import LocalStorage
 
-# Maps STORAGE_BACKEND → plugin name
+# Maps STORAGE_BACKEND → plugin name (slim install ships local only)
 BACKEND_PLUGINS: dict[str, str] = {
     "local": "mediacore-plugin-storage-local",
-    "s3": "mediacore-plugin-storage-s3",
-    "r2": "mediacore-plugin-storage-r2",
-    "gdrive": "mediacore-plugin-storage-gdrive",
-    "google_drive": "mediacore-plugin-storage-gdrive",
-    "azure": "mediacore-plugin-storage-azure",
-    "azure_blob": "mediacore-plugin-storage-azure",
-    "dropbox": "mediacore-plugin-storage-dropbox",
-    "onedrive": "mediacore-plugin-storage-onedrive",
-    "ftp": "mediacore-plugin-storage-ftp",
-    "webdav": "mediacore-plugin-storage-webdav",
 }
 
 

@@ -1,6 +1,6 @@
 # MediaCore agent guide
 
-This repository is **MediaCore** — **The Open Media Infrastructure Platform** (Extract • Process • Automate • Deliver). Not a single-purpose downloader: engine + plugins + pipeline + SDKs for building media applications. See [docs/getting-started/vision.md](docs/getting-started/vision.md). Docs site: VitePress in [`docs/`](docs/) (`npm run dev`).
+This repository is **MediaCore** — a **permitted media download CLI/API** (plus convert via ffmpeg). Not a scraper / yt-dlp clone. See [docs/getting-started/vision.md](docs/getting-started/vision.md). Docs: [`docs/`](docs/) (`npm run dev`).
 
 ## Cursor config
 
@@ -9,15 +9,11 @@ This repository is **MediaCore** — **The Open Media Infrastructure Platform** 
 
 ## Layout (canonical)
 
-`apps/` · `packages/` · `providers/` · `plugins/` · `sdk/` · `benchmarks/` · `crates/` · `mediacore/` · `docs/` · `tests/` · `scripts/` · `docker/` · `helm/`
+`apps/api` · `apps/cli` · `apps/worker` · `packages/` · `providers/` · `plugins/ffmpeg` · `plugins/storage-local` · `sdk/` · `docs/` · `tests/` · `scripts/` · `docker/`
 
-Path roles: [`docs/architecture/layout.md`](docs/architecture/layout.md).
+Path roles: [`docs/architecture/layout.md`](docs/architecture/layout.md). Thin SDKs live under `sdk/` (pip / npm / composer / go).
 
-- Working site code: `providers/<name>/provider.py` (never empty shells)
-- Catalog host detect: `providers/modules/<slug>/`
-- Queue/storage/ffmpeg live under `packages/` or `plugins/` — not top-level
-
-Do **not** recreate: `extractor/`, top-level `ffmpeg/`, `storage/`, `jobqueue/`, or a top-level `queue/` package (stdlib shadow).
+Do **not** recreate: `extractor/`, top-level `ffmpeg/` / `storage/` / `queue/`, `dashboard/`, `helm/`, `benchmarks/`, `crates/`.
 
 ## Hard constraints
 
@@ -31,7 +27,7 @@ Do **not** recreate: `extractor/`, top-level `ffmpeg/`, `storage/`, `jobqueue/`,
 ```bash
 uv sync --extra dev
 uv run uvicorn apps.api.main:app --reload --port 8000
-uv run pytest --ignore=tests/load --benchmark-disable
+uv run pytest tests/unit/cli tests/providers -q --benchmark-disable
 uv run python scripts/sync_platform_catalog.py --offline
 ```
 
@@ -44,13 +40,13 @@ uv run python scripts/sync_platform_catalog.py --offline
 | `mediacore-upgrade-loop` | Auto-implement platforms in batches (queue + yt-dlp host research only) |
 | `mediacore-catalog` | Sync/regenerate platform catalog |
 
-### Upgrade all platforms (agent loop)
+### Upgrade platforms (agent loop)
 
 ```bash
 uv run python scripts/provider_upgrade_queue.py next --limit 5
 # implement batch → mark done / skipped_no_api → regenerate docs → pytest -m provider
 ```
 
-yt-dlp (`github.com/yt-dlp/yt-dlp`) is **host/URL research only** — never port scrapers.
+yt-dlp is **host/URL research only** — never port scrapers.
 Catalog modules under `providers/modules/` are intentional for URL detection — do not mass-delete.
-See [`providers/README.md`](providers/README.md) and [`docs/architecture/mediacore-vs-ytdlp.md`](docs/architecture/mediacore-vs-ytdlp.md).
+See [`providers/README.md`](providers/README.md).

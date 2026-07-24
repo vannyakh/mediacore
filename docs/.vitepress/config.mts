@@ -6,8 +6,7 @@ const github = "https://github.com/vannyakh/mediacore";
 export default withMermaid(
   defineConfig({
     title: "MediaCore",
-    description:
-      "The Open Source Media Infrastructure Platform — Extract • Process • Automate • Deliver",
+    description: "Permitted media download CLI/API — Extract · Process · Deliver",
     lang: "en-US",
     cleanUrls: true,
     lastUpdated: true,
@@ -33,7 +32,7 @@ export default withMermaid(
         "meta",
         {
           property: "og:description",
-          content: "Open source media infrastructure — APIs, SDKs, CLI, plugins, platforms",
+          content: "Permitted media download CLI and API",
         },
       ],
       ["meta", { property: "og:image", content: "/logo.png" }],
@@ -61,9 +60,8 @@ export default withMermaid(
           text: "Project",
           items: [
             { text: "Architecture", link: "/architecture/" },
-            { text: "Relationships", link: "/architecture/relationships" },
+            { text: "Layout", link: "/architecture/layout" },
             { text: "Deployment", link: "/deployment/" },
-            { text: "Benchmarks", link: "/benchmarks/" },
             { text: "Roadmap", link: "/getting-started/roadmap" },
             { text: "GitHub", link: github },
           ],
@@ -99,7 +97,6 @@ export default withMermaid(
               { text: "Repository layout", link: "/architecture/layout" },
               { text: "Engine & events", link: "/architecture/overview" },
               { text: "vs yt-dlp layout", link: "/architecture/mediacore-vs-ytdlp" },
-              { text: "Relationships", link: "/architecture/relationships" },
             ],
           },
         ],
@@ -112,19 +109,7 @@ export default withMermaid(
         "/sdk/": [
           {
             text: "SDK",
-            items: [
-              { text: "Install", link: "/sdk/" },
-              { text: "JavaScript", link: "/sdk/javascript" },
-              { text: "TypeScript", link: "/sdk/typescript" },
-              { text: "Python", link: "/sdk/python" },
-              { text: "Go", link: "/sdk/go" },
-              { text: "Rust", link: "/sdk/rust" },
-              { text: "Dart", link: "/sdk/dart" },
-              { text: "C#", link: "/sdk/csharp" },
-              { text: "Java", link: "/sdk/java" },
-              { text: "Swift", link: "/sdk/swift" },
-              { text: "Kotlin", link: "/sdk/kotlin" },
-            ],
+            items: [{ text: "Install", link: "/sdk/" }],
           },
         ],
         "/plugins/": [
@@ -141,13 +126,7 @@ export default withMermaid(
         "/deployment/": [
           {
             text: "Deployment",
-            items: [{ text: "Docker & Helm", link: "/deployment/" }],
-          },
-        ],
-        "/benchmarks/": [
-          {
-            text: "Benchmarks",
-            items: [{ text: "Overview", link: "/benchmarks/" }],
+            items: [{ text: "Docker", link: "/deployment/" }],
           },
         ],
       },

@@ -1,4 +1,4 @@
-"""HTTP media downloader used by providers."""
+"""HTTP media downloader used by providers (progressive + HLS/DASH streams)."""
 
 from __future__ import annotations
 
@@ -9,6 +9,7 @@ from pathlib import Path
 import httpx
 
 from packages.core.exceptions import DownloadError
+from packages.core.parser import is_stream_playlist_url
 
 DEFAULT_TIMEOUT = httpx.Timeout(60.0, connect=15.0)
 CHUNK_SIZE = 1024 * 64
@@ -27,6 +28,35 @@ def get_progress_callback() -> ProgressCallback | None:
     return getattr(_progress_local, "callback", None)
 
 
+def _looks_like_playlist_content_type(content_type: str | None) -> bool:
+    if not content_type:
+        return False
+    ct = content_type.lower()
+    return (
+        "mpegurl" in ct
+        or "m3u8" in ct
+        or "dash+xml" in ct
+        or ct.startswith("application/vnd.apple.mpegurl")
+    )
+
+
+def download_stream_file(
+    url: str,
+    dest: Path,
+    *,
+    headers: dict[str, str] | None = None,
+) -> tuple[int, str | None]:
+    """Download a direct HLS/DASH playlist URL via ffmpeg into a media file."""
+    from packages.media.wrapper import FFmpegError, download_stream
+
+    try:
+        path = download_stream(url, dest, headers=headers)
+    except FFmpegError as exc:
+        raise DownloadError(str(exc)) from exc
+    size = path.stat().st_size if path.exists() else 0
+    return size, "video/mp4"
+
+
 def download_file(
     url: str,
     dest: Path,
@@ -34,7 +64,17 @@ def download_file(
     headers: dict[str, str] | None = None,
     timeout: httpx.Timeout | None = None,
     on_progress: ProgressCallback | None = None,
+    allow_stream: bool = True,
 ) -> tuple[int, str | None]:
+    """
+    Progressive HTTP download (chunked stream to disk).
+
+    When ``allow_stream`` is true and the URL is an HLS/DASH playlist, uses ffmpeg
+    to fetch the media stream (requires ffmpeg on PATH).
+    """
+    if allow_stream and is_stream_playlist_url(url):
+        return download_stream_file(url, dest, headers=headers)
+
     dest.parent.mkdir(parents=True, exist_ok=True)
     progress = on_progress or get_progress_callback()
     try:
@@ -42,6 +82,10 @@ def download_file(
             with client.stream("GET", url, headers=headers or {}) as response:
                 response.raise_for_status()
                 content_type = response.headers.get("content-type")
+                # Playlist served without .m3u8 suffix — escalate to ffmpeg
+                if allow_stream and _looks_like_playlist_content_type(content_type):
+                    response.close()
+                    return download_stream_file(url, dest, headers=headers)
                 total_header = response.headers.get("content-length")
                 total = int(total_header) if total_header and total_header.isdigit() else None
                 size = 0

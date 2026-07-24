@@ -1,10 +1,10 @@
 /**
- * MediaCore JavaScript SDK — unified client surface.
+ * MediaCore JavaScript SDK — thin client for the permitted download API.
  *
- * client.media.analyze / download / convert / thumbnail
- * client.jobs.list / get
- * client.plugins.list
+ * Install (from repo): npm install ./sdk/javascript
  */
+
+const TERMINAL = new Set(["completed", "failed", "cancelled"]);
 
 export class MediaCore {
   constructor(apiKey, baseUrl = "http://localhost:8000") {
@@ -39,16 +39,25 @@ export class MediaCore {
         method: "POST",
         body: JSON.stringify({ path, options }),
       }),
-    thumbnail: (url) =>
-      this.#request("/v1/thumbnail", {
-        method: "POST",
-        body: JSON.stringify({ url }),
-      }),
   };
 
   jobs = {
     list: (limit = 50) => this.#request(`/v1/jobs?limit=${encodeURIComponent(limit)}`),
     get: (id) => this.#request(`/v1/jobs/${id}`),
+    wait: async (id, { timeout = 120000, interval = 500 } = {}) => {
+      const deadline = Date.now() + timeout;
+      let last = null;
+      while (Date.now() < deadline) {
+        last = await this.jobs.get(id);
+        if (TERMINAL.has(String(last?.status || ""))) return last;
+        await new Promise((r) => setTimeout(r, interval));
+      }
+      throw new Error(`job ${id} did not finish within ${timeout}ms`);
+    },
+  };
+
+  providers = {
+    list: () => this.#request("/v1/providers"),
   };
 
   plugins = {

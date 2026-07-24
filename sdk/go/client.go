@@ -10,17 +10,16 @@ import (
 	"time"
 )
 
-// Client is the MediaCore Go SDK.
-// Surface: client.Media.Analyze/Download/Convert/Thumbnail,
-// client.Jobs.List/Get, client.Plugins.List.
+// Client is the MediaCore Go SDK for the permitted download API.
 type Client struct {
 	BaseURL    string
 	APIKey     string
 	HTTPClient *http.Client
 
-	Media   *MediaAPI
-	Jobs    *JobsAPI
-	Plugins *PluginsAPI
+	Media     *MediaAPI
+	Jobs      *JobsAPI
+	Providers *ProvidersAPI
+	Plugins   *PluginsAPI
 }
 
 func New(apiKey string, baseURL ...string) *Client {
@@ -37,6 +36,7 @@ func New(apiKey string, baseURL ...string) *Client {
 	}
 	c.Media = &MediaAPI{c: c}
 	c.Jobs = &JobsAPI{c: c}
+	c.Providers = &ProvidersAPI{c: c}
 	c.Plugins = &PluginsAPI{c: c}
 	return c
 }
@@ -91,35 +91,40 @@ func (m *MediaAPI) Download(url string, format string) (map[string]any, error) {
 	return out, err
 }
 
-func (m *MediaAPI) Convert(path string, options map[string]any) (map[string]any, error) {
-	if options == nil {
-		options = map[string]any{}
-	}
-	var out map[string]any
-	err := m.c.request("POST", "/v1/convert", map[string]any{"path": path, "options": options}, &out)
-	return out, err
-}
-
-func (m *MediaAPI) Thumbnail(url string) (map[string]any, error) {
-	var out map[string]any
-	err := m.c.request("POST", "/v1/thumbnail", map[string]string{"url": url}, &out)
-	return out, err
-}
-
 type JobsAPI struct{ c *Client }
-
-func (j *JobsAPI) List(limit int) ([]map[string]any, error) {
-	if limit <= 0 {
-		limit = 50
-	}
-	var out []map[string]any
-	err := j.c.request("GET", fmt.Sprintf("/v1/jobs?limit=%d", limit), nil, &out)
-	return out, err
-}
 
 func (j *JobsAPI) Get(id string) (map[string]any, error) {
 	var out map[string]any
 	err := j.c.request("GET", "/v1/jobs/"+id, nil, &out)
+	return out, err
+}
+
+func (j *JobsAPI) Wait(id string, timeout time.Duration) (map[string]any, error) {
+	if timeout <= 0 {
+		timeout = 120 * time.Second
+	}
+	deadline := time.Now().Add(timeout)
+	var last map[string]any
+	for time.Now().Before(deadline) {
+		out, err := j.Get(id)
+		if err != nil {
+			return nil, err
+		}
+		last = out
+		status, _ := out["status"].(string)
+		if status == "completed" || status == "failed" || status == "cancelled" {
+			return out, nil
+		}
+		time.Sleep(500 * time.Millisecond)
+	}
+	return last, fmt.Errorf("job %s did not finish within %s", id, timeout)
+}
+
+type ProvidersAPI struct{ c *Client }
+
+func (p *ProvidersAPI) List() ([]map[string]any, error) {
+	var out []map[string]any
+	err := p.c.request("GET", "/v1/providers", nil, &out)
 	return out, err
 }
 

@@ -64,5 +64,17 @@ def is_direct_media_url(url: str) -> bool:
             ".wav",
             ".flac",
             ".m3u8",
+            ".mpd",
         )
     )
+
+
+def is_stream_playlist_url(url: str) -> bool:
+    """True for direct HLS/DASH playlist URLs (not watch-page scrapes)."""
+    parsed = urlparse(url)
+    path = parsed.path.lower()
+    if path.endswith((".m3u8", ".mpd")):
+        return True
+    # query sometimes carries format=m3u8 on CDN URLs
+    q = (parsed.query or "").lower()
+    return "m3u8" in path or "format=m3u8" in q or "playlist.m3u8" in path

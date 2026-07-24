@@ -82,3 +82,49 @@ def convert_media(source: Path, dest: Path) -> Path:
     if result.returncode != 0:
         raise FFmpegError(result.stderr.strip() or "ffmpeg convert failed")
     return dest
+
+
+def download_stream(
+    url: str,
+    dest: Path,
+    *,
+    headers: dict[str, str] | None = None,
+    timeout_sec: int = 600,
+) -> Path:
+    """
+    Fetch a direct HLS/DASH (or ffmpeg-readable) stream URL into a local file.
+
+    Requires ffmpeg. Does not scrape watch pages — pass a permitted media/playlist URL.
+    """
+    if not ffmpeg_available():
+        raise FFmpegError(
+            "ffmpeg is not installed (required for HLS/m3u8 and DASH stream download)"
+        )
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    if not dest.suffix:
+        dest = dest.with_suffix(".mp4")
+
+    def _build(extra: list[str]) -> list[str]:
+        cmd = ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error"]
+        if headers:
+            header_blob = "".join(f"{k}: {v}\r\n" for k, v in headers.items())
+            cmd.extend(["-headers", header_blob])
+        cmd.extend(["-i", url, *extra, str(dest)])
+        return cmd
+
+    attempts = (
+        ["-c", "copy"],
+        ["-c", "copy", "-bsf:a", "aac_adtstoasc"],  # MPEG-TS HLS → MP4
+    )
+    last_err = ""
+    for extra in attempts:
+        result = subprocess.run(
+            _build(extra),
+            capture_output=True,
+            text=True,
+            timeout=timeout_sec,
+        )
+        if result.returncode == 0 and dest.exists() and dest.stat().st_size > 0:
+            return dest
+        last_err = result.stderr.strip() or "ffmpeg stream download failed"
+    raise FFmpegError(last_err)

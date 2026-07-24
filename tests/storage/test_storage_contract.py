@@ -10,18 +10,6 @@ from packages.testkit.fake_storage import FakeStorage
 
 pytestmark = pytest.mark.storage
 
-STORAGE_PLUGINS = [
-    "mediacore-plugin-storage-local",
-    "mediacore-plugin-storage-s3",
-    "mediacore-plugin-storage-r2",
-    "mediacore-plugin-storage-gdrive",
-    "mediacore-plugin-storage-azure",
-    "mediacore-plugin-storage-dropbox",
-    "mediacore-plugin-storage-onedrive",
-    "mediacore-plugin-storage-ftp",
-    "mediacore-plugin-storage-webdav",
-]
-
 
 def test_local_storage_contract(tmp_path: Path, monkeypatch):
     monkeypatch.setenv("STORAGE_ROOT", str(tmp_path / "local"))
@@ -40,11 +28,10 @@ def test_fake_storage_contract(tmp_path: Path):
     assert url.endswith("/a.bin")
 
 
-@pytest.mark.parametrize("name", STORAGE_PLUGINS)
-def test_storage_plugin_discovered(name: str):
+def test_storage_local_plugin_discovered():
     reset_plugin_loader()
     loader = PluginLoader()
-    info = {p.name: p for p in loader.discover()}[name]
+    info = {p.name: p for p in loader.discover()}["mediacore-plugin-storage-local"]
     assert info.kind == "storage"
     assert "store" in info.capabilities or info.status == "stub"
     assert info.module is not None
@@ -63,37 +50,4 @@ def test_default_resolve_is_local(tmp_path: Path, monkeypatch):
     storage = resolve_storage()
     assert storage.name == "local"
     assert storage.requires_cloud is False
-    get_settings.cache_clear()
-
-
-def test_s3_without_credentials_fails_clearly(monkeypatch, tmp_path: Path):
-    monkeypatch.setenv("STORAGE_BACKEND", "s3")
-    monkeypatch.setenv("STORAGE_ROOT", str(tmp_path))
-    monkeypatch.delenv("S3_BUCKET", raising=False)
-    from packages.config.settings import get_settings
-    from packages.core.exceptions import PluginError
-    from packages.storage.factory import resolve_storage
-
-    get_settings.cache_clear()
-    reset_plugin_loader()
-    with pytest.raises(PluginError, match="S3 storage not configured"):
-        resolve_storage()
-    get_settings.cache_clear()
-
-
-@pytest.mark.parametrize(
-    "backend",
-    ["gdrive", "azure", "dropbox", "onedrive"],
-)
-def test_oauth_stubs_need_config(backend: str, monkeypatch, tmp_path: Path):
-    monkeypatch.setenv("STORAGE_BACKEND", backend)
-    monkeypatch.setenv("STORAGE_ROOT", str(tmp_path))
-    from packages.config.settings import get_settings
-    from packages.core.exceptions import PluginError
-    from packages.storage.factory import resolve_storage
-
-    get_settings.cache_clear()
-    reset_plugin_loader()
-    with pytest.raises(PluginError, match="optional|not configured|not implemented"):
-        resolve_storage()
     get_settings.cache_clear()

@@ -37,14 +37,14 @@ Full product story: [Vision](/getting-started/vision).
 Full path table: [Repository layout](./layout).
 
 ```text
-apps/        api · worker · cli · dashboard · scheduler · desktop · studio · gateway
+apps/        api · worker · cli
 packages/    core · engine · registry · queue · storage · events · plugins · …
 providers/   <name>/ working  ·  modules/ catalog  ·  platforms/ hosts
-plugins/     ffmpeg · whisper · storage-* · webhook · …
-sdk/ · docs/ · tests/ · scripts/ · docker/ · helm/ · benchmarks/ · crates/ · mediacore/
+plugins/     ffmpeg · storage-local
+docs/ · tests/ · scripts/ · docker/ · mediacore/
 ```
 
-Legacy roots removed: `extractor/`, top-level `ffmpeg/` / `storage/` / `queue/` / `jobqueue/`.
+Removed product shells: dashboard, desktop, studio, gateway, scheduler, sdk, benchmarks, crates, helm.
 
 Contributor map: [MediaCore vs yt-dlp](./mediacore-vs-ytdlp) · [`providers/README.md`](../../providers/README.md).
 
@@ -52,16 +52,16 @@ Contributor map: [MediaCore vs yt-dlp](./mediacore-vs-ytdlp) · [`providers/READ
 
 | Layer | Responsibility |
 |-------|----------------|
-| **Engine** | Generic: URL, HTTP, cache, queue, pipeline, jobs, events, config, storage interface, plugins, scheduler, logging, metrics, security, telemetry |
-| **Runtime** | Execute jobs: Queue → Worker → Pipeline → Events (local, Docker, K8s, server, desktop, embedded) |
+| **Engine** | Generic: URL, HTTP, cache, queue, pipeline, jobs, events, config, storage, plugins |
+| **Runtime** | Execute jobs: Queue → Worker → Pipeline → Events (local or Docker) |
 
 No platform-specific code in the engine.
 
 ## Core principles
 
 1. **Core first** — small, stable, provider-agnostic.
-2. **Plugins for everything else** — storage, AI, auth, notifications, integrations.
-3. **Same pipeline everywhere** — API, CLI, Desktop, Studio share jobs and events.
+2. **Plugins only where needed** — `ffmpeg` + `storage-local` in the slim tree.
+3. **Same pipeline** — API and CLI share analyze/download jobs.
 4. **SDK consistency** — same concepts across languages.
 5. **Deployment modes** — CLI, desktop, docker, k8s, embedded, local-only.
 

@@ -4,59 +4,41 @@ title: Repository layout
 
 # Repository layout
 
-Canonical MediaCore paths. Prefer these names in new code and docs — do not recreate removed legacy roots.
+Slim MediaCore download-tool layout. Prefer these paths in new code.
 
 ## Top level
 
 | Path | Role |
 |------|------|
-| `apps/` | User surfaces: `api`, `cli`, `worker`, `dashboard`, `scheduler`, `desktop`, `studio`, `gateway` |
-| `packages/` | Shared libraries: `core`, `engine`, `registry`, `queue`, `storage`, `events`, `plugins`, … |
-| `providers/` | Site knowledge only (working packages + `modules/` catalog) |
-| `plugins/` | Optional capabilities: `ffmpeg`, `whisper`, `storage-*`, webhooks, … |
-| `sdk/` | Language clients |
-| `docs/` | VitePress site (`npm run dev`) |
-| `tests/` | Pytest suites |
-| `scripts/` | Catalog sync, provider queue, tooling |
-| `docker/` | Compose stack (root `docker-compose.yml` includes it) |
-| `helm/` | Kubernetes chart |
-| `benchmarks/` | Performance suite |
-| `crates/` | Rust engine foundation |
-| `mediacore/` | Package version (`__version__`) |
-| `alembic/` | DB migrations |
-| `examples/` | Small sample scripts |
-| `main.py` | Thin local entry → `apps.api.main` |
+| `apps/api` | REST `/v1` analyze / download / jobs |
+| `apps/cli` | `mediacore` permitted download CLI |
+| `apps/worker` | Dramatiq worker for async jobs |
+| `packages/core` | Downloader, HTTP, models, provider protocol |
+| `packages/engine` | Orchestration |
+| `packages/registry` | URL → provider |
+| `packages/queue` | Job queue (never top-level `queue/`) |
+| `packages/storage` | Local (+ optional cloud backends in package) |
+| `providers/` | Working providers + `modules/` catalog |
+| `plugins/ffmpeg` | Convert / remux after download |
+| `plugins/storage-local` | Default artifact storage |
+| `sdk/` | Thin clients: Python, JS/TS, PHP, Go |
+| `docs/` | VitePress site |
+| `tests/` · `scripts/` · `docker/` · `alembic/` · `mediacore/` | Support |
 
-## Providers (detail)
+## Providers
 
 | Path | Role |
 |------|------|
-| `providers/<name>/` | Working provider (`provider.py`) — register early in `packages/registry` |
-| `providers/modules/<slug>/` | Catalog modules (~1300) — host detect + direct media |
-| `providers/platforms/` | `hosts.py`, factory |
-| `providers/data/` | Snapshot, index, upgrade backlog |
-| `providers/base_module.py` | Catalog base class |
-| `providers/direct_media.py` / `oembed.py` | Shared helpers |
-
-Do **not** leave empty `providers/<name>/` folders (no `provider.py`). Catalog coverage for Facebook/Instagram lives under `providers/modules/`.
-
-## Packages vs plugins
-
-| Concern | Path |
-|---------|------|
-| HTTP download helper | `packages/core/downloader.py` |
-| Orchestration | `packages/engine/` |
-| URL → provider | `packages/registry/` |
-| Job queue | `packages/queue/` (never top-level `queue/`) |
-| Blob storage backends | `packages/storage/` |
-| FFmpeg convert plugin | `plugins/ffmpeg/` (never top-level `ffmpeg/`) |
+| `providers/<name>/provider.py` | Working provider (must exist) |
+| `providers/modules/<slug>/` | Catalog host detect + direct media |
+| `providers/platforms/` | Host maps + factory |
 
 ## Removed (do not recreate)
 
-`extractor/` · top-level `ffmpeg/` · top-level `storage/` · `jobqueue/` · top-level `queue/` · `providers/stubs/` · empty working provider shells
+`apps/dashboard` · `desktop` · `studio` · `gateway` · `scheduler` · `benchmarks/` · `crates/` · `helm/` · extra notification/AI/cloud storage plugins · top-level `extractor/` / `ffmpeg/` / `storage/` / `queue/`
 
 ## Related
 
 - [Overview](./overview)
 - [MediaCore vs yt-dlp](./mediacore-vs-ytdlp)
-- Repository [`providers/README.md`](../../providers/README.md)
+- [`providers/README.md`](../../providers/README.md)

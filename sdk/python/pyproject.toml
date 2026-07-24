@@ -1,0 +1,17 @@
+[project]
+name = "mediacore-sdk"
+version = "0.1.0"
+description = "MediaCore Python SDK — permitted download / analyze client"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["httpx>=0.28.0"]
+
+[project.urls]
+Homepage = "https://github.com/vannyakh/mediacore"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["mediacore_sdk"]

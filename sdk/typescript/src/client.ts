@@ -1,5 +1,6 @@
 /**
- * MediaCore TypeScript SDK — same surface as JS / Python / Go / Rust / Dart / C#.
+ * MediaCore TypeScript SDK — same surface as the JS client.
+ * Install: npm install ./sdk/typescript
  */
 
 export type AnalyzeResult = {
@@ -24,17 +25,11 @@ export type JobResult = {
   platform?: string | null;
   format_id?: string | null;
   error?: string | null;
+  result_path?: string | null;
   result_url?: string | null;
 };
 
-export type PluginResult = {
-  name: string;
-  version: string;
-  kind: string;
-  description: string;
-  status: string;
-  capabilities?: string[];
-};
+const TERMINAL = new Set(["completed", "failed", "cancelled"]);
 
 export class MediaCore {
   constructor(
@@ -73,21 +68,35 @@ export class MediaCore {
         method: "POST",
         body: JSON.stringify({ path, options }),
       }),
-    thumbnail: (url: string) =>
-      this.request<JobCreateResult>("/v1/thumbnail", {
-        method: "POST",
-        body: JSON.stringify({ url }),
-      }),
   };
 
   jobs = {
     list: (limit = 50) =>
-      this.request<JobResult[]>(`/v1/jobs?limit=${encodeURIComponent(String(limit))}`),
+      this.request<JobResult[]>(`/v1/jobs?limit=${encodeURIComponent(limit)}`),
     get: (id: string) => this.request<JobResult>(`/v1/jobs/${id}`),
+    wait: async (
+      id: string,
+      opts: { timeout?: number; interval?: number } = {},
+    ): Promise<JobResult> => {
+      const timeout = opts.timeout ?? 120_000;
+      const interval = opts.interval ?? 500;
+      const deadline = Date.now() + timeout;
+      let last!: JobResult;
+      while (Date.now() < deadline) {
+        last = await this.jobs.get(id);
+        if (TERMINAL.has(String(last.status || ""))) return last;
+        await new Promise((r) => setTimeout(r, interval));
+      }
+      throw new Error(`job ${id} did not finish within ${timeout}ms`);
+    },
+  };
+
+  providers = {
+    list: () => this.request<Array<Record<string, unknown>>>("/v1/providers"),
   };
 
   plugins = {
-    list: () => this.request<PluginResult[]>("/v1/plugins"),
+    list: () => this.request<Array<Record<string, unknown>>>("/v1/plugins"),
   };
 }
 

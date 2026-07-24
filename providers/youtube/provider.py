@@ -58,8 +58,9 @@ class YoutubeProvider(Provider):
 
     def download(self, url: str, format_id: str, dest: Path) -> DownloadResult:
         raise ProviderNotConfiguredError(
-            f"{self.name} (page download requires authorized YouTube access; "
-            "public oEmbed is metadata-only)"
+            f"{self.name} (watch pages are metadata-only via public oEmbed; "
+            "pass a direct media/stream URL (.mp4/.m3u8) to generic instead — "
+            "MediaCore does not scrape YouTube streams)"
         )
 
     def thumbnail(self, url: str) -> ThumbnailInfo | None:

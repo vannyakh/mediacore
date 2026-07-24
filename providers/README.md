@@ -10,8 +10,8 @@ providers/modules/    ~1300 catalog packages — host detect + direct media only
 packages/core/        downloader.py · http.py · models · provider protocol
 packages/engine/      Orchestration
 packages/registry/    URL → provider resolve
-plugins/              Postprocess: ffmpeg, whisper, storage-* (not scrapers)
-apps/cli · apps/api   User surfaces
+plugins/              ffmpeg · storage-local
+apps/cli · apps/api · apps/worker
 ```
 
 Canonical paths: [docs/architecture/layout.md](../docs/architecture/layout.md).  

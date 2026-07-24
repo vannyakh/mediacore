@@ -37,7 +37,6 @@ from apps.api.schemas import (
 from packages.core.exceptions import MediaCoreError
 from packages.engine.engine import MediaCoreEngine
 from packages.events.bus import Event, EventType, get_event_bus
-from packages.events.plugins import plugin_runtime_status
 from packages.media.wrapper import ffmpeg_available
 from packages.plugins.loader import get_plugin_loader
 from packages.plugins.runtime import FFMPEG_PLUGIN
@@ -399,20 +398,7 @@ def providers_catalog_search(
 
 @router.get("/plugins", response_model=list[PluginOut])
 def list_plugins(_: ApiKey = Depends(require_api_key)) -> list[PluginOut]:
-    plugins = get_plugin_loader().list()
-    out: list[PluginOut] = []
-    for p in plugins:
-        data = p.to_dict()
-        runtime = plugin_runtime_status(data["name"])
-        if runtime != "stub" or data["name"].startswith("mediacore-plugin-"):
-            if data["name"] in {
-                "mediacore-plugin-webhook",
-                "mediacore-plugin-telegram",
-                "mediacore-plugin-discord",
-            }:
-                data["status"] = runtime
-        out.append(PluginOut(**data))
-    return out
+    return [PluginOut(**p.to_dict()) for p in get_plugin_loader().list()]
 
 
 @router.get("/system", response_model=SystemOut)

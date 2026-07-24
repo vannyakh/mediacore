@@ -8,25 +8,14 @@ from packages.plugins.loader import PluginLoader
 pytestmark = pytest.mark.unit
 
 
-def test_discover_builtin_plugins():
+def test_discover_download_plugins():
     loader = PluginLoader()
     plugins = loader.discover()
     names = {p.name for p in plugins}
-    assert "mediacore-plugin-storage-local" in names
-    assert "mediacore-plugin-ffmpeg" in names
-    assert "mediacore-plugin-metadata" in names
-    assert "mediacore-plugin-auth-apikey" in names
-
-
-def test_stub_plugin_dirs():
-    loader = PluginLoader()
-    stubs = [p for p in loader.discover() if p.status == "stub"]
-    # OAuth clouds remain stubs until fully wired
-    assert any(p.name.endswith("storage-gdrive") for p in stubs)
-    assert any(p.name.endswith("storage-dropbox") for p in stubs)
-    azure = loader.get("mediacore-plugin-storage-azure")
-    assert azure is not None
-    assert azure.status == "available"
+    assert names == {
+        "mediacore-plugin-storage-local",
+        "mediacore-plugin-ffmpeg",
+    }
 
 
 def test_loader_get():
@@ -59,17 +48,3 @@ def test_unknown_kind_becomes_error(tmp_path: Path):
     plugins = loader.discover()
     assert len(plugins) == 1
     assert plugins[0].status == "error"
-
-
-def test_custom_plugin_root(tmp_path: Path):
-    plugin_dir = tmp_path / "demo"
-    plugin_dir.mkdir()
-    (plugin_dir / "plugin.py").write_text(
-        'PLUGIN = {"name": "mediacore-plugin-demo", "kind": "storage", "capabilities": ["x"]}\n',
-        encoding="utf-8",
-    )
-    loader = PluginLoader(root=tmp_path)
-    plugins = loader.discover()
-    assert len(plugins) == 1
-    assert plugins[0].name == "mediacore-plugin-demo"
-    assert plugins[0].kind == "storage"

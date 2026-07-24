@@ -28,8 +28,7 @@ packages/
 providers/
   <name>/      working providers (register early)
   modules/     ~1300 catalog packages — host detect + direct media
-plugins/       ffmpeg, storage-*, whisper, webhook, …
-sdk/           language clients
+plugins/       ffmpeg · storage-local
 ```
 
 ## Pipeline (honest)

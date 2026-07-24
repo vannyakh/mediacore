@@ -20,7 +20,7 @@ from packages.events.bus import get_event_bus
 from packages.events.plugins import register_event_plugins
 from packages.events.redis_bridge import RedisEventBridge, configure_event_bridge
 from packages.logging.setup import setup_logging
-from packages.telemetry.metrics import render_metrics
+from packages.logging.metrics import render_metrics
 
 setup_logging()
 logger = logging.getLogger("mediacore.api")
@@ -57,7 +57,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title=settings.app_name,
         version=__version__,
-        description="MediaCore — media extraction, processing, and automation platform",
+        description="MediaCore — permitted media download CLI/API",
         lifespan=lifespan,
     )
 

@@ -1,17 +1,10 @@
 services:
-  nginx:
-    image: nginx:1.27-alpine
-    ports:
-      - "8080:80"
-    volumes:
-      - ../apps/gateway/nginx.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - api
-
   api:
     build:
       context: ..
       dockerfile: docker/Dockerfile
+    ports:
+      - "8000:8000"
     environment:
       USE_SQLITE: "false"
       DATABASE_URL: postgresql+psycopg://mediacore:mediacore@postgres:5432/mediacore
@@ -19,14 +12,13 @@ services:
       STORAGE_ROOT: /data/files
       SEED_API_KEY: dev-api-key-change-me
       SYNC_DOWNLOAD: "false"
+      EVENTS_REDIS_ENABLED: "false"
       APP_NAME: MediaCore
     volumes:
       - media_data:/data/files
     depends_on:
       - postgres
       - redis
-    expose:
-      - "8000"
 
   worker:
     build:
@@ -38,27 +30,13 @@ services:
       DATABASE_URL: postgresql+psycopg://mediacore:mediacore@postgres:5432/mediacore
       REDIS_URL: redis://redis:6379/0
       STORAGE_ROOT: /data/files
+      EVENTS_REDIS_ENABLED: "false"
     volumes:
       - media_data:/data/files
     depends_on:
       - postgres
       - redis
       - api
-
-  scheduler:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile
-    command: ["python", "-m", "apps.scheduler.main"]
-    environment:
-      USE_SQLITE: "false"
-      DATABASE_URL: postgresql+psycopg://mediacore:mediacore@postgres:5432/mediacore
-      REDIS_URL: redis://redis:6379/0
-      STORAGE_ROOT: /data/files
-      JOB_TTL_HOURS: "24"
-    depends_on:
-      - redis
-      - postgres
 
   redis:
     image: redis:7-alpine
@@ -74,28 +52,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pg_data:/var/lib/postgresql/data
-
-  prometheus:
-    image: prom/prometheus:v2.55.1
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    ports:
-      - "9090:9090"
-    depends_on:
-      - api
-
-  grafana:
-    image: grafana/grafana:11.3.0
-    ports:
-      - "3000:3000"
-    environment:
-      GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: admin
-    volumes:
-      - ./grafana/provisioning:/etc/grafana/provisioning:ro
-    depends_on:
-      - prometheus
+      - pg_data:/data/postgres
 
 volumes:
   pg_data:
