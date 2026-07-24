@@ -18,6 +18,11 @@ logger = logging.getLogger("mediacore.plugins.runtime")
 STORAGE_LOCAL = "mediacore-plugin-storage-local"
 FFMPEG_PLUGIN = "mediacore-plugin-ffmpeg"
 
+
+class _IdentityNormalizer:
+    def enrich(self, metadata: Any) -> Any:
+        return metadata
+
 # Kinds that receive EventBus events via on_event
 _EVENT_KINDS = (
     PluginKind.NOTIFICATIONS,
@@ -109,7 +114,14 @@ class PluginRuntime:
         return self.create(FFMPEG_PLUGIN)
 
     def metadata_normalizer(self) -> Any:
-        return self.create("mediacore-plugin-metadata")
+        """Optional metadata enricher; identity when no metadata plugin is installed."""
+        info = self.loader.get("mediacore-plugin-metadata")
+        if info is None or info.status != "available" or not info.module:
+            return _IdentityNormalizer()
+        try:
+            return self.create("mediacore-plugin-metadata")
+        except PluginError:
+            return _IdentityNormalizer()
 
     def dispatch_event(self, event: Any) -> None:
         """Invoke on_event for notification, webhook, and analytics plugins."""

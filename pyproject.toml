@@ -1,7 +1,7 @@
 [project]
 name = "mediacore"
 version = "0.1.0"
-description = "MediaCore — The Open Source Media Infrastructure Platform"
+description = "MediaCore — permitted media download CLI/API"
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.12"
@@ -34,18 +34,10 @@ dev = [
     "ruff>=0.8.0",
     "httpx>=0.28.0",
 ]
-storage-s3 = ["boto3>=1.35.0"]
-storage-azure = ["azure-storage-blob>=12.24.0"]
-storage-cloud = [
-    "mediacore[storage-s3]",
-    "mediacore[storage-azure]",
-]
-
 [project.scripts]
 mediacore = "apps.cli.main:main"
 mediacore-api = "apps.api.main:run"
 mediacore-worker = "apps.worker.main:run"
-mediacore-scheduler = "apps.scheduler.main:run"
 
 [build-system]
 requires = ["hatchling"]

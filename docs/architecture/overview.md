@@ -34,35 +34,34 @@ Full product story: [Vision](/getting-started/vision).
 
 ## Layout
 
+Full path table: [Repository layout](./layout).
+
 ```text
-apps/        api, worker, cli, dashboard, scheduler, desktop, studio, gateway
-packages/    core (downloader, http), engine, registry, plugins, events, queue, storage, …
-providers/   working providers + modules/ catalog (independent of core)
-plugins/     storage-*, ffmpeg, whisper, webhook, telegram, …
-sdk/         multi-language clients
-benchmarks/  standalone performance suite
-crates/      mediacore-engine (Rust foundation)
-mediacore/   package version (__version__)
+apps/        api · worker · cli
+packages/    core · engine · registry · queue · storage · events · plugins · …
+providers/   <name>/ working  ·  modules/ catalog  ·  platforms/ hosts
+plugins/     ffmpeg · storage-local
+docs/ · tests/ · scripts/ · docker/ · mediacore/
 ```
 
-Legacy shims removed: `extractor/`, top-level `ffmpeg/`, `storage/`, `jobqueue/`, top-level `queue/`.
+Removed product shells: dashboard, desktop, studio, gateway, scheduler, sdk, benchmarks, crates, helm.
 
-Contributor map: [MediaCore vs yt-dlp layout](./mediacore-vs-ytdlp) · [`providers/README.md`](../../providers/README.md).
+Contributor map: [MediaCore vs yt-dlp](./mediacore-vs-ytdlp) · [`providers/README.md`](../../providers/README.md).
 
 ## Engine vs runtime
 
 | Layer | Responsibility |
 |-------|----------------|
-| **Engine** | Generic: URL, HTTP, cache, queue, pipeline, jobs, events, config, storage interface, plugins, scheduler, logging, metrics, security, telemetry |
-| **Runtime** | Execute jobs: Queue → Worker → Pipeline → Events (local, Docker, K8s, server, desktop, embedded) |
+| **Engine** | Generic: URL, HTTP, cache, queue, pipeline, jobs, events, config, storage, plugins |
+| **Runtime** | Execute jobs: Queue → Worker → Pipeline → Events (local or Docker) |
 
 No platform-specific code in the engine.
 
 ## Core principles
 
 1. **Core first** — small, stable, provider-agnostic.
-2. **Plugins for everything else** — storage, AI, auth, notifications, integrations.
-3. **Same pipeline everywhere** — API, CLI, Desktop, Studio share jobs and events.
+2. **Plugins only where needed** — `ffmpeg` + `storage-local` in the slim tree.
+3. **Same pipeline** — API and CLI share analyze/download jobs.
 4. **SDK consistency** — same concepts across languages.
 5. **Deployment modes** — CLI, desktop, docker, k8s, embedded, local-only.
 

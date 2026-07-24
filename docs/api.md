@@ -1,3 +1,0 @@
-# Moved
-
-See [api/](api/).

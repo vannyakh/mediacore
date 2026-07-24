@@ -1,3 +1,0 @@
-# Moved
-
-See [plugins/](plugins/).

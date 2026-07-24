@@ -1,10 +1,16 @@
 {
   "name": "@mediacore/sdk-ts",
   "version": "0.1.0",
+  "description": "MediaCore TypeScript SDK — permitted download / analyze client",
   "type": "module",
   "main": "src/client.ts",
   "types": "src/client.ts",
   "exports": {
     ".": "./src/client.ts"
-  }
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "license": "Apache-2.0"
 }

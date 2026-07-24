@@ -1,0 +1,16 @@
+{
+  "name": "mediacore/sdk",
+  "description": "MediaCore PHP SDK — permitted download / analyze client",
+  "type": "library",
+  "license": "Apache-2.0",
+  "require": {
+    "php": ">=8.1",
+    "ext-curl": "*",
+    "ext-json": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "MediaCore\\": "src/"
+    }
+  }
+}

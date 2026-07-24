@@ -1,7 +1,0 @@
-name: mediacore
-description: MediaCore Dart SDK — unified client surface
-version: 0.1.0
-environment:
-  sdk: ">=3.0.0 <4.0.0"
-dependencies:
-  http: ^1.2.0

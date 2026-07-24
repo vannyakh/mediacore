@@ -1,20 +1,24 @@
-# Providers
+# Providers (extractors)
 
-MediaCore resolves media URLs through a **provider registry**. Core stays platform-agnostic; all site knowledge lives here.
+In MediaCore, **extractors live under `providers/`** (there is no top-level `extractor/`).  
+Core (`packages/core`) stays platform-agnostic; site knowledge stays here.
 
-## One-screen map (whole repo)
+## One-screen map
 
 ```text
-providers/<name>/     Working site logic (oEmbed / official / share-link download)
-providers/modules/    ~1300 catalog packages — host detect + direct media only
-packages/core/        downloader.py · http.py · models · provider protocol
-packages/engine/      Orchestration (like yt-dlp's YoutubeDL coordinator)
-packages/registry/    URL → provider resolve
-plugins/              Postprocess: ffmpeg, whisper, storage-* (not scrapers)
-apps/cli · apps/api   User surfaces
+providers/<name>/     Working extractor (must have provider.py)
+providers/modules/    ~1300 catalog extractors — host detect + direct media only
+packages/core/
+  networking/ · downloader/   # yt-dlp-shaped (see packages/core/README.md)
+  provider protocol · models · pipeline
+packages/engine/      Orchestration
+packages/registry/    URL → extractor resolve
+plugins/              ffmpeg · storage-local
+apps/cli · apps/api · apps/worker
 ```
 
-Full concept map: [docs/architecture/mediacore-vs-ytdlp.md](../docs/architecture/mediacore-vs-ytdlp.md).
+Canonical paths: [docs/architecture/layout.md](../docs/architecture/layout.md).  
+vs yt-dlp folders: [docs/architecture/mediacore-vs-ytdlp.md](../docs/architecture/mediacore-vs-ytdlp.md).
 
 ## Layout (this folder)
 
@@ -36,8 +40,8 @@ providers/
 | `providers/modules/<slug>/` | Catalog module — intentional; **do not mass-delete** |
 | `providers/platforms/hosts.py` | Curated host maps merged into the index |
 | `scripts/provider_upgrade_queue.py` | Batch upgrade queue |
-| `packages/core/downloader.py` | HTTP fetch used by providers |
-| `packages/core/http.py` | Shared networking client |
+| `packages/core/downloader/` | HTTP + stream fetch used by providers |
+| `packages/core/networking/` | Shared networking client (`http.py` re-exports) |
 | `plugins/ffmpeg` | Convert/remux after a permitted download |
 
 ## Registration order
@@ -55,6 +59,16 @@ When you add a working provider, also add its folder name to `WORKING_SKIP` in `
 3. **Download** — direct media on known hosts, or authorized/permitted APIs only
 
 Page/watch URLs without a permitted API return `provider_not_configured`. That is expected, not a bug.
+
+## Download capability matrix
+
+| Capability | Status | Behavior |
+|------------|--------|----------|
+| **download** | `active` (legacy `available`) | Permitted file fetch (direct media, share links, public recording APIs) |
+| **metadata** | `metadata_only` | Analyze / oEmbed / public API metadata; page download blocked |
+| **catalog** | `not_configured` | Host detect + direct media on that host; watch pages not configured |
+
+CLI: `mediacore providers list --download-only`
 
 ## Adding a working provider
 

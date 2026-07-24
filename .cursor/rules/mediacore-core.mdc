@@ -5,17 +5,18 @@ alwaysApply: true
 
 # MediaCore Core
 
-Brand is **MediaCore** only — **The Open Media Infrastructure Platform** (tagline: Extract • Process • Automate • Deliver). Do not introduce other product names, legacy aliases (`apidownloader`, `VideoExtractor`), or third-party downloader brands in code, docs, logs, or package names. Never position MediaCore as “just a video downloader.”
+Brand is **MediaCore** only. Product surface is a **permitted media download CLI/API** (plus ffmpeg convert). Do not introduce other product names, legacy aliases (`apidownloader`, `VideoExtractor`), or third-party downloader brands in code, docs, logs, or package names. Do not claim universal watch-URL scraping.
 
 ## Architecture
 
 - Platform-first: core stays provider-agnostic (no YouTube/TikTok/etc. knowledge in core).
-- Stack: Engine → Plugin System → Providers → Media Pipeline → SDK → Application.
-- Layout: `apps/` (api, worker, cli, dashboard, desktop, studio…), `packages/` (core, engine, registry, plugins, events…), `providers/`, `plugins/`, `sdk/`, `docs/`.
+- Stack: Engine → Providers → Pipeline → CLI/API (ffmpeg plugin for convert).
+- Layout: `apps/api`, `apps/cli`, `apps/worker`, `packages/core` (+ engine/registry/…), `providers/` (**extractors**), `plugins/ffmpeg`, `plugins/storage-local`, `sdk/`, `docs/`. Path table: `docs/architecture/layout.md`.
+- Extractor = `providers/<name>/provider.py` (not top-level `extractor/`). Catalog-only under `providers/modules/`. Storage is local-only in the slim tree.
 - Runtime queue package is `packages/queue` only — never add a top-level `queue/` Python package (shadows stdlib).
-- Do not recreate legacy shims: `extractor/`, `ffmpeg/`, `storage/`, `jobqueue/`.
+- Do not recreate: `extractor/`, top-level `ffmpeg/` / `storage/` / `jobqueue/`, `dashboard/`, `helm/`, `benchmarks/`, `crates/`.
 - API surface: `/v1/*` (compatibility alias `/api/v1/*` allowed).
-- Vision / roadmap: `docs/getting-started/vision.md`, `ROADMAP.md` (detail in `docs/getting-started/roadmap.md`).
+- Vision / roadmap: `docs/getting-started/vision.md`, `ROADMAP.md`.
 
 ## Compliance
 
@@ -26,5 +27,5 @@ Brand is **MediaCore** only — **The Open Media Infrastructure Platform** (tagl
 
 ## Branding
 
-- Loggers, metrics job names, SDK packages: `mediacore` / `@mediacore/*`.
+- Loggers, metrics job names: `mediacore`.
 - User-facing copy says MediaCore, never legacy project names.

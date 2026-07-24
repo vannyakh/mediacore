@@ -76,9 +76,12 @@ class _FakeClient:
 
 
 def test_parser_requires_command():
+    from apps.cli.main import rewrite_argv_for_url_mode
+
     parser = build_parser()
     with pytest.raises(SystemExit):
         parser.parse_args([])
+    assert rewrite_argv_for_url_mode(["https://example.com/a.mp4"])[0] == "get"
 
 
 def test_parser_analyze_and_download_wait():
@@ -101,6 +104,69 @@ def test_parser_analyze_and_download_wait():
     assert args.wait is True
     assert args.wait_timeout == 30.0
     assert args.format == "720p"
+
+
+def test_url_first_get_and_list_formats():
+    from apps.cli.main import rewrite_argv_for_url_mode
+
+    rewritten = rewrite_argv_for_url_mode(["-F", "https://example.com/a.mp4"])
+    assert rewritten == ["get", "-F", "https://example.com/a.mp4"]
+    parser = build_parser()
+    args = parser.parse_args(rewritten)
+    assert args.command == "get"
+    assert args.list_formats is True
+    assert args.urls == ["https://example.com/a.mp4"]
+
+    rewritten = rewrite_argv_for_url_mode(
+        ["--base", "http://api", "-s", "https://example.com/a.mp4"]
+    )
+    assert rewritten[0:3] == ["--base", "http://api", "get"]
+
+
+def test_cmd_get_simulate_lists_analyze(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+):
+    client = _FakeClient(
+        {
+            ("POST", "/v1/analyze"): _FakeResponse(
+                payload={
+                    "platform": "generic",
+                    "title": "demo",
+                    "formats": [{"id": "original", "quality": "original", "container": "mp4"}],
+                }
+            )
+        }
+    )
+    monkeypatch.setattr(commands, "make_client", lambda *a, **k: client)
+    args = SimpleNamespace(
+        base="http://x",
+        key="k",
+        urls=["https://example.com/v.mp4"],
+        url=None,
+        batch_file=None,
+        list_formats=True,
+        simulate=False,
+        format="original",
+        output=None,
+        wait=True,
+        wait_timeout=10.0,
+        quiet=False,
+        verbose=False,
+    )
+    assert commands.cmd_get(args) == 0
+    out = capsys.readouterr().out
+    assert "original" in out
+    assert "generic" in out
+
+
+def test_batch_file_urls(tmp_path: Path):
+    batch = tmp_path / "urls.txt"
+    batch.write_text("# comment\nhttps://a.example/x.mp4\nhttps://b.example/y.mp4\n", encoding="utf-8")
+    args = SimpleNamespace(url=None, urls=[], batch_file=str(batch))
+    assert commands._collect_urls(args) == [
+        "https://a.example/x.mp4",
+        "https://b.example/y.mp4",
+    ]
 
 
 def test_resolve_env_overrides(monkeypatch: pytest.MonkeyPatch):
@@ -257,6 +323,8 @@ def test_doctor_reports_checks(monkeypatch: pytest.MonkeyPatch, capsys: pytest.C
     assert payload["ok"] is True
     assert payload["checks"]["ffmpeg"]["ok"] is True
     assert payload["checks"]["plugins"]["total"] >= 1
+    assert "events_redis" in payload["checks"]
+    assert payload["checks"]["events_redis"]["ok"] is True
 
 
 def test_main_http_error(monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]):
@@ -316,6 +384,8 @@ def test_parser_providers_list_and_search():
     assert args.func is commands.cmd_providers_list
     args = parser.parse_args(["providers", "list", "--status", "active"])
     assert args.status == "active"
+    args = parser.parse_args(["providers", "list", "--download-only"])
+    assert args.download_only is True
     args = parser.parse_args(["providers", "search", "youtube", "--limit", "10"])
     assert args.query == "youtube"
     assert args.limit == 10
@@ -337,11 +407,45 @@ def test_cmd_providers_list(monkeypatch: pytest.MonkeyPatch, capsys: pytest.Capt
         }
     )
     monkeypatch.setattr(commands, "make_client", lambda *a, **k: client)
-    args = SimpleNamespace(base="http://localhost:8000", key="k", status=None)
+    args = SimpleNamespace(
+        base="http://localhost:8000", key="k", status=None, download_only=False
+    )
     assert commands.cmd_providers_list(args) == 0
     payload = json.loads(capsys.readouterr().out)
     assert payload["working_count"] == 2
+    assert payload["by_capability"]["download"] == 1
+    assert payload["by_capability"]["metadata"] == 1
+    assert payload["download"][0]["name"] == "dropbox"
+    assert payload["metadata"][0]["name"] == "youtube"
     assert payload["catalog"]["providers_indexed"] == 1000
+
+
+def test_cmd_providers_list_download_only(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+):
+    client = _FakeClient(
+        {
+            ("GET", "/v1/providers"): _FakeResponse(
+                payload=[
+                    {"name": "dropbox", "status": "active"},
+                    {"name": "youtube", "status": "metadata_only"},
+                    {"name": "generic", "status": "available"},
+                ]
+            ),
+            ("GET", "/v1/providers/catalog"): _FakeResponse(payload={}),
+        }
+    )
+    monkeypatch.setattr(commands, "make_client", lambda *a, **k: client)
+    args = SimpleNamespace(
+        base="http://localhost:8000", key="k", status=None, download_only=True
+    )
+    assert commands.cmd_providers_list(args) == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["download_only"] is True
+    assert payload["listed"] == 2
+    names = {p["name"] for p in payload["providers"]}
+    assert names == {"dropbox", "generic"}
+    assert payload["by_capability"]["metadata"] == 0
 
 
 def test_cmd_providers_search(monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]):
@@ -372,4 +476,5 @@ def test_format_http_error_provider_not_configured_hint():
     text = format_http_error(exc)
     assert "provider_not_configured" in text
     assert "hint:" in text
-    assert "providers list" in text
+    assert "download-only" in text
+    assert "-s URL" in text

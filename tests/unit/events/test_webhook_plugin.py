@@ -2,8 +2,6 @@ import pytest
 
 from packages.events.bus import Event, EventBus, EventType
 from packages.events.plugins import forward_webhook, register_event_plugins
-from packages.plugins.loader import reset_plugin_loader
-from packages.plugins.runtime import reset_runtime
 
 pytestmark = pytest.mark.unit
 
@@ -31,14 +29,11 @@ def test_forward_webhook_posts(monkeypatch):
     assert calls == [("https://hooks.example.com/mc", event.to_dict())]
 
 
-def test_emit_dispatches_webhook_on_event(monkeypatch):
-    """Single delivery path: EventBus.emit → PluginRuntime.dispatch_event → on_event."""
+def test_emit_forwards_webhook_when_configured(monkeypatch):
     monkeypatch.setenv("MEDIACORE_WEBHOOK_URL", "https://hooks.example.com/mc")
     from apps.api.config import get_settings
 
     get_settings.cache_clear()
-    reset_plugin_loader()
-    reset_runtime()
 
     calls: list[str] = []
 
@@ -59,9 +54,7 @@ def test_emit_dispatches_webhook_on_event(monkeypatch):
     monkeypatch.setattr("packages.events.plugins.httpx.Client", FakeClient)
     bus = EventBus()
     enabled = register_event_plugins(bus)
-    assert "mediacore-plugin-webhook" in enabled
+    assert "webhook" in enabled
     bus.emit(EventType.COMPLETED, job_id="z")
     assert calls.count("https://hooks.example.com/mc") == 1
     get_settings.cache_clear()
-    reset_plugin_loader()
-    reset_runtime()
