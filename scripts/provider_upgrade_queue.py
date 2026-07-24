@@ -19,13 +19,21 @@ REGISTRY = ROOT / "packages" / "registry" / "providers.py"
 
 # Public oEmbed (or equivalent) endpoints — agent should prefer these first.
 KNOWN_OEMBED: dict[str, dict[str, str]] = {
+    "youtube": {
+        "endpoint": "https://www.youtube.com/oembed",
+        "note": "format=json; metadata_only (no download)",
+    },
+    "tiktok": {
+        "endpoint": "https://www.tiktok.com/oembed",
+        "note": "official public oEmbed; metadata_only",
+    },
     "flickr": {
         "endpoint": "https://www.flickr.com/services/oembed",
         "note": "format=json",
     },
     "tumblr": {
         "endpoint": "https://www.tumblr.com/oembed/1.0",
-        "note": "public oEmbed",
+        "note": "deprecated/unavailable (2024+); prefer hosts_only or Tumblr API credentials",
     },
     "smugmug": {
         "endpoint": "https://api.smugmug.com/services/oembed/",
@@ -33,7 +41,7 @@ KNOWN_OEMBED: dict[str, dict[str, str]] = {
     },
     "slideshare": {
         "endpoint": "https://www.slideshare.net/api/oembed/2",
-        "note": "format=json",
+        "note": "oEmbed deprecated by SlideShare; hosts_only only",
     },
     "scribd": {
         "endpoint": "https://www.scribd.com/services/oembed",
@@ -53,15 +61,15 @@ KNOWN_OEMBED: dict[str, dict[str, str]] = {
     },
     "twitch": {
         "endpoint": "https://api.twitch.tv/v5/oembed",
-        "note": "legacy; prefer Helix with credentials or skip download",
+        "note": "v5 oEmbed gone; Helix needs OAuth — skipped_no_api without credentials",
     },
     "spotify": {
         "endpoint": "https://open.spotify.com/oembed",
         "note": "metadata oEmbed only",
     },
     "applepodcasts": {
-        "endpoint": "https://itunes.apple.com/oembed",
-        "note": "podcasts/music oEmbed where supported",
+        "endpoint": "https://itunes.apple.com/lookup",
+        "note": "use iTunes Lookup API (oEmbed 404); metadata_only",
     },
 }
 

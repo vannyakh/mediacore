@@ -13,7 +13,7 @@ from providers.base_module import PlatformModule
 class BloggerComProvider(PlatformModule):
     name = 'blogger.com'
     status = 'not_configured'
-    host_suffixes = ('blogger.com',)
+    host_suffixes = ('blogger.com', 'www.blogger.com')
     ie_names = ('blogger.com',)
     source = "catalog"
     description = 'Platform module for blogger.com'

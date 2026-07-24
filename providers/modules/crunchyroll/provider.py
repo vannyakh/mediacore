@@ -14,6 +14,6 @@ class CrunchyrollProvider(PlatformModule):
     name = 'crunchyroll'
     status = 'not_configured'
     host_suffixes = ('crunchyroll.com', 'www.crunchyroll.com')
-    ie_names = ('Crunchyroll',)
+    ie_names = ('Crunchyroll', 'crunchyroll')
     source = "catalog"
     description = 'Platform module for crunchyroll'

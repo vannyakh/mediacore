@@ -13,7 +13,7 @@ from providers.base_module import PlatformModule
 class TumblrProvider(PlatformModule):
     name = 'tumblr'
     status = 'not_configured'
-    host_suffixes = ()
+    host_suffixes = ('tumblr.com', 'www.tumblr.com')
     ie_names = ('Tumblr',)
     source = "catalog"
     description = 'Platform module for tumblr'

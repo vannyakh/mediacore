@@ -21,28 +21,74 @@ MAJOR_PLATFORMS: dict[str, dict] = {
         "ie_names": ("youtube", "Youtube", "YoutubeTab", "YoutubeClip"),
     },
     "tiktok": {
-        "hosts": ("tiktok.com", "www.tiktok.com", "vm.tiktok.com", "m.tiktok.com"),
+        "hosts": (
+            "tiktok.com",
+            "www.tiktok.com",
+            "vm.tiktok.com",
+            "m.tiktok.com",
+            "vt.tiktok.com",
+        ),
         "ie_names": ("TikTok", "tiktok"),
     },
     "instagram": {
         "hosts": ("instagram.com", "www.instagram.com"),
-        "ie_names": ("Instagram",),
+        "ie_names": ("Instagram", "instagram:story", "instagram:tag", "instagram:user"),
     },
     "facebook": {
-        "hosts": ("facebook.com", "www.facebook.com", "fb.watch", "m.facebook.com", "fb.com"),
-        "ie_names": ("Facebook",),
+        "hosts": (
+            "facebook.com",
+            "www.facebook.com",
+            "fb.watch",
+            "m.facebook.com",
+            "fb.com",
+            "web.facebook.com",
+        ),
+        "ie_names": ("Facebook", "facebook", "facebook:ads", "facebook:reel"),
     },
     "twitter": {
         "hosts": ("twitter.com", "www.twitter.com", "x.com", "www.x.com", "mobile.twitter.com"),
         "ie_names": ("twitter", "Twitter"),
     },
     "twitch": {
-        "hosts": ("twitch.tv", "www.twitch.tv", "m.twitch.tv", "clips.twitch.tv"),
+        "hosts": ("twitch.tv", "www.twitch.tv", "m.twitch.tv", "clips.twitch.tv", "go.twitch.tv"),
         "ie_names": ("Twitch", "TwitchVod", "TwitchClips"),
     },
+    "applepodcasts": {
+        "hosts": ("podcasts.apple.com", "itunes.apple.com"),
+        "ie_names": ("ApplePodcasts", "apple:podcasts"),
+    },
+    "flickr": {
+        "hosts": ("flickr.com", "www.flickr.com", "secure.flickr.com"),
+        "ie_names": ("Flickr",),
+    },
+    "slideshare": {
+        "hosts": ("slideshare.net", "www.slideshare.net"),
+        "ie_names": ("Slideshare",),
+    },
+    "tumblr": {
+        "hosts": ("tumblr.com", "www.tumblr.com"),
+        "ie_names": ("Tumblr",),
+    },
     "bilibili": {
-        "hosts": ("bilibili.com", "www.bilibili.com", "b23.tv", "space.bilibili.com"),
-        "ie_names": ("BiliBili", "Bilibili"),
+        "hosts": (
+            "bilibili.com",
+            "www.bilibili.com",
+            "b23.tv",
+            "space.bilibili.com",
+            "player.bilibili.com",
+            "live.bilibili.com",
+            "bilibili.tv",
+            "www.bilibili.tv",
+        ),
+        "ie_names": ("BiliBili", "Bilibili", "bilibili"),
+    },
+    "aol.com": {
+        "hosts": ("aol.com", "www.aol.com", "aol.ca", "aol.co.uk", "aol.de", "aol.jp"),
+        "ie_names": ("aol.com",),
+    },
+    "arte.sky.it": {
+        "hosts": ("arte.sky.it",),
+        "ie_names": ("arte.sky.it",),
     },
     "pinterest": {
         "hosts": ("pinterest.com", "www.pinterest.com", "pin.it"),
@@ -133,11 +179,37 @@ MAJOR_PLATFORMS: dict[str, dict] = {
     },
     "bbc": {
         "hosts": ("bbc.co.uk", "www.bbc.co.uk", "bbc.com", "www.bbc.com"),
-        "ie_names": ("bbc", "BBC"),
+        "ie_names": (
+            "bbc",
+            "BBC",
+            "bbc.co.uk",
+            "bbc.co.uk:article",
+            "bbc.co.uk:iplayer:episodes",
+            "bbc.co.uk:iplayer:group",
+            "bbc.co.uk:playlist",
+        ),
     },
     "cnn": {
-        "hosts": ("cnn.com", "www.cnn.com"),
-        "ie_names": ("CNN",),
+        "hosts": (
+            "cnn.com",
+            "www.cnn.com",
+            "edition.cnn.com",
+            "money.cnn.com",
+            "cnnespanol.cnn.com",
+        ),
+        "ie_names": ("CNN", "cnn"),
+    },
+    "cielotv.it": {
+        "hosts": ("cielotv.it", "www.cielotv.it"),
+        "ie_names": ("cielotv.it",),
+    },
+    "croatian.film": {
+        "hosts": ("croatian.film", "www.croatian.film"),
+        "ie_names": ("croatian.film",),
+    },
+    "cu.ntv.co.jp": {
+        "hosts": ("cu.ntv.co.jp",),
+        "ie_names": ("cu.ntv.co.jp",),
     },
     "espn": {
         "hosts": ("espn.com", "www.espn.com"),
@@ -149,19 +221,64 @@ MAJOR_PLATFORMS: dict[str, dict] = {
     },
     "crunchyroll": {
         "hosts": ("crunchyroll.com", "www.crunchyroll.com"),
-        "ie_names": ("Crunchyroll",),
+        "ie_names": ("Crunchyroll", "crunchyroll"),
     },
     "funimation": {
         "hosts": ("funimation.com", "www.funimation.com"),
         "ie_names": ("Funimation",),
     },
     "afreecatv": {
-        "hosts": ("afreecatv.com", "www.afreecatv.com", "vod.afreecatv.com"),
-        "ie_names": ("afreecatv",),
+        # Rebranded to Soop; keep legacy afreecatv hosts (redirect) + sooplive.
+        "hosts": (
+            "afreecatv.com",
+            "www.afreecatv.com",
+            "vod.afreecatv.com",
+            "sooplive.com",
+            "www.sooplive.com",
+            "vod.sooplive.com",
+            "play.sooplive.com",
+        ),
+        "ie_names": ("afreecatv", "soop", "soop:live", "soop:user", "soop:catchstory"),
+    },
+    "24tv.ua": {
+        "hosts": ("24tv.ua", "www.24tv.ua"),
+        "ie_names": ("24tv.ua",),
+    },
+    "56.com": {
+        "hosts": ("56.com", "www.56.com", "player.56.com"),
+        "ie_names": ("56.com",),
+    },
+    "9now.com.au": {
+        "hosts": ("9now.com.au", "www.9now.com.au"),
+        "ie_names": ("9now.com.au",),
+    },
+    "abc.net.au": {
+        "hosts": ("abc.net.au", "www.abc.net.au", "iview.abc.net.au"),
+        "ie_names": ("abc.net.au", "abc.net.au:iview", "abc.net.au:iview:showseries"),
     },
     "bitchute": {
-        "hosts": ("bitchute.com", "www.bitchute.com"),
-        "ie_names": ("BitChute",),
+        "hosts": ("bitchute.com", "www.bitchute.com", "old.bitchute.com"),
+        "ie_names": ("BitChute", "bitchute"),
+    },
+    "blogger.com": {
+        "hosts": ("blogger.com", "www.blogger.com"),
+        "ie_names": ("blogger.com",),
+    },
+    "canalc2.tv": {
+        "hosts": ("canalc2.tv", "www.canalc2.tv", "archives-canalc2.u-strasbg.fr"),
+        "ie_names": ("canalc2.tv",),
+    },
+    "cbc.ca": {
+        "hosts": ("cbc.ca", "www.cbc.ca", "gem.cbc.ca"),
+        "ie_names": (
+            "cbc.ca",
+            "cbc.ca:player",
+            "cbc.ca:player:playlist",
+            "cbc.ca:listen",
+            "gem.cbc.ca",
+            "gem.cbc.ca:playlist",
+            "gem.cbc.ca:live",
+        ),
     },
     "odysee": {
         "hosts": ("odysee.com", "www.odysee.com"),

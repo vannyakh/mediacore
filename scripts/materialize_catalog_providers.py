@@ -47,6 +47,8 @@ WORKING_SKIP = frozenset(
         "vimeo",
         "generic",
         "example",
+        "youtube",
+        "tiktok",
         "dailymotion",
         "soundcloud",
         "reddit",
@@ -57,6 +59,12 @@ WORKING_SKIP = frozenset(
         "streamable",
         "imgur",
         "archiveorg",
+        "flickr",
+        "applepodcasts",
+        "abc_net_au",
+        "bbc",
+        "bilibili",
+        "bitchute",
     }
 )
 

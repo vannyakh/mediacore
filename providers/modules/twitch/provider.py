@@ -13,7 +13,7 @@ from providers.base_module import PlatformModule
 class TwitchProvider(PlatformModule):
     name = 'twitch'
     status = 'not_configured'
-    host_suffixes = ('twitch.tv', 'www.twitch.tv', 'm.twitch.tv', 'clips.twitch.tv')
+    host_suffixes = ('twitch.tv', 'www.twitch.tv', 'm.twitch.tv', 'clips.twitch.tv', 'go.twitch.tv')
     ie_names = ('twitch:clips', 'Twitch', 'TwitchVod', 'TwitchClips', 'twitch:collection', 'twitch:stream', 'twitch:videos', 'twitch:\u200bvideos:clips', 'twitch:\u200bvideos:collections', 'twitch:vod')
     source = "catalog"
     description = 'Platform module for twitch'

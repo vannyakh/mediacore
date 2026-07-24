@@ -13,7 +13,7 @@ from providers.base_module import PlatformModule
 class AfreecatvProvider(PlatformModule):
     name = 'afreecatv'
     status = 'not_configured'
-    host_suffixes = ('afreecatv.com', 'www.afreecatv.com', 'vod.afreecatv.com')
-    ie_names = ('afreecatv',)
+    host_suffixes = ('afreecatv.com', 'www.afreecatv.com', 'vod.afreecatv.com', 'sooplive.com', 'www.sooplive.com', 'vod.sooplive.com', 'play.sooplive.com')
+    ie_names = ('soop', 'afreecatv', 'soop:live', 'soop:user', 'soop:catchstory')
     source = "catalog"
-    description = 'Platform module for afreecatv'
+    description = 'sooplive.com'

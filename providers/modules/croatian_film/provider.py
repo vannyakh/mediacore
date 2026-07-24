@@ -13,7 +13,7 @@ from providers.base_module import PlatformModule
 class CroatianFilmProvider(PlatformModule):
     name = 'croatian.film'
     status = 'not_configured'
-    host_suffixes = ('croatian.film',)
+    host_suffixes = ('croatian.film', 'www.croatian.film')
     ie_names = ('croatian.film',)
     source = "catalog"
     description = 'Platform module for croatian.film'

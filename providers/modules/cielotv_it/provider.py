@@ -13,7 +13,7 @@ from providers.base_module import PlatformModule
 class CielotvItProvider(PlatformModule):
     name = 'cielotv.it'
     status = 'not_configured'
-    host_suffixes = ('cielotv.it',)
+    host_suffixes = ('cielotv.it', 'www.cielotv.it')
     ie_names = ('cielotv.it',)
     source = "catalog"
     description = 'Platform module for cielotv.it'

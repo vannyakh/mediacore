@@ -13,7 +13,7 @@ from providers.base_module import PlatformModule
 class AolComProvider(PlatformModule):
     name = 'aol.com'
     status = 'broken'
-    host_suffixes = ('aol.com',)
+    host_suffixes = ('aol.com', 'www.aol.com', 'aol.ca', 'aol.co.uk', 'aol.de', 'aol.jp')
     ie_names = ('aol.com',)
     source = "catalog"
     description = 'Platform module for aol.com'

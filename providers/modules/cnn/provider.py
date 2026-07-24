@@ -13,7 +13,7 @@ from providers.base_module import PlatformModule
 class CnnProvider(PlatformModule):
     name = 'cnn'
     status = 'not_configured'
-    host_suffixes = ('cnn.com', 'www.cnn.com')
-    ie_names = ('CNN',)
+    host_suffixes = ('cnn.com', 'www.cnn.com', 'edition.cnn.com', 'money.cnn.com', 'cnnespanol.cnn.com')
+    ie_names = ('CNN', 'cnn')
     source = "catalog"
     description = 'Platform module for cnn'

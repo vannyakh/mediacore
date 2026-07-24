@@ -13,7 +13,7 @@ from providers.base_module import PlatformModule
 class P24tvUaProvider(PlatformModule):
     name = '24tv.ua'
     status = 'not_configured'
-    host_suffixes = ('24tv.ua',)
+    host_suffixes = ('24tv.ua', 'www.24tv.ua')
     ie_names = ('24tv.ua',)
     source = "catalog"
     description = 'Platform module for 24tv.ua'

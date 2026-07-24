@@ -13,7 +13,7 @@ from providers.base_module import PlatformModule
 class CbcCaProvider(PlatformModule):
     name = 'cbc.ca'
     status = 'not_configured'
-    host_suffixes = ('cbc.ca',)
-    ie_names = ('cbc.ca', 'cbc.ca:listen', 'cbc.ca:player', 'cbc.ca:\u200bplayer:playlist')
+    host_suffixes = ('cbc.ca', 'www.cbc.ca', 'gem.cbc.ca')
+    ie_names = ('cbc.ca', 'cbc.ca:player', 'cbc.ca:player:playlist', 'cbc.ca:listen', 'gem.cbc.ca', 'gem.cbc.ca:playlist', 'gem.cbc.ca:live', 'cbc.ca:\u200bplayer:playlist', 'gem.cbc.ca:olympics')
     source = "catalog"
     description = 'Platform module for cbc.ca'

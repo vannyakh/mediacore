@@ -13,7 +13,7 @@ from providers.base_module import PlatformModule
 class P56ComProvider(PlatformModule):
     name = '56.com'
     status = 'not_configured'
-    host_suffixes = ('56.com',)
+    host_suffixes = ('56.com', 'www.56.com', 'player.56.com')
     ie_names = ('56.com',)
     source = "catalog"
     description = 'Platform module for 56.com'

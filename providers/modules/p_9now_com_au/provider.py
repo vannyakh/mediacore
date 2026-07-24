@@ -13,7 +13,7 @@ from providers.base_module import PlatformModule
 class P9nowComAuProvider(PlatformModule):
     name = '9now.com.au'
     status = 'not_configured'
-    host_suffixes = ('9now.com.au',)
+    host_suffixes = ('9now.com.au', 'www.9now.com.au')
     ie_names = ('9now.com.au',)
     source = "catalog"
     description = 'Platform module for 9now.com.au'

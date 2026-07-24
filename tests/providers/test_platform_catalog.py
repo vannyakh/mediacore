@@ -32,12 +32,13 @@ def test_host_modules_resolve():
     assert any(m.name == "youtube" for m in modules)
 
 
-def test_registry_resolves_youtube_module():
+def test_registry_resolves_youtube_working_provider():
     reset_registry()
     registry = build_default_registry()
     provider = registry.resolve("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
     assert provider.name == "youtube"
-    assert provider.status == "not_configured"
+    assert provider.status == "metadata_only"
+    assert getattr(provider, "source", None) != "catalog"
 
 
 def test_registry_includes_full_catalog():

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "count": 1363,
+  "count": 1352,
   "providers": [
     {
       "slug": "p_10play",
@@ -63,7 +63,8 @@
       "name": "24tv.ua",
       "module": "providers.modules.p_24tv_ua.provider",
       "hosts": [
-        "24tv.ua"
+        "24tv.ua",
+        "www.24tv.ua"
       ],
       "broken": false,
       "status": "not_configured"
@@ -97,7 +98,9 @@
       "name": "56.com",
       "module": "providers.modules.p_56_com.provider",
       "hosts": [
-        "56.com"
+        "56.com",
+        "www.56.com",
+        "player.56.com"
       ],
       "broken": false,
       "status": "not_configured"
@@ -131,7 +134,8 @@
       "name": "9now.com.au",
       "module": "providers.modules.p_9now_com_au.provider",
       "hosts": [
-        "9now.com.au"
+        "9now.com.au",
+        "www.9now.com.au"
       ],
       "broken": false,
       "status": "not_configured"
@@ -141,7 +145,9 @@
       "name": "abc.net.au",
       "module": "providers.modules.abc_net_au.provider",
       "hosts": [
-        "abc.net.au"
+        "abc.net.au",
+        "www.abc.net.au",
+        "iview.abc.net.au"
       ],
       "broken": false,
       "status": "not_configured"
@@ -273,7 +279,11 @@
       "hosts": [
         "afreecatv.com",
         "www.afreecatv.com",
-        "vod.afreecatv.com"
+        "vod.afreecatv.com",
+        "sooplive.com",
+        "www.sooplive.com",
+        "vod.sooplive.com",
+        "play.sooplive.com"
       ],
       "broken": false,
       "status": "not_configured"
@@ -499,7 +509,12 @@
       "name": "aol.com",
       "module": "providers.modules.aol_com.provider",
       "hosts": [
-        "aol.com"
+        "aol.com",
+        "www.aol.com",
+        "aol.ca",
+        "aol.co.uk",
+        "aol.de",
+        "aol.jp"
       ],
       "broken": true,
       "status": "broken"
@@ -516,22 +531,6 @@
       "slug": "aparat",
       "name": "aparat",
       "module": "providers.modules.aparat.provider",
-      "hosts": [],
-      "broken": false,
-      "status": "not_configured"
-    },
-    {
-      "slug": "apple",
-      "name": "apple",
-      "module": "providers.modules.apple.provider",
-      "hosts": [],
-      "broken": false,
-      "status": "not_configured"
-    },
-    {
-      "slug": "applepodcasts",
-      "name": "applepodcasts",
-      "module": "providers.modules.applepodcasts.provider",
       "hosts": [],
       "broken": false,
       "status": "not_configured"
@@ -771,29 +770,6 @@
       "status": "not_configured"
     },
     {
-      "slug": "bbc",
-      "name": "bbc",
-      "module": "providers.modules.bbc.provider",
-      "hosts": [
-        "bbc.co.uk",
-        "www.bbc.co.uk",
-        "bbc.com",
-        "www.bbc.com"
-      ],
-      "broken": false,
-      "status": "not_configured"
-    },
-    {
-      "slug": "bbc_co_uk",
-      "name": "bbc.co.uk",
-      "module": "providers.modules.bbc_co_uk.provider",
-      "hosts": [
-        "bbc.co.uk"
-      ],
-      "broken": false,
-      "status": "not_configured"
-    },
-    {
       "slug": "bbvtv",
       "name": "bbvtv",
       "module": "providers.modules.bbvtv.provider",
@@ -902,19 +878,6 @@
       "name": "bild",
       "module": "providers.modules.bild.provider",
       "hosts": [],
-      "broken": false,
-      "status": "not_configured"
-    },
-    {
-      "slug": "bilibili",
-      "name": "bilibili",
-      "module": "providers.modules.bilibili.provider",
-      "hosts": [
-        "bilibili.com",
-        "www.bilibili.com",
-        "b23.tv",
-        "space.bilibili.com"
-      ],
       "broken": false,
       "status": "not_configured"
     },
@@ -1095,17 +1058,6 @@
       "status": "not_configured"
     },
     {
-      "slug": "bitchute",
-      "name": "bitchute",
-      "module": "providers.modules.bitchute.provider",
-      "hosts": [
-        "bitchute.com",
-        "www.bitchute.com"
-      ],
-      "broken": false,
-      "status": "not_configured"
-    },
-    {
       "slug": "bitchutechannel",
       "name": "bitchutechannel",
       "module": "providers.modules.bitchutechannel.provider",
@@ -1166,7 +1118,8 @@
       "name": "blogger.com",
       "module": "providers.modules.blogger_com.provider",
       "hosts": [
-        "blogger.com"
+        "blogger.com",
+        "www.blogger.com"
       ],
       "broken": false,
       "status": "not_configured"
@@ -1467,7 +1420,9 @@
       "name": "canalc2.tv",
       "module": "providers.modules.canalc2_tv.provider",
       "hosts": [
-        "canalc2.tv"
+        "canalc2.tv",
+        "www.canalc2.tv",
+        "archives-canalc2.u-strasbg.fr"
       ],
       "broken": false,
       "status": "not_configured"
@@ -1501,7 +1456,9 @@
       "name": "cbc.ca",
       "module": "providers.modules.cbc_ca.provider",
       "hosts": [
-        "cbc.ca"
+        "cbc.ca",
+        "www.cbc.ca",
+        "gem.cbc.ca"
       ],
       "broken": false,
       "status": "not_configured"
@@ -1647,7 +1604,8 @@
       "name": "cielotv.it",
       "module": "providers.modules.cielotv_it.provider",
       "hosts": [
-        "cielotv.it"
+        "cielotv.it",
+        "www.cielotv.it"
       ],
       "broken": false,
       "status": "not_configured"
@@ -1786,7 +1744,10 @@
       "module": "providers.modules.cnn.provider",
       "hosts": [
         "cnn.com",
-        "www.cnn.com"
+        "www.cnn.com",
+        "edition.cnn.com",
+        "money.cnn.com",
+        "cnnespanol.cnn.com"
       ],
       "broken": false,
       "status": "not_configured"
@@ -1892,7 +1853,8 @@
       "name": "croatian.film",
       "module": "providers.modules.croatian_film.provider",
       "hosts": [
-        "croatian.film"
+        "croatian.film",
+        "www.croatian.film"
       ],
       "broken": false,
       "status": "not_configured"
@@ -2742,7 +2704,8 @@
         "www.facebook.com",
         "fb.watch",
         "m.facebook.com",
-        "fb.com"
+        "fb.com",
+        "web.facebook.com"
       ],
       "broken": false,
       "status": "not_configured"
@@ -2857,14 +2820,6 @@
       "slug": "fivetv",
       "name": "fivetv",
       "module": "providers.modules.fivetv.provider",
-      "hosts": [],
-      "broken": false,
-      "status": "not_configured"
-    },
-    {
-      "slug": "flickr",
-      "name": "flickr",
-      "module": "providers.modules.flickr.provider",
       "hosts": [],
       "broken": false,
       "status": "not_configured"
@@ -3231,16 +3186,6 @@
       "name": "gedidigital",
       "module": "providers.modules.gedidigital.provider",
       "hosts": [],
-      "broken": false,
-      "status": "not_configured"
-    },
-    {
-      "slug": "gem_cbc_ca",
-      "name": "gem.cbc.ca",
-      "module": "providers.modules.gem_cbc_ca.provider",
-      "hosts": [
-        "gem.cbc.ca"
-      ],
       "broken": false,
       "status": "not_configured"
     },
@@ -8309,7 +8254,10 @@
       "slug": "slideshare",
       "name": "slideshare",
       "module": "providers.modules.slideshare.provider",
-      "hosts": [],
+      "hosts": [
+        "slideshare.net",
+        "www.slideshare.net"
+      ],
       "broken": false,
       "status": "not_configured"
     },
@@ -8393,14 +8341,6 @@
       "slug": "sonylivseries",
       "name": "sonylivseries",
       "module": "providers.modules.sonylivseries.provider",
-      "hosts": [],
-      "broken": false,
-      "status": "not_configured"
-    },
-    {
-      "slug": "soop",
-      "name": "soop",
-      "module": "providers.modules.soop.provider",
       "hosts": [],
       "broken": false,
       "status": "not_configured"
@@ -9289,19 +9229,6 @@
       "status": "not_configured"
     },
     {
-      "slug": "tiktok",
-      "name": "tiktok",
-      "module": "providers.modules.tiktok.provider",
-      "hosts": [
-        "tiktok.com",
-        "www.tiktok.com",
-        "vm.tiktok.com",
-        "m.tiktok.com"
-      ],
-      "broken": true,
-      "status": "broken"
-    },
-    {
       "slug": "tlc",
       "name": "tlc",
       "module": "providers.modules.tlc.provider",
@@ -9491,7 +9418,10 @@
       "slug": "tumblr",
       "name": "tumblr",
       "module": "providers.modules.tumblr.provider",
-      "hosts": [],
+      "hosts": [
+        "tumblr.com",
+        "www.tumblr.com"
+      ],
       "broken": false,
       "status": "not_configured"
     },
@@ -9759,7 +9689,8 @@
         "twitch.tv",
         "www.twitch.tv",
         "m.twitch.tv",
-        "clips.twitch.tv"
+        "clips.twitch.tv",
+        "go.twitch.tv"
       ],
       "broken": false,
       "status": "not_configured"
@@ -11061,21 +10992,6 @@
       "name": "youpornvideos",
       "module": "providers.modules.youpornvideos.provider",
       "hosts": [],
-      "broken": false,
-      "status": "not_configured"
-    },
-    {
-      "slug": "youtube",
-      "name": "youtube",
-      "module": "providers.modules.youtube.provider",
-      "hosts": [
-        "youtube.com",
-        "youtu.be",
-        "youtube-nocookie.com",
-        "m.youtube.com",
-        "music.youtube.com",
-        "www.youtube.com"
-      ],
       "broken": false,
       "status": "not_configured"
     },

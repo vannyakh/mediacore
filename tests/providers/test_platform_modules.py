@@ -57,15 +57,21 @@ def test_platform_module_page_url_not_configured():
         mod.download(url, "original", Path("/tmp/x.mp4"))
 
 
-def test_registry_youtube_page_not_configured():
+def test_registry_youtube_uses_working_oembed_provider():
     reset_registry()
     from packages.registry.providers import get_registry
 
     registry = get_registry()
-    provider = registry.resolve("https://www.youtube.com/watch?v=abc123")
+    provider = registry.resolve("https://www.youtube.com/watch?v=jNQXAC9IVRw")
     assert provider.name == "youtube"
+    assert getattr(provider, "status", None) == "metadata_only"
+    assert getattr(provider, "source", None) != "catalog"
     with pytest.raises(ProviderNotConfiguredError):
-        provider.metadata("https://www.youtube.com/watch?v=abc123")
+        provider.download(
+            "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+            "oembed",
+            Path("/tmp/x.mp4"),
+        )
 
 
 def test_build_platform_modules_alias():

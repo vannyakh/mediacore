@@ -21,6 +21,8 @@ OUT_DOCS = ROOT / "docs" / "public" / "platforms.json"
 
 # Working providers registered early in packages/registry/providers.py — docs UI status.
 DOCS_WORKING_STATUS: dict[str, str] = {
+    "youtube": "metadata_only",
+    "tiktok": "metadata_only",
     "vimeo": "metadata_only",
     "dailymotion": "metadata_only",
     "soundcloud": "metadata_only",
@@ -32,6 +34,12 @@ DOCS_WORKING_STATUS: dict[str, str] = {
     "streamable": "metadata_only",
     "imgur": "metadata_only",
     "archiveorg": "metadata_only",
+    "flickr": "metadata_only",
+    "applepodcasts": "metadata_only",
+    "abc.net.au": "metadata_only",
+    "bbc": "metadata_only",
+    "bilibili": "metadata_only",
+    "bitchute": "metadata_only",
 }
 
 

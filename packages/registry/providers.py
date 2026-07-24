@@ -79,6 +79,9 @@ def build_default_registry() -> ProviderRegistry:
     # Working providers first (same name as a catalog stub → stub is skipped)
     for module_name in (
         "providers.filesystem.provider",
+        # Priority platforms (public oEmbed)
+        "providers.youtube.provider",
+        "providers.tiktok.provider",
         "providers.vimeo.provider",
         "providers.dailymotion.provider",
         "providers.soundcloud.provider",
@@ -90,6 +93,12 @@ def build_default_registry() -> ProviderRegistry:
         "providers.streamable.provider",
         "providers.imgur.provider",
         "providers.archiveorg.provider",
+        "providers.flickr.provider",
+        "providers.applepodcasts.provider",
+        "providers.abc_net_au.provider",
+        "providers.bbc.provider",
+        "providers.bilibili.provider",
+        "providers.bitchute.provider",
     ):
         _register_module(registry, module_name)
 

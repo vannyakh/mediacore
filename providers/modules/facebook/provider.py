@@ -13,7 +13,7 @@ from providers.base_module import PlatformModule
 class FacebookProvider(PlatformModule):
     name = 'facebook'
     status = 'not_configured'
-    host_suffixes = ('facebook.com', 'www.facebook.com', 'fb.watch', 'm.facebook.com', 'fb.com')
+    host_suffixes = ('facebook.com', 'www.facebook.com', 'fb.watch', 'm.facebook.com', 'fb.com', 'web.facebook.com')
     ie_names = ('facebook', 'Facebook', 'facebook:ads', 'facebook:reel')
     source = "catalog"
     description = 'Platform module for facebook'

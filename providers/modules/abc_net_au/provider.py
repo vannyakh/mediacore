@@ -13,7 +13,7 @@ from providers.base_module import PlatformModule
 class AbcNetAuProvider(PlatformModule):
     name = 'abc.net.au'
     status = 'not_configured'
-    host_suffixes = ('abc.net.au',)
-    ie_names = ('abc.net.au', 'abc.net.au:iview', 'abc.net.au:\u200biview:showseries')
+    host_suffixes = ('abc.net.au', 'www.abc.net.au', 'iview.abc.net.au')
+    ie_names = ('abc.net.au', 'abc.net.au:iview', 'abc.net.au:iview:showseries', 'abc.net.au:\u200biview:showseries')
     source = "catalog"
     description = 'Platform module for abc.net.au'

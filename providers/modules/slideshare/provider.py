@@ -13,7 +13,7 @@ from providers.base_module import PlatformModule
 class SlideshareProvider(PlatformModule):
     name = 'slideshare'
     status = 'not_configured'
-    host_suffixes = ()
+    host_suffixes = ('slideshare.net', 'www.slideshare.net')
     ie_names = ('Slideshare',)
     source = "catalog"
     description = 'Platform module for slideshare'

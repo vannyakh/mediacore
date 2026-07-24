@@ -45,6 +45,8 @@ Back-compat aliases: `get_metadata` → `metadata`, `list_formats` → `formats`
 |----------|------|
 | `filesystem` | `file://` and local paths |
 | `generic` | Direct media HTTP(S) URLs |
+| `youtube` | Public oEmbed metadata |
+| `tiktok` | Public oEmbed metadata |
 | `vimeo` | Public oEmbed metadata |
 | `dailymotion` | Public oEmbed metadata |
 | `soundcloud` | Public oEmbed metadata |
@@ -56,6 +58,12 @@ Back-compat aliases: `get_metadata` → `metadata`, `list_formats` → `formats`
 | `streamable` | Public oEmbed metadata |
 | `imgur` | Public oEmbed metadata |
 | `archiveorg` | Public oEmbed metadata |
+| `flickr` | Public oEmbed metadata |
+| `applepodcasts` | Public iTunes Lookup metadata |
+| `abc.net.au` | Public iView catalog metadata (show pages) |
+| `bbc` | Public programmes JSON metadata |
+| `bilibili` | Public web view API metadata (BV/av) |
+| `bitchute` | Public beta video API metadata |
 | `example` | `mediacore://example/...` demo |
 
 ## Full platform catalog

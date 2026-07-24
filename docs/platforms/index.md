@@ -44,6 +44,8 @@ uv run python scripts/sync_platform_catalog.py --offline
 | `filesystem` | `active` | Local `file://` paths |
 | `generic` | `active` | Direct HTTP(S) media URLs |
 | `example` | `example` | Demo `mediacore://` URLs |
+| `youtube` | `metadata_only` | Public oEmbed |
+| `tiktok` | `metadata_only` | Public oEmbed |
 | `vimeo` | `metadata_only` | Public oEmbed |
 | `dailymotion` | `metadata_only` | Public oEmbed |
 | `soundcloud` | `metadata_only` | Public oEmbed |
@@ -55,6 +57,12 @@ uv run python scripts/sync_platform_catalog.py --offline
 | `streamable` | `metadata_only` | Public oEmbed |
 | `imgur` | `metadata_only` | Public oEmbed |
 | `archiveorg` | `metadata_only` | Public oEmbed |
+| `flickr` | `metadata_only` | Public oEmbed |
+| `applepodcasts` | `metadata_only` | Public iTunes Lookup API |
+| `abc.net.au` | `metadata_only` | Public iView catalog API (show pages) |
+| `bbc` | `metadata_only` | Public `/programmes/{pid}.json` |
+| `bilibili` | `metadata_only` | Public web view API (BV/av) |
+| `bitchute` | `metadata_only` | Public beta video API |
 
 Catalog modules with the same `name` are skipped when these working providers register first.
 
