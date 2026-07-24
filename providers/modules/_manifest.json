@@ -141,9 +141,9 @@
       "status": "not_configured"
     },
     {
-      "slug": "abc_net_au",
+      "slug": "plat_abc_net_au",
       "name": "abc.net.au",
-      "module": "providers.modules.abc_net_au.provider",
+      "module": "providers.modules.plat_abc_net_au.provider",
       "hosts": [
         "abc.net.au",
         "www.abc.net.au",

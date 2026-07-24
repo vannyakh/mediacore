@@ -6,6 +6,7 @@ alwaysApply: false
 
 # Registry
 
-- Build order: working providers → catalog stubs → generic/example.
+- Build order: working providers → catalog modules → generic/example.
+- Catalog modules under `providers/modules/` are intentional for host detection; do not mass-delete.
 - Use `reset_registry()` in tests after changing registration.
 - Catalog generation: `scripts/sync_platform_catalog.py --offline` and `scripts/generate_providers.py`.

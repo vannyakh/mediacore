@@ -2,6 +2,8 @@
 
 MediaCore **never hardcodes scrape logic in core**. Platforms live under `providers/` and are resolved by the registry. The table below lists the **full catalog** (search + filter).
 
+**Permitted access:** “Supports platform X” means host detection plus metadata/download when a public or official API (or direct media) allows it — not watch-URL scraping for every site. Catalog modules stay for routing; page URLs without a permitted path return `provider_not_configured`. Contributor layout: repository file `providers/README.md`.
+
 ```mermaid
 flowchart LR
   URL[Media_URL] --> Registry[ProviderRegistry]

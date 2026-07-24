@@ -30,17 +30,37 @@ RESERVED = frozenset(
         "modules",
         "stubs",
         "data",
+        "base_module",
+        "direct_media",
+        "oembed",
+        # Working provider packages (keep in sync with WORKING_SKIP + registry)
         "filesystem",
         "vimeo",
         "generic",
         "example",
-        "base_stub",
-        "base_module",
-        "direct_media",
-        "oembed",
+        "youtube",
+        "tiktok",
+        "dailymotion",
+        "soundcloud",
+        "reddit",
+        "ted",
+        "wikimedia",
+        "bandcamp",
+        "mixcloud",
+        "streamable",
+        "imgur",
+        "archiveorg",
+        "flickr",
+        "applepodcasts",
+        "abc_net_au",
+        "bbc",
+        "bilibili",
+        "bitchute",
     }
 )
 
+# Catalog names skipped when materializing modules — keep aligned with early
+# register list in packages/registry/providers.py (+ generic/example).
 WORKING_SKIP = frozenset(
     {
         "filesystem",

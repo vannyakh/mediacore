@@ -10,7 +10,7 @@ from __future__ import annotations
 from providers.base_module import PlatformModule
 
 
-class AbcNetAuProvider(PlatformModule):
+class PlatAbcNetAuProvider(PlatformModule):
     name = 'abc.net.au'
     status = 'not_configured'
     host_suffixes = ('abc.net.au', 'www.abc.net.au', 'iview.abc.net.au')

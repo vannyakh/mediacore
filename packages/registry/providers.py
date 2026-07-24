@@ -76,10 +76,8 @@ def _register_module(registry: ProviderRegistry, module_name: str) -> None:
 def build_default_registry() -> ProviderRegistry:
     registry = ProviderRegistry()
 
-    # Working providers first (same name as a catalog stub → stub is skipped)
     for module_name in (
         "providers.filesystem.provider",
-        # Priority platforms (public oEmbed)
         "providers.youtube.provider",
         "providers.tiktok.provider",
         "providers.vimeo.provider",

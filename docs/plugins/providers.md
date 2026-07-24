@@ -102,14 +102,24 @@ POST /v1/live
 
 `GET /v1/providers` includes each provider's `capabilities` list.
 
+## What “supports a platform” means
+
+1. **Detect** the host (working provider or catalog module)
+2. **Metadata** when a public oEmbed / official or permitted API exists
+3. **Download** for direct media on known hosts, or when access is authorized
+
+Catalog modules under `providers/modules/` are intentional (~1300) for URL routing — do not mass-delete them. Contributor layout: repository file `providers/README.md`.
+
 ## Compliance
 
 Use **official/supported APIs** or content you have permission to access.
-Stub providers raise `provider_not_configured` until enabled.
+Catalog modules raise `provider_not_configured` for page/watch URLs until a permitted provider is wired.
+Do **not** port third-party scraper extractors into MediaCore.
 
 ## Adding a working provider
 
-1. Create `providers/<name>/provider.py`
+1. Create `providers/<name>/provider.py` (see `providers/README.md`)
 2. Implement the seven stages (or rely on defaults where capabilities are false)
 3. Set `capabilities = ProviderCapabilities(...)`
 4. Register early in `packages/registry/providers.py`
+5. Add the package folder to `WORKING_SKIP` in `scripts/materialize_catalog_providers.py`

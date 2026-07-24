@@ -46,3 +46,5 @@ uv run python scripts/provider_upgrade_queue.py next --limit 5
 ```
 
 yt-dlp (`github.com/yt-dlp/yt-dlp`) is **host/URL research only** — never port scrapers.
+Catalog modules under `providers/modules/` are intentional for URL detection — do not mass-delete.
+See [`providers/README.md`](providers/README.md).

@@ -102,6 +102,19 @@ mediacore/
 
 Legacy top-level shims (`extractor/`, `ffmpeg/`, `storage/`, `jobqueue/`, `queue/`) were removed — use `packages/*` instead.
 
+Provider layout for contributors: [`providers/README.md`](providers/README.md).
+
+### What works today / what does not
+
+| Works | Does not (by design) |
+|-------|----------------------|
+| Analyze many platforms (host detection via catalog modules) | Scraping watch pages like a generic video downloader |
+| Metadata via public oEmbed / permitted APIs (YouTube, TikTok, Vimeo, …) | Bypassing platform access controls or Terms of Service |
+| Download **direct media** URLs (and local `file://`) | Unofficial stream extraction for every site |
+| Jobs, plugins, SDKs, pipeline around permitted media | Shipping yt-dlp (or any scraper runtime) as a dependency |
+
+Page/watch URLs without a permitted API return `provider_not_configured` until an official path is wired.
+
 ---
 
 ## Documentation

@@ -41,14 +41,17 @@ Use `packages.registry.providers.reset_registry()` in tests after registry chang
 
 ## Platform modules
 
-- On disk: `providers/modules/<slug>/` (~1360 packages).
+- On disk: `providers/modules/<slug>/` (~1360 packages). **Intentional** — do not mass-delete for cleanup.
 - Index: `providers/data/providers_index.json`.
 - Host maps: `providers/platforms/hosts.py` → `scripts/generate_providers.py`.
 - Direct media URLs on a module's hosts: metadata + download via `PlatformModule`.
 - Page/watch URLs: `status=not_configured` → `ProviderNotConfiguredError` until official API.
+- Working packages live in `providers/<name>/` and register early; catalog modules with the same `name` are skipped.
 
 ## Do not
 
 - Wire third-party scraper libraries for extract/download.
 - Put platform scrape logic inside `packages/core`.
+- Port yt-dlp `_real_extract` / scrape logic (hosts / `_VALID_URL` research only).
 - Recreate `providers/stubs/` (renamed to `modules/`).
+- Reintroduce `providers/base_stub.py` or `StubProvider`.

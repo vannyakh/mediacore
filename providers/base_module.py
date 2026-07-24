@@ -99,7 +99,3 @@ class PlatformModule(Provider):
 
     def list_formats(self, url: str) -> list[FormatInfo]:
         return self.formats(url)
-
-
-# Back-compat alias (one release)
-StubProvider = PlatformModule

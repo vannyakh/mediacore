@@ -19,6 +19,8 @@ const links = [
 
 MediaCore is positioned like FFmpeg for processing, Terraform for providers, or LangChain for workflows — a **unified developer platform**, not a single-purpose downloader.
 
+Multi-site URL coverage is inspired by the breadth of community extractor catalogs, but MediaCore ships its **own** engine, registry, and providers. There is no scraper runtime dependency and no porting of third-party `_real_extract` logic — only host research for detection, then official or permitted APIs for metadata and download.
+
 ## Why it exists
 
 Reusable building blocks instead of one-off media handlers:
