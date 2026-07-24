@@ -39,6 +39,6 @@ def test_unknown_backend_fails(tmp_path: Path, monkeypatch):
 
     get_settings.cache_clear()
     reset_plugin_loader()
-    with pytest.raises(PluginError, match="Unknown STORAGE_BACKEND"):
+    with pytest.raises(PluginError, match="local only"):
         resolve_storage()
     get_settings.cache_clear()

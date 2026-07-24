@@ -11,8 +11,8 @@ Brand is **MediaCore** only. Product surface is a **permitted media download CLI
 
 - Platform-first: core stays provider-agnostic (no YouTube/TikTok/etc. knowledge in core).
 - Stack: Engine → Providers → Pipeline → CLI/API (ffmpeg plugin for convert).
-- Layout: `apps/api`, `apps/cli`, `apps/worker`, `packages/`, `providers/`, `plugins/ffmpeg`, `plugins/storage-local`, `sdk/` (thin clients), `docs/`. Path table: `docs/architecture/layout.md`.
-- Working providers need `providers/<name>/provider.py`; catalog-only sites stay under `providers/modules/` — no empty working shells.
+- Layout: `apps/api`, `apps/cli`, `apps/worker`, `packages/core` (+ engine/registry/…), `providers/` (**extractors**), `plugins/ffmpeg`, `plugins/storage-local`, `sdk/`, `docs/`. Path table: `docs/architecture/layout.md`.
+- Extractor = `providers/<name>/provider.py` (not top-level `extractor/`). Catalog-only under `providers/modules/`. Storage is local-only in the slim tree.
 - Runtime queue package is `packages/queue` only — never add a top-level `queue/` Python package (shadows stdlib).
 - Do not recreate: `extractor/`, top-level `ffmpeg/` / `storage/` / `jobqueue/`, `dashboard/`, `helm/`, `benchmarks/`, `crates/`.
 - API surface: `/v1/*` (compatibility alias `/api/v1/*` allowed).

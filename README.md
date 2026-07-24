@@ -69,11 +69,11 @@ Flags: `--base`, `--key`, `-q`/`-v` (or `MEDIACORE_BASE` / `MEDIACORE_API_KEY`).
 
 ```text
 apps/api · apps/cli · apps/worker
-packages/     core · engine · registry · queue · storage · events · …
-providers/    <name>/ working  ·  modules/ catalog
-plugins/      ffmpeg · storage-local
-sdk/          python · javascript · typescript · php · go
-docs/ · tests/ · scripts/ · docker/ · mediacore/
+packages/core          # networking · downloader · provider protocol
+packages/engine · registry · queue · storage(local) · …
+providers/             # extractors (working + modules/)
+plugins/ffmpeg · plugins/storage-local
+sdk/ · docs/ · tests/ · scripts/ · docker/
 ```
 
 ## SDKs (install)

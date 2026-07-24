@@ -11,9 +11,10 @@ This repository is **MediaCore** — a **permitted media download CLI/API** (plu
 
 `apps/api` · `apps/cli` · `apps/worker` · `packages/` · `providers/` · `plugins/ffmpeg` · `plugins/storage-local` · `sdk/` · `docs/` · `tests/` · `scripts/` · `docker/`
 
-Path roles: [`docs/architecture/layout.md`](docs/architecture/layout.md). Thin SDKs live under `sdk/` (pip / npm / composer / go).
+Path roles: [`docs/architecture/layout.md`](docs/architecture/layout.md).  
+**Extractor = `providers/`** · **Core = `packages/core`** · SDKs under `sdk/`.
 
-Do **not** recreate: `extractor/`, top-level `ffmpeg/` / `storage/` / `queue/`, `dashboard/`, `helm/`, `benchmarks/`, `crates/`.
+Do **not** recreate: top-level `extractor/` / `ffmpeg/` / `storage/` / `queue/`, `dashboard/`, `helm/`, `benchmarks/`, `crates/`, cloud storage backends.
 
 ## Hard constraints
 

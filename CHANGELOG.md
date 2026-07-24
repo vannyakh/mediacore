@@ -21,11 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CLI URL-first UX (`mediacore URL`, `-F`, `-s`, `-o`, `-a` batch) — permitted paths only
 - Architecture map: `docs/architecture/mediacore-vs-ytdlp.md`
 - Thin download SDKs under `sdk/` with install docs: Python (`pip`), JS/TS (`npm`), PHP (`composer`), Go (`go mod`)
-- Direct HLS/DASH stream download for permitted playlist URLs (`.m3u8` / `.mpd`) via ffmpeg in `packages/core/downloader.py`
+- Direct HLS/DASH stream download for permitted playlist URLs (`.m3u8` / `.mpd`) via ffmpeg in `packages/core/downloader/`
 
 ### Changed
 
-- Slim download-tool core: keep `apps/api|cli|worker`, providers, `plugins/ffmpeg` + `storage-local`; remove dashboard/desktop/studio/gateway/scheduler, benchmarks, crates, helm, and extra plugins (SDKs restored as thin clients)
+- Align `packages/core` with [yt-dlp `yt_dlp` layout](https://github.com/yt-dlp/yt-dlp/tree/master/yt_dlp): `networking/` + `downloader/` subpackages (compat `http.py` re-export; no scraper ports)
+- Slim download-tool core: keep `apps/api|cli|worker`, providers (extractors), `plugins/ffmpeg` + `storage-local`; remove dashboard/desktop/studio/gateway/scheduler, benchmarks, crates, helm, cloud storage backends, and extra plugins (SDKs restored as thin clients)
+- Clarify extractor path = `providers/`; core = `packages/core` (no top-level `extractor/`)
 - Canonical path guide: `docs/architecture/layout.md`; removed empty `providers/facebook` / `providers/instagram` shells (catalog modules remain)
 - Permitted download-tool clarity: CLI groups providers as `download` vs `metadata`, adds `--download-only`, and docs/README lead with a working download example (YouTube-class = `-s` only)
 - `DOCS_WORKING_STATUS` aligned to runtime `active` for Dropbox / Google Drive / media.ccc.de

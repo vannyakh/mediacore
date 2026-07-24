@@ -44,6 +44,10 @@ def test_removed_product_surfaces_gone():
         "plugins/whisper",
         "plugins/telegram",
         "plugins/discord",
+        "packages/storage/azure.py",
+        "packages/storage/s3_compatible.py",
+        "packages/storage/ftp.py",
+        "extractor",
     ):
         assert not (ROOT / name).exists(), f"should be removed: {name}"
 

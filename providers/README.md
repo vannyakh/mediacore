@@ -1,15 +1,18 @@
-# Providers
+# Providers (extractors)
 
-MediaCore resolves media URLs through a **provider registry**. Core stays platform-agnostic; all site knowledge lives here.
+In MediaCore, **extractors live under `providers/`** (there is no top-level `extractor/`).  
+Core (`packages/core`) stays platform-agnostic; site knowledge stays here.
 
-## One-screen map (whole repo)
+## One-screen map
 
 ```text
-providers/<name>/     Working site logic (must have provider.py)
-providers/modules/    ~1300 catalog packages — host detect + direct media only
-packages/core/        downloader.py · http.py · models · provider protocol
+providers/<name>/     Working extractor (must have provider.py)
+providers/modules/    ~1300 catalog extractors — host detect + direct media only
+packages/core/
+  networking/ · downloader/   # yt-dlp-shaped (see packages/core/README.md)
+  provider protocol · models · pipeline
 packages/engine/      Orchestration
-packages/registry/    URL → provider resolve
+packages/registry/    URL → extractor resolve
 plugins/              ffmpeg · storage-local
 apps/cli · apps/api · apps/worker
 ```
@@ -37,8 +40,8 @@ providers/
 | `providers/modules/<slug>/` | Catalog module — intentional; **do not mass-delete** |
 | `providers/platforms/hosts.py` | Curated host maps merged into the index |
 | `scripts/provider_upgrade_queue.py` | Batch upgrade queue |
-| `packages/core/downloader.py` | HTTP fetch used by providers |
-| `packages/core/http.py` | Shared networking client |
+| `packages/core/downloader/` | HTTP + stream fetch used by providers |
+| `packages/core/networking/` | Shared networking client (`http.py` re-exports) |
 | `plugins/ffmpeg` | Convert/remux after a permitted download |
 
 ## Registration order

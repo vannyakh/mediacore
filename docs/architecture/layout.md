@@ -4,41 +4,41 @@ title: Repository layout
 
 # Repository layout
 
-Slim MediaCore download-tool layout. Prefer these paths in new code.
+Minimized download-tool layout. **Extractor = `providers/`**. **Core = `packages/core`**.
 
-## Top level
+## Keep
 
-| Path | Role |
-|------|------|
-| `apps/api` | REST `/v1` analyze / download / jobs |
-| `apps/cli` | `mediacore` permitted download CLI |
-| `apps/worker` | Dramatiq worker for async jobs |
-| `packages/core` | Downloader, HTTP, models, provider protocol |
-| `packages/engine` | Orchestration |
-| `packages/registry` | URL → provider |
-| `packages/queue` | Job queue (never top-level `queue/`) |
-| `packages/storage` | Local (+ optional cloud backends in package) |
-| `providers/` | Working providers + `modules/` catalog |
-| `plugins/ffmpeg` | Convert / remux after download |
-| `plugins/storage-local` | Default artifact storage |
-| `sdk/` | Thin clients: Python, JS/TS, PHP, Go |
-| `docs/` | VitePress site |
-| `tests/` · `scripts/` · `docker/` · `alembic/` · `mediacore/` | Support |
+```text
+apps/api · apps/cli · apps/worker
+packages/core/
+  networking/ · downloader/   # yt-dlp-shaped subpackages
+  models · provider · pipeline · parser
+packages/engine        # orchestration (YoutubeDL analog)
+packages/registry      # URL → extractor/provider
+packages/queue · storage · config · events · plugins · media · auth · cache · logging
+providers/             # extractors (working + modules catalog)
+plugins/ffmpeg · plugins/storage-local   # postprocessor analog
+sdk/ · docs/ · tests/ · scripts/ · docker/
+```
 
-## Providers
+| Path | Role (yt-dlp analog) |
+|------|----------------------|
+| `packages/core/networking/` | `networking/` |
+| `packages/core/downloader/` | `downloader/` (+ HLS via ffmpeg) |
+| `providers/<name>/` | extractor (working) |
+| `providers/modules/` | extractor catalog (host detect + direct media) |
+| `packages/engine/` | YoutubeDL-like coordinator |
+| `packages/registry/` | extractor registry |
+| `plugins/ffmpeg` | `postprocessor/` |
 
-| Path | Role |
-|------|------|
-| `providers/<name>/provider.py` | Working provider (must exist) |
-| `providers/modules/<slug>/` | Catalog host detect + direct media |
-| `providers/platforms/` | Host maps + factory |
+## Implement an extractor
 
-## Removed (do not recreate)
+1. Add `providers/<name>/provider.py` (implements `packages.core.provider.Provider`)
+2. Register early in `packages/registry/providers.py`
+3. Add folder to `WORKING_SKIP` in `scripts/materialize_catalog_providers.py`
+4. Contract test in `tests/providers/`
+5. Prefer oEmbed / public API / direct media / share-link — **no scrapers**
 
-`apps/dashboard` · `desktop` · `studio` · `gateway` · `scheduler` · `benchmarks/` · `crates/` · `helm/` · extra notification/AI/cloud storage plugins · top-level `extractor/` / `ffmpeg/` / `storage/` / `queue/`
+## Removed
 
-## Related
-
-- [Overview](./overview)
-- [MediaCore vs yt-dlp](./mediacore-vs-ytdlp)
-- [`providers/README.md`](../../providers/README.md)
+Dashboard · desktop · studio · gateway · scheduler · helm · benchmarks · crates · cloud storage backends · notification plugins · top-level `extractor/` / `ffmpeg/` / `queue/`
