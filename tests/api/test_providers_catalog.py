@@ -3,7 +3,7 @@ import pytest
 pytestmark = pytest.mark.api
 
 
-def test_providers_include_stubs(client, api_headers):
+def test_providers_include_modules(client, api_headers):
     res = client.get("/v1/providers", headers=api_headers)
     assert res.status_code == 200
     names = {p["name"] for p in res.json()}

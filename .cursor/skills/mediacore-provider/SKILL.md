@@ -1,7 +1,7 @@
 ---
 name: mediacore-provider
 description: >-
-  Add or upgrade a MediaCore media provider (working implementation or catalog stub).
+  Add or upgrade a MediaCore media provider (working implementation or catalog module).
   Use when creating providers, editing providers/, hosts maps, registry registration,
   or enabling platform metadata/download with permitted APIs.
 ---
@@ -26,28 +26,28 @@ Declare `capabilities = ProviderCapabilities(...)` for the stages you support.
 ## When adding a working provider
 
 1. Create `providers/<name>/provider.py` implementing `packages.core.provider.Provider`.
-2. Register the module **early** in `packages/registry/providers.py` (before catalog stubs).
+2. Register the module **early** in `packages/registry/providers.py` (before catalog modules).
 3. Add host suffixes / URL rules; keep scrape-free / ToS-safe.
 4. Add contract tests with `packages.testkit.contracts.run_provider_contract`.
 5. Run `uv run pytest -m provider -q`.
 
-## When adding host detection for a stub
+## When adding host detection for a catalog module
 
 1. Edit `providers/platforms/hosts.py` (`MAJOR_PLATFORMS`).
 2. Regenerate: `uv run python scripts/generate_providers.py` (or `sync_platform_catalog.py --offline`).
 3. Confirm `supports()` via registry resolve in a unit test.
 
-## Stub pattern
+## Catalog module pattern
 
 ```python
-from providers.base_stub import StubProvider
+from providers.base_module import PlatformModule
 
-class MyProvider(StubProvider):
+class MyProvider(PlatformModule):
     name = "myplatform"
     host_suffixes = ("myplatform.com", "www.myplatform.com")
 ```
 
-Catalog stubs use `status="not_configured"` and raise `ProviderNotConfiguredError` until permitted access is wired.
+`PlatformModule` already downloads **direct media** URLs on those hosts. Page/watch URLs raise `ProviderNotConfiguredError` until permitted access is wired.
 
 ## Do not
 

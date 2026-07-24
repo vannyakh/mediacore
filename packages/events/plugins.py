@@ -1,4 +1,4 @@
-"""Register notification plugins as EventBus listeners."""
+"""Notification helpers + plugin status. Delivery is via PluginRuntime.dispatch_event."""
 
 from __future__ import annotations
 
@@ -92,32 +92,23 @@ def forward_discord(event: Event) -> None:
         logger.exception("Discord notify failed for %s", event.type.value)
 
 
-def _make_listener(forwarder: Any) -> Any:
-    def _listen(event: Event) -> None:
-        forwarder(event)
-
-    return _listen
-
-
 def register_event_plugins(bus: EventBus) -> list[str]:
-    """Attach webhook / telegram / discord listeners. Returns enabled plugin names."""
+    """Log which notification plugins are configured.
+
+    Delivery runs through ``PluginRuntime.dispatch_event`` → each plugin's
+    ``on_event`` (no duplicate bus listeners — avoids double webhook sends).
+    """
+    del bus  # API lifespan still calls this for startup logging
     enabled: list[str] = []
-
     if _webhook_url():
-        bus.on(None, _make_listener(forward_webhook))
         enabled.append("mediacore-plugin-webhook")
-        logger.info("Webhook event listener enabled")
-
+        logger.info("Webhook plugin ready (on_event)")
     if _telegram_config():
-        bus.on(None, _make_listener(forward_telegram))
         enabled.append("mediacore-plugin-telegram")
-        logger.info("Telegram event listener enabled")
-
+        logger.info("Telegram plugin ready (on_event)")
     if _discord_url():
-        bus.on(None, _make_listener(forward_discord))
         enabled.append("mediacore-plugin-discord")
-        logger.info("Discord event listener enabled")
-
+        logger.info("Discord plugin ready (on_event)")
     return enabled
 
 

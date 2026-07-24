@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Provider upgrade queue for the MediaCore auto-upgrade agent loop.
 
-Lists next catalog stubs to upgrade, classifies known oEmbed candidates, and
+Lists next catalog platform modules to upgrade, classifies known oEmbed candidates, and
 records done / skipped outcomes. yt-dlp is never invoked — research URLs only.
 """
 
@@ -77,7 +77,7 @@ BUILTIN_ALWAYS = frozenset({"filesystem", "generic", "example", "vimeo"})
 
 
 def _parse_early_registry_names() -> set[str]:
-    """Module tails registered before catalog stubs → likely working providers."""
+    """Module tails registered before catalog modules → likely working providers."""
     text = REGISTRY.read_text(encoding="utf-8")
     # Rough: providers.X.provider strings in the first for-loop of build_default_registry
     names = set(BUILTIN_ALWAYS)

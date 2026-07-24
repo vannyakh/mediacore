@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Materialize catalog stubs as providers/stubs/<slug>/provider.py.
+"""Materialize catalog platform modules as providers/modules/<slug>/provider.py.
 
 Reads:  providers/data/providers_index.json
-Writes: providers/stubs/<slug>/… + providers/stubs/_manifest.json
+Writes: providers/modules/<slug>/… + providers/modules/_manifest.json
 
 Note: do NOT use providers/catalog/ — that name is reserved for providers/catalog.py.
 
 Runtime registration still uses the index/factory for speed; folders exist so
-each platform has a concrete file to upgrade from stub → working provider.
+each platform has a concrete file to upgrade from module → working provider.
 """
 
 from __future__ import annotations
@@ -19,14 +19,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = ROOT / "providers" / "data" / "providers_index.json"
-OUT = ROOT / "providers" / "stubs"
+OUT = ROOT / "providers" / "modules"
 MANIFEST = OUT / "_manifest.json"
 
-# Top-level packages that must not collide with stub module names
+# Top-level packages that must not collide with module package names
 RESERVED = frozenset(
     {
         "catalog",
         "platforms",
+        "modules",
         "stubs",
         "data",
         "filesystem",
@@ -34,10 +35,30 @@ RESERVED = frozenset(
         "generic",
         "example",
         "base_stub",
+        "base_module",
+        "direct_media",
+        "oembed",
     }
 )
 
-WORKING_SKIP = frozenset({"filesystem", "vimeo", "generic", "example"})
+WORKING_SKIP = frozenset(
+    {
+        "filesystem",
+        "vimeo",
+        "generic",
+        "example",
+        "dailymotion",
+        "soundcloud",
+        "reddit",
+        "ted",
+        "wikimedia",
+        "bandcamp",
+        "mixcloud",
+        "streamable",
+        "imgur",
+        "archiveorg",
+    }
+)
 
 
 def module_slug(name: str) -> str:
@@ -74,19 +95,20 @@ def render_provider(
 ) -> str:
     cls = class_name(slug)
     st = "broken" if broken else (status or "not_configured")
-    desc = description or f"Catalog stub for {name}"
-    return f'''"""Auto-generated MediaCore catalog stub for `{name}`.
+    desc = description or f"Platform module for {name}"
+    return f'''"""Auto-generated MediaCore platform module for `{name}`.
 
-Upgrade this file to a working provider using official/permitted APIs only.
+Direct media URLs on this module's hosts support metadata + download.
+Page/watch URLs need an official/permitted API upgrade.
 Regenerate with: uv run python scripts/materialize_catalog_providers.py
 """
 
 from __future__ import annotations
 
-from providers.base_stub import StubProvider
+from providers.base_module import PlatformModule
 
 
-class {cls}(StubProvider):
+class {cls}(PlatformModule):
     name = {name!r}
     status = {st!r}
     host_suffixes = {tuple(hosts)!r}
@@ -104,7 +126,6 @@ def main() -> int:
     providers = data.get("providers") or []
 
     if OUT.exists():
-        # Keep __init__.py pattern: wipe generated package dirs only
         for child in OUT.iterdir():
             if child.name.startswith(".") or child.name == "README.md":
                 continue
@@ -115,7 +136,7 @@ def main() -> int:
 
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "__init__.py").write_text(
-        '"""Materialized catalog stub packages (one folder per platform)."""\n',
+        '"""Materialized platform modules (one folder per catalog platform)."""\n',
         encoding="utf-8",
     )
 
@@ -130,7 +151,6 @@ def main() -> int:
 
         slug = module_slug(name)
         if slug in seen_slugs:
-            # Disambiguate collisions
             n = 2
             while f"{slug}_{n}" in seen_slugs:
                 n += 1
@@ -162,7 +182,7 @@ def main() -> int:
             {
                 "slug": slug,
                 "name": name,
-                "module": f"providers.stubs.{slug}.provider",
+                "module": f"providers.modules.{slug}.provider",
                 "hosts": hosts,
                 "broken": broken,
                 "status": "broken" if broken else status,
@@ -175,13 +195,15 @@ def main() -> int:
         encoding="utf-8",
     )
     (OUT / "README.md").write_text(
-        """# Catalog provider stubs
+        """# Platform modules
 
 One folder per platform from `providers/data/providers_index.json`.
 
-- Status is `not_configured` (or `broken`) until you implement permitted/official access.
-- Runtime still loads stubs via `providers.platforms.factory` (fast).
-- To upgrade a platform: edit `providers/stubs/<slug>/provider.py` and register it early in `packages/registry/providers.py`.
+- **Direct media** URLs on a module's hosts: metadata + download via `PlatformModule`.
+- **Page/watch** URLs: `not_configured` until you implement permitted/official access.
+- Runtime loads modules via `providers.platforms.factory` (fast index).
+- To upgrade a platform: edit `providers/modules/<slug>/provider.py` (or add
+  `providers/<name>/`) and register early in `packages/registry/providers.py`.
 
 Regenerate:
 
@@ -193,7 +215,7 @@ uv run python scripts/materialize_catalog_providers.py
         encoding="utf-8",
     )
 
-    print(f"Wrote {written} catalog packages under {OUT.relative_to(ROOT)}")
+    print(f"Wrote {written} platform modules under {OUT.relative_to(ROOT)}")
     print(f"Manifest: {MANIFEST.relative_to(ROOT)} ({written} entries)")
     return 0
 

@@ -26,8 +26,8 @@ def test_generic_contract(tmp_path: Path):
     provider = GenericHTTPProvider()
     url = "https://cdn.example.com/demo.mp4"
     with (
-        patch("providers.generic.provider.head_content_type", return_value="video/mp4"),
-        patch("providers.generic.provider.download_file", return_value=(4, "video/mp4")),
+        patch("providers.direct_media.head_content_type", return_value="video/mp4"),
+        patch("providers.direct_media.download_file", return_value=(4, "video/mp4")),
     ):
         run_provider_contract(provider, url, tmp_path / "out.mp4", expect_download=True)
 
@@ -171,7 +171,7 @@ def test_archiveorg_contract_metadata_only(tmp_path: Path):
     )
 
 
-def test_oembed_providers_override_catalog_stubs():
+def test_oembed_providers_override_catalog_modules():
     from packages.registry.providers import reset_registry
 
     registry = reset_registry()

@@ -19,7 +19,7 @@ Provider
 └── Live
 ```
 
-Implement `packages.core.provider.Provider`:
+Implement `packages.core.provider.Provider` or extend `providers.base_module.PlatformModule`.
 
 ```python
 capabilities = ProviderCapabilities(...)
@@ -27,30 +27,28 @@ capabilities = ProviderCapabilities(...)
 def supports(self, url: str) -> bool: ...
 def metadata(self, url: str) -> MediaMetadata: ...
 def download(self, url: str, format_id: str, dest: Path) -> DownloadResult: ...
-# Optional / capability-gated:
-# manifest, formats, thumbnail, subtitles, live
 ```
-
-Declare only capabilities you implement. Defaults handle thumbnail/subtitles/live from metadata when flags are set.
 
 ## Registration order
 
 1. Working providers first (early list in `packages/registry/providers.py`)  
-2. Catalog stubs from `providers/platforms/factory.py` (skip if name already registered)  
+2. Catalog platform modules from `providers/platforms/factory.py` (skip if name already registered)  
 3. `generic` + `example` last  
 
 Batch upgrades: skill `mediacore-upgrade-loop` + `scripts/provider_upgrade_queue.py`.
 
 Use `packages.registry.providers.reset_registry()` in tests after registry changes.
 
-## Catalog stubs
+## Platform modules
 
-- Index: `providers/data/providers_index.json` (~1370 stubs).
-- Host maps: `providers/platforms/hosts.py` → regenerate with `scripts/generate_providers.py`.
-- Snapshot input: `providers/data/sites_snapshot.json` (MediaCore-owned data; no foreign brand filenames).
-- Stubs: `status=not_configured` (or `broken`); `supports()` only when `host_suffixes` set.
+- On disk: `providers/modules/<slug>/` (~1360 packages).
+- Index: `providers/data/providers_index.json`.
+- Host maps: `providers/platforms/hosts.py` → `scripts/generate_providers.py`.
+- Direct media URLs on a module's hosts: metadata + download via `PlatformModule`.
+- Page/watch URLs: `status=not_configured` → `ProviderNotConfiguredError` until official API.
 
 ## Do not
 
 - Wire third-party scraper libraries for extract/download.
 - Put platform scrape logic inside `packages/core`.
+- Recreate `providers/stubs/` (renamed to `modules/`).

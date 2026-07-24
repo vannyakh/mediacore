@@ -18,6 +18,13 @@ logger = logging.getLogger("mediacore.plugins.runtime")
 STORAGE_LOCAL = "mediacore-plugin-storage-local"
 FFMPEG_PLUGIN = "mediacore-plugin-ffmpeg"
 
+# Kinds that receive EventBus events via on_event
+_EVENT_KINDS = (
+    PluginKind.NOTIFICATIONS,
+    PluginKind.WEBHOOKS,
+    PluginKind.ANALYTICS,
+)
+
 
 class PluginRuntime:
     def __init__(self, loader: PluginLoader | None = None) -> None:
@@ -59,6 +66,19 @@ class PluginRuntime:
         label = f"{kind_enum.value}" + (f"/{capability}" if capability else "")
         raise PluginError(f"No enabled plugin for {label}")
 
+    def create(self, name: str, settings: Any | None = None, **kwargs: Any) -> Any:
+        """Call a plugin's ``create()`` factory after require()."""
+        info = self.require(name)
+        module = info.module or {}
+        factory = module.get("create")
+        if factory is None:
+            raise PluginError(f"Plugin '{name}' has no create() factory")
+        if settings is None:
+            from packages.config.settings import get_settings
+
+            settings = get_settings()
+        return factory(settings, **kwargs)
+
     def get_storage(self, root: str | Path | None = None) -> StorageBackend:
         """
         Resolve storage for the active STORAGE_BACKEND.
@@ -70,7 +90,6 @@ class PluginRuntime:
         settings = get_settings()
         backend = normalize_backend(settings.storage_backend)
         plugin_name = BACKEND_PLUGINS.get(backend, STORAGE_LOCAL)
-        # Local must always be available; cloud plugins only required when selected.
         if backend == "local":
             self.require(STORAGE_LOCAL)
         else:
@@ -85,9 +104,16 @@ class PluginRuntime:
             )
         return info
 
+    def ffmpeg(self) -> Any:
+        """Return FFmpegService from the ffmpeg plugin."""
+        return self.create(FFMPEG_PLUGIN)
+
+    def metadata_normalizer(self) -> Any:
+        return self.create("mediacore-plugin-metadata")
+
     def dispatch_event(self, event: Any) -> None:
-        """Invoke on_event for enabled notification/webhook plugins that define it."""
-        for kind in (PluginKind.NOTIFICATIONS, PluginKind.WEBHOOKS):
+        """Invoke on_event for notification, webhook, and analytics plugins."""
+        for kind in _EVENT_KINDS:
             for info in self.loader.by_kind(kind):
                 if info.status not in {"available", "stub"}:
                     continue
@@ -96,6 +122,9 @@ class PluginRuntime:
                     continue
                 handler = module.get("on_event")
                 if handler is None:
+                    continue
+                # Skip stub notification plugins that aren't configured
+                if info.status == "stub" and kind != PluginKind.ANALYTICS:
                     continue
                 try:
                     handler(event)

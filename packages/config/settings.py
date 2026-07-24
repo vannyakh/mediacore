@@ -50,6 +50,7 @@ class MediaCoreSettings(BaseSettings):
 
     azure_storage_connection_string: str | None = None
     azure_storage_container: str | None = None
+    azure_public_base_url: str | None = None
 
     gdrive_credentials_json: str | None = None
     gdrive_folder_id: str | None = None

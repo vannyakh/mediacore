@@ -35,9 +35,17 @@ Full product story: [Vision](/getting-started/vision).
 ## Layout
 
 ```text
-apps/        api, gateway, dashboard, desktop, studio, worker, cli
+apps/        api, worker, cli, dashboard, scheduler, desktop, studio, gateway
 packages/    core, engine, registry, plugins, events, queue, storage, media, …
-providers/   generic, filesystem, vimeo, example  (independent of core)
+providers/   working providers + modules/ catalog (independent of core)
+plugins/     storage-*, ffmpeg, webhook, …
+sdk/         multi-language clients
+benchmarks/  standalone performance suite
+crates/      mediacore-engine (Rust foundation)
+mediacore/   package version (__version__)
+```
+
+Legacy shims removed: `extractor/`, top-level `ffmpeg/`, `storage/`, `jobqueue/`, `queue/`.
 plugins/     storage-*, ffmpeg, whisper, webhook, telegram, …
 sdk/         javascript, typescript, python, rust, go, dart, csharp, …
 crates/      mediacore-engine (Rust foundation — roadmap)

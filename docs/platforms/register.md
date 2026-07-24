@@ -88,15 +88,15 @@ for module_name in (
     _register_module(registry, module_name)
 ```
 
-## Catalog stubs
+## Catalog platform modules
 
-For platforms that are not ready, regenerate stubs instead of hand-writing thousands of files:
+For platforms that are not fully upgraded, regenerate modules instead of hand-writing thousands of files:
 
 ```bash
 uv run python scripts/sync_platform_catalog.py --offline
 ```
 
-Stubs appear in `GET /v1/providers` with `not_configured` until you replace them with a real provider (same `name` wins if registered earlier).
+Modules live under `providers/modules/<slug>/`. They support **direct media** download on their hosts; page/watch URLs stay `not_configured` until you add a working provider (same `name` wins if registered earlier).
 
 ## Tests
 

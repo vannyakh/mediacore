@@ -12,14 +12,15 @@ Brand is **MediaCore** only — **The Open Media Infrastructure Platform** (tagl
 - Platform-first: core stays provider-agnostic (no YouTube/TikTok/etc. knowledge in core).
 - Stack: Engine → Plugin System → Providers → Media Pipeline → SDK → Application.
 - Layout: `apps/` (api, worker, cli, dashboard, desktop, studio…), `packages/` (core, engine, registry, plugins, events…), `providers/`, `plugins/`, `sdk/`, `docs/`.
-- Runtime queue package is `packages/queue` (or `jobqueue` shim) — never shadow stdlib `queue`.
+- Runtime queue package is `packages/queue` only — never add a top-level `queue/` Python package (shadows stdlib).
+- Do not recreate legacy shims: `extractor/`, `ffmpeg/`, `storage/`, `jobqueue/`.
 - API surface: `/v1/*` (compatibility alias `/api/v1/*` allowed).
 - Vision / roadmap: `docs/getting-started/vision.md`, `ROADMAP.md` (detail in `docs/getting-started/roadmap.md`).
 
 ## Compliance
 
 - Do not implement scrapers or access-control bypasses.
-- Provider stubs may detect URLs and return `provider_not_configured`.
+- Platform modules (`providers/modules/`) match hosts; direct media downloads work; page URLs return `provider_not_configured` until an official API is wired.
 - Working downloads/metadata must use official APIs or content the user has permission to access.
 - Do not add scraper runtimes as dependencies for platform extraction.
 

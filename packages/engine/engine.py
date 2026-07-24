@@ -45,6 +45,12 @@ class MediaCoreEngine:
                 "provider": metadata.platform,
                 "formats": [f.id for f in metadata.formats],
             }
+        try:
+            from packages.plugins.runtime import get_runtime
+
+            metadata = get_runtime().metadata_normalizer().enrich(metadata)
+        except Exception:  # noqa: BLE001
+            pass
 
         pipeline.set_metadata(metadata.to_dict())
         self.events.emit(

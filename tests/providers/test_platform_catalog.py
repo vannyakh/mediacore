@@ -2,7 +2,7 @@ import pytest
 
 from packages.registry.providers import build_default_registry, reset_registry
 from providers.catalog import catalog_summary, search_extractors
-from providers.platforms.factory import build_all_providers, build_platform_stubs
+from providers.platforms.factory import build_all_providers, build_platform_modules
 
 pytestmark = pytest.mark.provider
 
@@ -27,12 +27,12 @@ def test_all_providers_generated():
     assert "tiktok" in names
 
 
-def test_host_stubs_resolve():
-    stubs = build_platform_stubs()
-    assert any(s.name == "youtube" for s in stubs)
+def test_host_modules_resolve():
+    modules = build_platform_modules()
+    assert any(m.name == "youtube" for m in modules)
 
 
-def test_registry_resolves_youtube_stub():
+def test_registry_resolves_youtube_module():
     reset_registry()
     registry = build_default_registry()
     provider = registry.resolve("https://www.youtube.com/watch?v=dQw4w9WgXcQ")

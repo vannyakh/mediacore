@@ -88,7 +88,7 @@ curl -s -H "X-API-Key: dev-api-key-change-me" \
 **Request:** `{ "url": string }`  
 **Response:** `platform`, `title`, `duration`, `thumbnail`, `formats[]`, `manifest`, `is_live`, `subtitles[]`, …
 
-Catalog stubs that match a URL return `provider_not_configured` until a permitted provider is wired.
+Platform modules match hosts: direct media URLs download; page/watch URLs return `provider_not_configured` until a permitted provider is wired.
 
 ---
 
@@ -147,7 +147,7 @@ Event types include `JobCreated`, `AnalyzeStarted`, `MetadataReady`, `DownloadSt
 ## Providers
 
 ```bash
-# All registered providers (~1370+ stubs + builtins)
+# All registered providers (~1360+ modules + builtins)
 curl -s -H "X-API-Key: dev-api-key-change-me" \
   http://localhost:8000/v1/providers | head
 

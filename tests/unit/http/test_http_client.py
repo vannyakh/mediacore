@@ -1,6 +1,6 @@
 import pytest
 
-from extractor.network.http import get_client
+from packages.core.http import get_client
 
 pytestmark = pytest.mark.unit
 

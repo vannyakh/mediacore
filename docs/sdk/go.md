@@ -16,7 +16,7 @@ go get ./sdk/go
 
 ```bash [replace]
 # In your go.mod when developing against a checkout:
-# replace example.com/you/app => ../apidownloader  (adjust path)
+# replace example.com/you/app => ../mediacore  (adjust path)
 go get ./sdk/go
 ```
 

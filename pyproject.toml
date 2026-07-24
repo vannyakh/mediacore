@@ -57,10 +57,6 @@ packages = [
     "packages",
     "providers",
     "apps",
-    "extractor",
-    "ffmpeg",
-    "storage",
-    "jobqueue",
 ]
 
 # Ensure packages.testkit is importable in editable installs via pythonpath="."

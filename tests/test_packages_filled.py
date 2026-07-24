@@ -40,3 +40,11 @@ def test_plugin_loader_discovers_all():
     loader = PluginLoader(root=ROOT / "plugins")
     plugins = loader.discover()
     assert len(plugins) >= 14
+
+
+def test_legacy_shims_removed():
+    for name in ("extractor", "ffmpeg", "storage", "jobqueue", "queue"):
+        path = ROOT / name
+        assert not path.exists(), f"legacy path should be gone: {path}"
+    assert not (ROOT / "providers" / "stubs").exists()
+    assert (ROOT / "providers" / "modules").is_dir()

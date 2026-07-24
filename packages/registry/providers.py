@@ -93,23 +93,23 @@ def build_default_registry() -> ProviderRegistry:
     ):
         _register_module(registry, module_name)
 
-    # All catalog extractors as stub providers (folders under providers/stubs/)
+    # Catalog platform modules (folders under providers/modules/)
     try:
         from providers.platforms.factory import build_all_providers, catalog_package_count
 
-        stubs = build_all_providers()
-        for stub in stubs:
+        modules = build_all_providers()
+        for module in modules:
             # Skip names already registered as working providers
-            if registry.get(stub.name):
+            if registry.get(module.name):
                 continue
-            registry.register(stub)
+            registry.register(module)
         logger.info(
-            "Registered %s catalog stubs (%s on-disk packages)",
-            len(stubs),
+            "Registered %s platform modules (%s on-disk packages)",
+            len(modules),
             catalog_package_count(),
         )
     except Exception as exc:  # noqa: BLE001
-        logger.warning("Failed to load catalog providers: %s", exc)
+        logger.warning("Failed to load catalog platform modules: %s", exc)
 
     # Generic direct media + example last
     for module_name in (

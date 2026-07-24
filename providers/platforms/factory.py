@@ -1,6 +1,6 @@
-"""Build StubProvider instances for every extractor in the providers index.
+"""Build PlatformModule instances for every extractor in the providers index.
 
-Folder stubs live under ``providers/stubs/<slug>/`` (see
+Folder modules live under ``providers/modules/<slug>/`` (see
 ``scripts/materialize_catalog_providers.py``). Runtime registration uses the
 JSON index for speed; each platform still has an on-disk package to upgrade.
 """
@@ -11,10 +11,10 @@ import json
 from functools import lru_cache
 from pathlib import Path
 
-from providers.base_stub import StubProvider
+from providers.base_module import PlatformModule
 
 INDEX = Path(__file__).resolve().parents[1] / "data" / "providers_index.json"
-CATALOG_MANIFEST = Path(__file__).resolve().parents[1] / "stubs" / "_manifest.json"
+CATALOG_MANIFEST = Path(__file__).resolve().parents[1] / "modules" / "_manifest.json"
 
 
 @lru_cache
@@ -31,7 +31,7 @@ def load_catalog_manifest() -> dict:
     return json.loads(CATALOG_MANIFEST.read_text(encoding="utf-8"))
 
 
-def _make_stub(
+def _make_module(
     *,
     name: str,
     hosts: tuple[str, ...],
@@ -39,13 +39,13 @@ def _make_stub(
     broken: bool = False,
     description: str = "",
     module: str | None = None,
-) -> StubProvider:
-    class _PlatformStub(StubProvider):
+) -> PlatformModule:
+    class _PlatformModule(PlatformModule):
         pass
 
     safe = "".join(ch if ch.isalnum() else "_" for ch in name.title())
-    _PlatformStub.__name__ = f"{safe}Provider"
-    instance = _PlatformStub()
+    _PlatformModule.__name__ = f"{safe}Provider"
+    instance = _PlatformModule()
     instance.name = name
     instance.status = "broken" if broken else "not_configured"
     instance.host_suffixes = hosts
@@ -57,11 +57,11 @@ def _make_stub(
     return instance
 
 
-def build_all_providers() -> list[StubProvider]:
-    """All catalog extractors as MediaCore stub providers."""
+def build_all_providers() -> list[PlatformModule]:
+    """All catalog extractors as MediaCore platform modules."""
     data = load_providers_index()
     manifest = {p["name"]: p for p in (load_catalog_manifest().get("providers") or [])}
-    out: list[StubProvider] = []
+    out: list[PlatformModule] = []
     seen: set[str] = set()
     for item in data.get("providers") or []:
         name = str(item.get("name") or "").strip()
@@ -72,7 +72,7 @@ def build_all_providers() -> list[StubProvider]:
         ie_names = tuple(item.get("ie_names") or [])
         meta = manifest.get(name) or {}
         out.append(
-            _make_stub(
+            _make_module(
                 name=name,
                 hosts=hosts,
                 ie_names=ie_names,
@@ -84,12 +84,15 @@ def build_all_providers() -> list[StubProvider]:
     return out
 
 
-# Back-compat alias
-def build_platform_stubs() -> list[StubProvider]:
-    """Providers that can match URLs (have host suffixes)."""
+def build_platform_stubs() -> list[PlatformModule]:
+    """Back-compat: modules that can match URLs (have host suffixes)."""
     return [p for p in build_all_providers() if p.host_suffixes]
 
 
+def build_platform_modules() -> list[PlatformModule]:
+    return build_platform_stubs()
+
+
 def catalog_package_count() -> int:
-    """Number of materialized packages under providers/stubs/."""
+    """Number of materialized packages under providers/modules/."""
     return int(load_catalog_manifest().get("count") or 0)

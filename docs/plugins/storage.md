@@ -8,7 +8,8 @@ flowchart LR
   Runtime -->|STORAGE_BACKEND_local| Local[storage_local]
   Runtime -->|s3_r2| ObjectStore[S3_R2]
   Runtime -->|ftp_webdav| Net[FTP_WebDAV]
-  Runtime -->|stubs| Cloud[GDrive_Azure_Dropbox]
+  Runtime -->|azure| Azure[Azure_Blob]
+  Runtime -->|stubs| OAuth[GDrive_Dropbox_OneDrive]
   Local --> Files["/files/job_id"]
 ```
 
@@ -29,7 +30,7 @@ STORAGE_ROOT=./data/files
 | Amazon S3 | `mediacore-plugin-storage-s3` | available* | `uv sync --extra storage-s3` |
 | Cloudflare R2 | `mediacore-plugin-storage-r2` | available* | `uv sync --extra storage-s3` |
 | Google Drive | `mediacore-plugin-storage-gdrive` | stub | OAuth |
-| Azure Blob | `mediacore-plugin-storage-azure` | stub | `uv sync --extra storage-azure` |
+| Azure Blob | `mediacore-plugin-storage-azure` | available* | `uv sync --extra storage-azure` |
 | Dropbox | `mediacore-plugin-storage-dropbox` | stub | OAuth |
 | OneDrive | `mediacore-plugin-storage-onedrive` | stub | OAuth |
 | FTP | `mediacore-plugin-storage-ftp` | available* | none (stdlib) |

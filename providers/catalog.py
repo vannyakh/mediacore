@@ -45,8 +45,9 @@ def catalog_summary() -> dict[str, Any]:
         "providers_with_hosts": index.get("with_hosts", 0),
         "broken": broken,
         "note": (
-            "Full platform catalog is implemented as MediaCore stub providers. "
-            "Metadata/download require official or permitted access — "
+            "Full platform catalog is implemented as MediaCore platform modules. "
+            "Direct media URLs on a module's hosts support metadata + download; "
+            "page/watch URLs need official or permitted APIs — "
             "no third-party scraper runtime is bundled."
         ),
     }

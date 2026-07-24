@@ -10,8 +10,8 @@ pytestmark = pytest.mark.provider
 
 def test_generic_metadata():
     provider = GenericHTTPProvider()
-    with patch("providers.generic.provider.head_content_type", return_value="video/mp4"):
-        meta = provider.get_metadata("https://cdn.example.com/demo.mp4")
+    with patch("providers.direct_media.head_content_type", return_value="video/mp4"):
+        meta = provider.metadata("https://cdn.example.com/demo.mp4")
     assert meta.platform == "generic"
     assert meta.title == "demo.mp4"
     assert meta.formats[0].id == "original"
@@ -22,9 +22,9 @@ def test_generic_download(tmp_path: Path):
     provider = GenericHTTPProvider()
     dest = tmp_path / "out.mp4"
     with (
-        patch("providers.generic.provider.head_content_type", return_value="video/mp4"),
+        patch("providers.direct_media.head_content_type", return_value="video/mp4"),
         patch(
-            "providers.generic.provider.download_file",
+            "providers.direct_media.download_file",
             return_value=(128, "video/mp4"),
         ) as mock_dl,
     ):

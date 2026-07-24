@@ -1,9 +1,10 @@
 import pytest
 
+from packages.core.parser import quality_from_height
+
 pytestmark = pytest.mark.unit
 
 
-def test_utils_package_importable():
-    import extractor.utils.urls as urls
-
-    assert urls.quality_from_height(720) == "720p"
+def test_quality_from_height():
+    assert quality_from_height(720) == "720p"
+    assert quality_from_height(None) == "original"

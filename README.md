@@ -86,18 +86,21 @@ Flags: `--base`, `--key` (or `MEDIACORE_BASE` / `MEDIACORE_API_KEY`).
 
 ```text
 mediacore/
-  apps/         api, worker, cli, dashboard, desktop, studio, …
-  packages/     core, engine, registry, plugins, events, queue, testkit, mediacore_benchmark, …
-  providers/    platform extractors (independent of core)
-  plugins/      storage, ffmpeg, webhooks, AI, …
+  apps/         api, worker, cli, dashboard, scheduler, desktop, studio, gateway
+  packages/     core, engine, registry, queue, storage, media, plugins, events, …
+  providers/    working providers + modules/ catalog (core-agnostic)
+  plugins/      storage-*, ffmpeg, webhook, AI, …
   sdk/          JS, TS, Python, Rust, Go, Dart, C#, …
-  benchmarks/   standalone Criterion + Python performance suite
+  benchmarks/   standalone performance suite
   crates/       Rust engine foundation
-  docs/         guides (getting started, architecture, API, …)
+  mediacore/    package version (__version__)
+  docs/         VitePress site
   tests/        unit → load / chaos / benchmark
-  docker/       local compose stack
+  docker/       compose stack (root docker-compose.yml includes it)
   scripts/      catalog + developer tooling
 ```
+
+Legacy top-level shims (`extractor/`, `ffmpeg/`, `storage/`, `jobqueue/`, `queue/`) were removed — use `packages/*` instead.
 
 ---
 

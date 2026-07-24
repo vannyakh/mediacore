@@ -32,8 +32,10 @@ curl -s -H "X-API-Key: dev-api-key-change-me" http://localhost:8000/v1/plugins
 `packages.plugins.runtime`:
 
 - `get_storage()` — default **local**; cloud only when `STORAGE_BACKEND` is set
-- `ensure_ffmpeg()` — FFmpeg plugin + binary
-- `dispatch_event(event)` — webhook / notification hooks
+- `ensure_ffmpeg()` / `ffmpeg()` — FFmpeg plugin + binary / service
+- `metadata_normalizer()` — enrich analyze results
+- `dispatch_event(event)` — webhook / telegram / discord / analytics `on_event` (single path)
+- `create(name)` — call a plugin factory
 
 Refresh the docs UI data after adding plugins:
 

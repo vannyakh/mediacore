@@ -19,11 +19,12 @@
       "short_name": "analytics",
       "version": "0.1.0",
       "kind": "analytics",
-      "status": "stub",
-      "description": "Job and usage analytics sink (stub)",
+      "status": "available",
+      "description": "In-process job/usage analytics sink (counts + recent events)",
       "capabilities": [
         "track",
-        "metrics"
+        "metrics",
+        "events"
       ],
       "logo": "https://cdn.simpleicons.org/googleanalytics/E37400"
     },
@@ -32,11 +33,12 @@
       "short_name": "auth-apikey",
       "version": "0.1.0",
       "kind": "authentication",
-      "status": "stub",
-      "description": "API key authentication adapter (stub \u2014 core auth remains in packages/auth)",
+      "status": "available",
+      "description": "API key hash/verify adapter (core HTTP auth remains in apps.api)",
       "capabilities": [
         "api_key",
-        "verify"
+        "verify",
+        "hash"
       ],
       "logo": "https://cdn.simpleicons.org/auth0/EB5424"
     },
@@ -64,7 +66,8 @@
         "convert",
         "audio",
         "thumbnail",
-        "clip"
+        "clip",
+        "probe"
       ],
       "logo": "https://cdn.simpleicons.org/ffmpeg/007808"
     },
@@ -73,8 +76,8 @@
       "short_name": "metadata",
       "version": "0.1.0",
       "kind": "metadata",
-      "status": "stub",
-      "description": "Normalize and enrich media metadata (stub)",
+      "status": "available",
+      "description": "Normalize and lightly enrich media metadata",
       "capabilities": [
         "enrich",
         "normalize"
@@ -86,8 +89,8 @@
       "short_name": "provider",
       "version": "0.1.0",
       "kind": "provider",
-      "status": "stub",
-      "description": "Optional provider-plugin bridge (stub). Platform extractors remain under providers/ and packages/registry.",
+      "status": "available",
+      "description": "Provider-plugin bridge: resolve URLs via packages.registry. Platform extractors remain under providers/.",
       "capabilities": [
         "resolve",
         "metadata",
@@ -100,7 +103,7 @@
       "short_name": "storage-azure",
       "version": "0.1.0",
       "kind": "storage",
-      "status": "stub",
+      "status": "available",
       "description": "Azure Blob storage (optional \u2014 set STORAGE_BACKEND=azure)",
       "capabilities": [
         "store",
@@ -249,7 +252,7 @@
       "version": "0.1.0",
       "kind": "translation",
       "status": "stub",
-      "description": "Subtitle / text translation (stub)",
+      "description": "Subtitle/text translation (configure an official translation API)",
       "capabilities": [
         "translate"
       ],
@@ -274,7 +277,7 @@
       "version": "0.1.0",
       "kind": "ai",
       "status": "stub",
-      "description": "Speech-to-text via Whisper (stub)",
+      "description": "Speech-to-text / subtitles via Whisper (optional heavy dependency)",
       "capabilities": [
         "transcribe",
         "subtitles"

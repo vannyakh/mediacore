@@ -11,6 +11,7 @@ pytestmark = pytest.mark.plugin
     "name",
     [
         "mediacore-plugin-storage-local",
+        "mediacore-plugin-storage-azure",
         "mediacore-plugin-ffmpeg",
         "mediacore-plugin-webhook",
         "mediacore-plugin-metadata",
@@ -19,6 +20,8 @@ pytestmark = pytest.mark.plugin
         "mediacore-plugin-provider",
         "mediacore-plugin-translate",
         "mediacore-plugin-telegram",
+        "mediacore-plugin-discord",
+        "mediacore-plugin-whisper",
     ],
 )
 def test_plugin_manifest_contract(name: str):

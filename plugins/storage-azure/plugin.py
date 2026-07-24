@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from packages.storage.azure import AzureBlobStorage
 from packages.storage.cloud import not_configured
 
 PLUGIN = {
@@ -12,12 +13,12 @@ PLUGIN = {
     "version": "0.1.0",
     "kind": "storage",
     "description": "Azure Blob storage (optional — set STORAGE_BACKEND=azure)",
-    "status": "stub",
+    "status": "available",
     "capabilities": ["store", "delete", "signed_url", "publish"],
 }
 
 
-def create(settings: Any, *, root: str | Path | None = None) -> Any:
+def create(settings: Any, *, root: str | Path | None = None) -> AzureBlobStorage:
     conn = getattr(settings, "azure_storage_connection_string", None)
     container = getattr(settings, "azure_storage_container", None)
     if not conn or not container:
@@ -25,8 +26,9 @@ def create(settings: Any, *, root: str | Path | None = None) -> Any:
             "Azure Blob",
             "Set AZURE_STORAGE_CONNECTION_STRING and AZURE_STORAGE_CONTAINER.",
         )
-    raise not_configured(
-        "Azure Blob",
-        "Connection present but Azure client is not implemented yet "
-        "(uv sync --extra storage-azure planned).",
+    return AzureBlobStorage(
+        connection_string=conn,
+        container=container,
+        staging_root=root or getattr(settings, "storage_root", None),
+        public_base_url=getattr(settings, "azure_public_base_url", None),
     )

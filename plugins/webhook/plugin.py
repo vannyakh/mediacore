@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import os
-
 from packages.events.plugins import forward_webhook, plugin_runtime_status
 
 
@@ -22,5 +20,5 @@ PLUGIN = {
 
 
 def on_event(event) -> None:
-    """Called when registered as a bus listener."""
-    forward_webhook(event, url=os.getenv("MEDIACORE_WEBHOOK_URL") or os.getenv("WEBHOOK_URL"))
+    """Invoked by PluginRuntime.dispatch_event on every bus emit."""
+    forward_webhook(event)

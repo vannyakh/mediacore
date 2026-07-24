@@ -7,6 +7,12 @@ This repository is **MediaCore** — **The Open Media Infrastructure Platform** 
 - Rules: [`.cursor/rules/`](.cursor/rules/)
 - Skills: [`.cursor/skills/`](.cursor/skills/)
 
+## Layout (canonical)
+
+`apps/` · `packages/` · `providers/` · `plugins/` · `sdk/` · `benchmarks/` · `crates/` · `mediacore/` · `docs/` · `tests/` · `scripts/` · `docker/`
+
+Do **not** recreate: `extractor/`, top-level `ffmpeg/`, `storage/`, `jobqueue/`, or a top-level `queue/` package (stdlib shadow).
+
 ## Hard constraints
 
 1. Brand: MediaCore only (no legacy/foreign product names in new code or docs).

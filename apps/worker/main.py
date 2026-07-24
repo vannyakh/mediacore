@@ -6,7 +6,7 @@ import logging
 
 from apps.api.db.session import init_db
 from apps.worker import actors  # noqa: F401 — register actors
-from jobqueue.broker import configure_broker
+from packages.queue.broker import configure_broker
 
 logging.basicConfig(level=logging.INFO)
 

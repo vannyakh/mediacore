@@ -21,9 +21,12 @@ def test_discover_builtin_plugins():
 def test_stub_plugin_dirs():
     loader = PluginLoader()
     stubs = [p for p in loader.discover() if p.status == "stub"]
-    # OAuth / vendor clouds remain stubs until fully wired
+    # OAuth clouds remain stubs until fully wired
     assert any(p.name.endswith("storage-gdrive") for p in stubs)
-    assert any(p.name.endswith("storage-azure") for p in stubs)
+    assert any(p.name.endswith("storage-dropbox") for p in stubs)
+    azure = loader.get("mediacore-plugin-storage-azure")
+    assert azure is not None
+    assert azure.status == "available"
 
 
 def test_loader_get():

@@ -6,9 +6,10 @@ MediaCore **never hardcodes scrape logic in core**. Platforms live under `provid
 flowchart LR
   URL[Media_URL] --> Registry[ProviderRegistry]
   Registry --> Working[Working_builtins]
-  Registry --> Stubs[Catalog_stubs]
+  Registry --> Modules[Platform_modules]
   Working --> Engine[packages_engine]
-  Stubs -->|provider_not_configured| Engine
+  Modules -->|direct_media| Engine
+  Modules -->|page_url_not_configured| Engine
 ```
 
 <PlatformCatalog />
@@ -17,7 +18,7 @@ flowchart LR
 
 | Endpoint | Purpose |
 |----------|---------|
-| `GET /v1/providers` | Working + stub providers (with capabilities) |
+| `GET /v1/providers` | Working + platform modules (with capabilities) |
 | `GET /v1/providers/catalog` | Catalog summary counts |
 | `GET /v1/providers/catalog/search?q=` | Search extractors by name |
 
@@ -29,11 +30,11 @@ curl -s -H "X-API-Key: dev-api-key-change-me" \
   "http://localhost:8000/v1/providers/catalog/search?q=youtube"
 ```
 
-Regenerate stubs, on-disk packages (`providers/stubs/<slug>/`), and docs list:
+Regenerate modules (`providers/modules/<slug>/`) and docs list:
 
 ```bash
 uv run python scripts/sync_platform_catalog.py --offline
-# also writes providers/stubs/_manifest.json (~1370 stub folders)
+# also writes providers/modules/_manifest.json (~1360 module folders)
 ```
 
 ## Working builtins (metadata / download)
@@ -55,15 +56,15 @@ uv run python scripts/sync_platform_catalog.py --offline
 | `imgur` | `metadata_only` | Public oEmbed |
 | `archiveorg` | `metadata_only` | Public oEmbed |
 
-Catalog stubs with the same `name` are skipped when these modules register first.
+Catalog modules with the same `name` are skipped when these working providers register first.
 
 ## Status meanings
 
 | Status | Meaning |
 |--------|---------|
 | `available` / `active` | Safe to use in local/dev workflows |
-| `metadata` / `metadata_only` | Metadata only (no download) |
-| `stub` / `not_configured` | Catalog placeholder — wire official APIs |
+| `metadata` / `metadata_only` | Metadata only (no download of page URLs) |
+| `not_configured` | Catalog module — direct media OK; page URLs need official APIs |
 
 ## Next
 

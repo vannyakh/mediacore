@@ -92,6 +92,21 @@ MAJOR_PLATFORMS: dict[str, dict] = {
         "hosts": ("archive.org", "www.archive.org"),
         "ie_names": ("archive.org", "ArchiveOrg"),
     },
+    # Movie / trailer platforms — PlatformModule hosts for URL detection +
+    # direct-media download; page/watch URLs stay not_configured until a
+    # permitted/official API is wired (no scrapers).
+    "imdb": {
+        "hosts": ("imdb.com", "www.imdb.com", "m.imdb.com"),
+        "ie_names": ("imdb", "imdb:list"),
+    },
+    "moviepilot": {
+        "hosts": ("moviepilot.de", "www.moviepilot.de"),
+        "ie_names": ("moviepilot",),
+    },
+    "rottentomatoes": {
+        "hosts": ("rottentomatoes.com", "www.rottentomatoes.com"),
+        "ie_names": ("RottenTomatoes",),
+    },
     "niconico": {
         "hosts": ("nicovideo.jp", "www.nicovideo.jp", "nico.ms"),
         "ie_names": ("Niconico",),

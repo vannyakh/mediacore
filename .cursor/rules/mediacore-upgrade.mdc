@@ -1,5 +1,5 @@
 ---
-description: Auto-upgrade catalog stubs in batches; yt-dlp research-only for hosts
+description: Auto-upgrade catalog platform modules in batches; yt-dlp research-only for hosts
 globs: providers/**/*
 alwaysApply: false
 ---

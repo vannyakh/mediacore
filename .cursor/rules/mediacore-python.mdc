@@ -7,7 +7,7 @@ alwaysApply: false
 # MediaCore Python
 
 - Python `>=3.12`, manage deps with `uv`, config in root `pyproject.toml`.
-- Prefer `packages.*` imports over legacy `extractor.*` shims.
+- Import from `packages.*`, `providers.*`, `apps.*`, `mediacore` only — legacy `extractor` / `jobqueue` / top-level `ffmpeg` / `storage` shims are gone.
 - Domain errors: `packages.core.exceptions.MediaCoreError` subclasses with `code`.
 - Settings: `packages.config.settings` (API re-exports via `apps.api.config`).
 - Auth helpers: `packages.auth` (API re-exports via `apps.api.security`).

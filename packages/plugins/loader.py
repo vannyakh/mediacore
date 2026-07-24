@@ -7,7 +7,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from packages.plugins.kinds import PLUGIN_STATUSES, PluginKind, parse_plugin_kind
+from packages.plugins.kinds import (
+    DEFAULT_CAPABILITIES,
+    PLUGIN_STATUSES,
+    PluginKind,
+    parse_plugin_kind,
+)
 
 logger = logging.getLogger("mediacore.plugins")
 
@@ -98,6 +103,10 @@ class PluginLoader:
         status = meta.get("status", "available")
         if status not in PLUGIN_STATUSES:
             raise ValueError(f"Invalid plugin status: {status}")
+        caps = list(meta.get("capabilities") or [])
+        if not caps:
+            kind_enum = PluginKind(kind)
+            caps = list(DEFAULT_CAPABILITIES.get(kind_enum, []))
         return PluginInfo(
             name=meta.get("name", f"mediacore-plugin-{entry.name}"),
             version=meta.get("version", "0.1.0"),
@@ -105,7 +114,7 @@ class PluginLoader:
             description=meta.get("description", ""),
             status=status,
             path=str(entry),
-            capabilities=list(meta.get("capabilities") or []),
+            capabilities=caps,
             module=ns,
         )
 

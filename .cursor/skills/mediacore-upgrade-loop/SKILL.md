@@ -1,14 +1,14 @@
 ---
 name: mediacore-upgrade-loop
 description: >-
-  Auto-upgrade MediaCore catalog stubs into working providers in batches.
+  Auto-upgrade MediaCore catalog platform modules into working providers in batches.
   Use when the user asks to implement all platforms, continue the upgrade loop,
   process the provider queue, or research a platform against yt-dlp for hosts only.
 ---
 
 # MediaCore provider upgrade loop
 
-Upgrade catalog stubs **one batch at a time** into working `providers/<name>/` packages.
+Upgrade catalog modules **one batch at a time** into working `providers/<name>/` packages.
 
 ## Hard rules (never violate)
 
@@ -17,7 +17,7 @@ Upgrade catalog stubs **one batch at a time** into working `providers/<name>/` p
 3. **yt-dlp is research-only** for `_VALID_URL` / host patterns / IE names — never copy extract methods into MediaCore.
 4. Brand stays **MediaCore** only.
 
-If no permitted API exists → improve host detection on the stub (or leave stub) and mark the queue item `skipped_no_api`. Do **not** invent a scraper.
+If no permitted API exists → improve host detection on the module (direct media still works) and mark the queue item `skipped_no_api`. Do **not** invent a scraper.
 
 ## When to use
 
@@ -47,7 +47,7 @@ Default batch size: **5** platforms.
 ```
 Has public oEmbed?     → metadata_only provider via providers/oembed.py
 Has official public API? → metadata_only (or active if download is permitted)
-Only hosts known?      → ensure hosts in hosts.py / stub; status stays not_configured
+Only hosts known?      → ensure hosts in hosts.py / module; page URLs stay not_configured
 Nothing permitted?     → skipped_no_api; do not scrape
 ```
 
@@ -75,9 +75,9 @@ Known oEmbed hints live in `scripts/provider_upgrade_queue.py` (`KNOWN_OEMBED`).
 
 1. Create `providers/<name>/__init__.py` + `provider.py` (same `name` as catalog entry).
 2. Prefer `fetch_oembed` / `metadata_from_oembed` from [`providers/oembed.py`](../../../providers/oembed.py).
-3. Register early in [`packages/registry/providers.py`](../../../packages/registry/providers.py) before factory stubs.
+3. Register early in [`packages/registry/providers.py`](../../../packages/registry/providers.py) before factory modules.
 4. Add mocked contract test in `tests/providers/test_provider_contract.py`.
-5. Update stub docstring under `providers/stubs/<slug>/` → points at working module.
+5. Optionally note the working package under `providers/modules/<slug>/` README/docstring.
 6. Add name → `metadata_only` in `DOCS_WORKING_STATUS` in `scripts/generate_providers.py`.
 7. Update `docs/platforms/index.md`, `docs/plugins/providers.md`, and `WORKING` in `docs/.vitepress/theme/components/PlatformCatalog.vue`.
 8. `uv run python scripts/generate_providers.py` then provider pytest.

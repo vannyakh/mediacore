@@ -28,11 +28,11 @@ uv run python scripts/sync_platform_catalog.py --file ./sites.md
 |------|---------|
 | `providers/data/sites_snapshot.json` | Snapshot input |
 | `providers/data/extractors.json` | Clean extractor list |
-| `providers/data/providers_index.json` | Stub provider index |
+| `providers/data/providers_index.json` | Platform module index |
 | `docs/public/platforms.json` | Docs `/platforms/` full list UI |
 | `docs/public/plugins.json` | Docs `/plugins/` catalog UI (`scripts/generate_plugins_docs.py`) |
-| `providers/stubs/<slug>/` | On-disk stub package per platform (`materialize_catalog_providers.py`) |
-| `providers/stubs/_manifest.json` | Slug → module map for stub folders |
+| `providers/modules/<slug>/` | On-disk platform module per catalog entry |
+| `providers/modules/_manifest.json` | Slug → module map |
 | `providers/data/upgrade_backlog.json` | Auto-upgrade queue (`provider_upgrade_queue.py`) |
 
 ## After regenerate

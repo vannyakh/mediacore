@@ -60,7 +60,7 @@ Back-compat aliases: `get_metadata` → `metadata`, `list_formats` → `formats`
 
 ## Full platform catalog
 
-All known extractors are implemented as MediaCore stub providers:
+All known extractors are implemented as MediaCore **platform modules** (`providers/modules/`):
 
 ```bash
 # Regenerate from existing snapshot
@@ -74,11 +74,13 @@ uv run python scripts/sync_platform_catalog.py --file ./sites.md
 |------|---------|
 | `providers/data/sites_snapshot.json` | Catalog snapshot (input) |
 | `providers/data/extractors.json` | Clean extractor list |
-| `providers/data/providers_index.json` | All stub providers (+ hosts where known) |
+| `providers/data/providers_index.json` | All modules (+ hosts where known) |
+| `providers/modules/<slug>/` | On-disk module packages |
 
-- **~1370+ stub providers** registered at runtime
+- **~1360+ platform modules** registered at runtime
 - **~120+** have host maps for URL detection
-- Status is `not_configured` (or `broken`) until you wire permitted/official access
+- Direct media on module hosts: metadata + download
+- Page/watch URLs: `not_configured` until permitted/official access
 
 ### API
 
